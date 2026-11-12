@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>STI KPI Technical Design</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAwIDIwMDAiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iU1RJIEsiPg0KICA8IS0tIFNUSSBLIG1hcmssIHNxdWFyZSBhcHAgaWNvbiAoU1RJIFByZWNpc2lvbiBLUEkgYXBwKS4gVmVjdG9yIG1hc3RlciwgYnJhbmQgY29sb3JzLiBVU0UgT05MWTogZG8gbm90IGVkaXQsIHJlY29sb3IsIHJlZHJhdyBvciBkaXN0b3J0LiAtLT4NCiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNDA4LjQgMzE5LjQpIj4NCiAgICA8cGF0aCBmaWxsPSIjMUIyRDVCIiBkPSJNMC4wIDAuMEwzMDAuMCAwLjBMMzAwLjAgMTM2MS4yTDAuMCAxMzYxLjJaIi8+DQogICAgPHBhdGggZmlsbD0iIzAwQTNFMCIgZD0iTTgwMi4xIDAuMEwxMTgzLjMgMC4wTDM0NC4yIDEwMDAuMEwzNDQuMiA1NDUuN1oiLz4NCiAgICA8cGF0aCBmaWxsPSIjMDBBODc4IiBkPSJNNDUwLjUgOTQyLjFMNjQxLjEgNzE1LjBMMTE4My4zIDEzNjEuMkw4MDIuMSAxMzYxLjJaIi8+DQogIDwvZz4NCjwvc3ZnPg0K">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Open+Sans:wght@400;600;700&family=Sarabun:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+  :root {
+    --navy: #1B2D5B; --cyan: #00A3E0; --green: #00A878; --silver: #8C8C8C; --amber: #E0A800; --red: #C0392B;
+    --bg: #F5F7FA; --surface: #FFFFFF; --ink: #1B2D5B; --ink-2: #44506B; --ink-3: #6E778A; --line: #DDE2EA; --tint: #EAF6FC; --tint-g: #E6F6F1;
+    --f-head: "Rajdhani", "Segoe UI", Arial, sans-serif;
+    --f-body: "Open Sans", "Segoe UI", Arial, sans-serif;
+    --f-th: "Sarabun", "Leelawadee UI", Tahoma, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg: #0E1528; --surface: #15203B; --ink: #E3EAF6; --ink-2: #B9C3D6; --ink-3: #8E99AE; --line: #2A3858; --tint: #12304A; --tint-g: #123A35; color-scheme: dark } }
+  :root[data-theme="dark"] {
+    --bg: #0E1528; --surface: #15203B; --ink: #E3EAF6; --ink-2: #B9C3D6; --ink-3: #8E99AE; --line: #2A3858; --tint: #12304A; --tint-g: #123A35; color-scheme: dark }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 16px; }
+  body { margin: 0; background: var(--bg); color: var(--ink-2); font: 14.5px/1.65 var(--f-body); }
+  .thai-text, .th { font-family: var(--f-th); line-height: 1.75; }
+  h1, h2, h3 { font-family: var(--f-head); color: var(--ink); margin: 0; letter-spacing: .2px; text-wrap: balance; }
+  b, strong { color: var(--ink); font-weight: 600; }
+  a { color: var(--cyan); }
+  code { font: 12.5px/1.4 Consolas, "Cascadia Mono", monospace; background: var(--tint); color: var(--ink); padding: 1px 4px; border-radius: 3px; }
+  pre { margin: 12px 0 0; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; overflow-x: auto; }
+  pre code { background: none; padding: 0; font-size: 12.5px; line-height: 1.5; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding-inline: 16px; }
+
+  /* top bar (new-era standard) */
+  .sti-topbar { background: var(--navy); color: #fff; }
+  .sti-topbar .wrap { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding-block: 12px; }
+  .sti-topbar img { height: 26px; width: auto; display: block; }
+  .sti-topbar .div { width: 1px; height: 26px; background: rgba(255,255,255,.35); }
+  .slogan { margin-left: auto; text-align: right; line-height: 1.25; }
+  .slogan b { display: block; color: var(--cyan); font: 600 12px/1.3 var(--f-body); letter-spacing: 1px; }
+  .slogan span { font: 400 11.5px/1.5 var(--f-th); color: rgba(255,255,255,.8); }
+
+  /* hero */
+  .hero { padding-block: 28px 8px; }
+  .eyebrow { font: 600 11px/1 var(--f-body); letter-spacing: 1.4px; text-transform: uppercase; color: var(--cyan); margin-bottom: 8px; }
+  .hero h1 { font-size: 36px; line-height: 1.05; }
+  .hero .th { margin-top: 4px; color: var(--ink-3); font-size: 15px; }
+  .hero .meta { margin-top: 10px; font-size: 12.5px; color: var(--ink-3); display: flex; gap: 6px 18px; flex-wrap: wrap; }
+  .hero .meta i { color: var(--cyan); margin-right: 4px; }
+
+  /* layout: sticky TOC + content */
+  .layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 28px; padding-block: 16px 32px; align-items: start; }
+  nav.toc { position: sticky; top: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; font-size: 13px; }
+  nav.toc b { display: block; font: 700 13px var(--f-head); letter-spacing: .8px; text-transform: uppercase; margin-bottom: 6px; }
+  nav.toc ol { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+  nav.toc a { color: var(--ink-2); text-decoration: none; }
+  nav.toc a:hover { color: var(--cyan); }
+
+  section.sec { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 20px 22px; margin-bottom: 18px; }
+  section.sec > h2 { font-size: 24px; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; border-bottom: 2px solid var(--cyan); padding-bottom: 6px; margin-bottom: 12px; }
+  section.sec > h2 small { font: 400 14px var(--f-th); color: var(--ink-3); }
+  section.sec h3 { font-size: 17px; margin: 20px 0 6px; }
+  section.sec p { margin: 8px 0 0; }
+  section.sec ul, section.sec ol { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 4px; }
+  .lead { font-size: 15.5px; color: var(--ink); }
+
+  .tbl { overflow-x: auto; margin-top: 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; vertical-align: top; padding: 6px 10px 6px 0; border-bottom: 1px solid var(--line); }
+  thead th { color: var(--ink); font-weight: 600; white-space: nowrap; border-bottom: 2px solid var(--line); }
+  tbody tr:last-child td, tbody tr:last-child th { border-bottom: 0; }
+  td code { white-space: nowrap; }
+  .kv th { width: 190px; color: var(--ink); font-weight: 600; white-space: normal; }
+
+  .figure { margin-top: 14px; border: 1px solid var(--line); border-radius: 6px; padding: 12px; background: var(--bg); }
+  .figure svg { width: 100%; height: auto; display: block; }
+  .figure figcaption { font-size: 12.5px; color: var(--ink-3); margin-top: 6px; }
+
+  .callout { margin-top: 12px; border-left: 3px solid var(--cyan); background: var(--tint); padding: 8px 12px; border-radius: 0 4px 4px 0; font-size: 13.5px; }
+  .callout.g { border-left-color: var(--green); background: var(--tint-g); }
+  ul.check { list-style: none; padding-left: 0 !important; }
+  ul.check li::before { content: "\F28A"; font-family: "bootstrap-icons"; color: var(--silver); margin-right: 8px; }
+
+  .phases { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+  .phase { border-top: 3px solid var(--silver); padding-top: 6px; font-size: 12.5px; line-height: 1.45; }
+  .phase.p1 { border-top-color: var(--cyan); }
+  .phase b { display: block; font: 700 15px/1.2 var(--f-head); }
+  .phase em { display: block; font-style: normal; color: var(--cyan); font-weight: 600; font-size: 12px; }
+
+  footer.wrap { padding-block: 12px 22px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 12px; color: var(--ink-3); border-top: 1px solid var(--line); }
+  footer .sl { color: var(--ink); font-weight: 600; letter-spacing: .6px; }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: minmax(0, 1fr); }
+    nav.toc { position: static; }
+    .phases { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .slogan { margin-left: 0; text-align: left; flex-basis: 100%; }
+  }
+  @media print {
+    @page { size: A4 portrait; margin: 12mm; }
+    body { background: #fff; font-size: 12.5px; }
+    nav.toc { display: none; }
+    .layout { grid-template-columns: minmax(0, 1fr); }
+    section.sec { break-inside: auto; border: 0; padding: 0 0 12px; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+
+<div class="sti-topbar">
+  <div class="wrap">
+    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMjcuNDcgODMuNCIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSJTVEkgUHJlY2lzaW9uIj4KICA8IS0tIFNUSSBQcmVjaXNpb24gQ28uLCBMdGQuIC0gTG9nbyB2Miwgd2hpdGUgKHJldmVyc2VkKSBmb3IgZGFyayBiYWNrZ3JvdW5kcyAoRFJBRlQsIGF3YWl0aW5nIGJyYW5kLW93bmVyIGNvbmZpcm1hdGlvbikuIFZlY3RvciBtYXN0ZXIuIFVTRSBPTkxZOiBkbyBub3QgZWRpdCwgcmVjb2xvciwgcmVkcmF3IG9yIGRpc3RvcnQuIC0tPgogIDxwYXRoIGZpbGw9IiNGRkZGRkYiIGQ9Ik0zOS43NyA4LjIzTDc3LjQzIDQwLjdBMjMuOTggMjMuOTkgNDAuNzcgMCAxIDQ2LjA5IDc3LjA0TDguNDMgNDQuNTZBMjQuMTggMjMuOTkgNDAuNzcgMCAxIDM5Ljc3IDguMjNaTTEuODIgNDYuODJMNDQuODMgODMuNEwxLjgyIDgzLjRMMS44MiA0Ni44MlpNODguNyAwTDE3MC4xIDBMMTcwLjEgMjYuOTFMMTUzLjMyIDI2LjkxTDE1My4zMiA4My40TDEwNi4zMSA4My40TDEwNi4zMSAyNi45MUw4OC43IDI2LjkxTDg4LjcgMFpNMTgwLjQ0IDBMMjI3LjQ3IDBMMjI3LjQ3IDgzLjRMMTgwLjQ0IDgzLjRMMTgwLjQ0IDBaIi8+CiAgPHBhdGggZmlsbD0iIzAwQTNFMCIgZD0iTTQwLjIyIDBMODEuMDEgMEw4MS4wMSAzNC43TDQwLjIyIDBaIi8+Cjwvc3ZnPgo=" alt="STI Precision">
+    <span class="div" aria-hidden="true"></span>
+    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMzY0LjcgMTM2MS4yIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IlNUSSBLIj4NCiAgPCEtLSBTVEkgSyBsb2dvLCB3aGl0ZSAoZGFyayBiYWNrZ3JvdW5kcykgKFNUSSBQcmVjaXNpb24gS1BJIGFwcCkuIFZlY3RvciBtYXN0ZXIsIGJyYW5kIGNvbG9ycy4gVVNFIE9OTFk6IGRvIG5vdCBlZGl0LCByZWNvbG9yLCByZWRyYXcgb3IgZGlzdG9ydC4gLS0+DQogIDxwYXRoIGZpbGw9IiNGRkZGRkYiIGQ9Ik0wLjAgMC4wTDMwMC4wIDAuMEwzMDAuMCAxMzYxLjJMMC4wIDEzNjEuMloiLz4NCiAgPHBhdGggZmlsbD0iIzAwQTNFMCIgZD0iTTgwMi4xIDAuMEwxMTgzLjMgMC4wTDM0NC4yIDEwMDAuMEwzNDQuMiA1NDUuN1oiLz4NCiAgPHBhdGggZmlsbD0iIzAwQTg3OCIgZD0iTTQ1MC41IDk0Mi4xTDY0MS4xIDcxNS4wTDExODMuMyAxMzYxLjJMODAyLjEgMTM2MS4yWiIvPg0KICA8cGF0aCBmaWxsPSIjRkZGRkZGIiBkPSJNOTUzLjMgMzQyLjkgMTI0MSAwSDE1MTQuM1ExNjc5LjQgMCAxNzcwLjQgOTBRMTg2MS41IDE3OS45IDE4NjEuNSAzNDUuMVY1NDguM1ExODYxLjUgNzEzLjQgMTc3MC40IDgwMy40UTE2NzkuNCA4OTMuNCAxNTE0LjMgODkzLjRIMTI0Ny42UTEyMjIuMiA4OTMuNCAxMjIyLjIgOTE2LjZWMTMxNi43UTEyMjIuMiAxMzI3LjUgMTIxOS42IDEzMzUuNkw5NTMuMyAxMDE4LjNWMzQyLjlaTTIzNTQuNyA0NC41VjEzMTYuN1EyMzU0LjcgMTM2MS4yIDIzMTAuMyAxMzYxLjJIMjEzMC4zUTIwODUuOSAxMzYxLjIgMjA4NS45IDEzMTYuN1Y0NC41UTIwODUuOSAwIDIxMzAuMyAwSDIzMTAuM1EyMzU0LjcgMCAyMzU0LjcgNDQuNVpNMTI0NS40IDY1OC40SDE0NjkuOFExNTM3LjYgNjU4LjQgMTU2NS4xIDYyOS44UTE1OTIuNiA2MDEuMiAxNTkyLjYgNTM1LjZWMzU3LjhRMTU5Mi42IDI5MCAxNTY1LjEgMjYxLjRRMTUzNy42IDIzMi45IDE0NjkuOCAyMzIuOUgxMjQ1LjRRMTIyMi4yIDIzMi45IDEyMjIuMiAyNTYuMlY2MzUuMVExMjIyLjIgNjU4LjQgMTI0NS40IDY1OC40WiIvPg0KPC9zdmc+DQo=" alt="STI K · KPI">
+    <div class="slogan"><b>PRECISION YOU CAN TRUST</b><span lang="th">ความแม่นยำที่คุณวางใจ</span></div>
+  </div>
+</div>
+
+<header class="wrap hero">
+  <div class="eyebrow">STI KPI app · Technical design document</div>
+  <h1>STI KPI Web App — Technical Design</h1>
+  <p class="th thai-text" lang="th">เอกสารออกแบบทางเทคนิค ระบบบริหาร KPI ของ STI</p>
+  <div class="meta">
+    <span><i class="bi bi-calendar3"></i>12 November 2026</span>
+    <span><i class="bi bi-file-earmark-text"></i>Version 0.5, for IT review · sign-in via STI Main</span>
+    <span><i class="bi bi-shield-check"></i>Governed by STI-STD-2026-001</span>
+  </div>
+</header>
+
+<div class="wrap layout">
+  <nav class="toc" aria-label="Contents">
+    <b>Contents</b>
+    <ol>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#architecture">Architecture</a></li>
+      <li><a href="#data">Data model</a></li>
+      <li><a href="#flows">Modules, flows and API</a></li>
+      <li><a href="#ui">UI, branding and language</a></li>
+      <li><a href="#security">Security and NFRs</a></li>
+      <li><a href="#roadmap">Roadmap, risks, open items</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <!-- 1 -->
+    <section class="sec" id="overview">
+      <h2>1. Overview <small lang="th">ภาพรวม</small></h2>
+      <p class="lead">STI KPI is a <b>Tier 1, standalone intranet app</b> at <code>http://sti-apps:8080/kpi</code>. It holds every KPI from company to team (2027) and person (2028) in the two layers of the STI KPI framework: <b>Base KPIs</b> for the running job and <b>Goal KPIs</b> cascaded from the goal and strategies S1–S4. All are tracked monthly and reviewed quarterly and at year end. It replaces scattered Excel files with one register, one scoring rule and one audit trail.</p>
+      <div class="tbl"><table class="kv"><tbody>
+        <tr><th>App name</th><td>STI KPI (product mark STI K)</td></tr>
+        <tr><th>Code name</th><td><code>STI.Kpi.*</code></td></tr>
+        <tr><th>Tier</th><td>Tier 1 — Core</td></tr>
+        <tr><th>Ports</th><td>API 5230 · Vite dev 5330</td></tr>
+        <tr><th>Database</th><td>MySQL 8, schema <code>sti_kpi</code>, <code>utf8mb4_unicode_ci</code></td></tr>
+        <tr><th>Staff sign-in</th><td>Through <b>STI Main</b> only (SSO, AD account). KPI has no staff login form and never sees an AD password.</td></tr>
+        <tr><th>KPI login page</th><td>Local admin accounts only, for local administration</td></tr>
+        <tr><th>Governing standard</th><td>STI-STD-2026-001 <i>STI Application Development Standard</i> (27 Aug 2026). Where this document and the standard disagree, the standard wins.</td></tr>
+        <tr><th>Status</th><td>Design. Prototype only, no production code yet.</td></tr>
+      </tbody></table></div>
+      <p><b>Why Tier 1.</b> Two of the standard's four tests are true: more than one department depends on it (every division, the Council, the MD), and from 2028 it writes audited data (individual results are HR records and may feed pay).</p>
+      <p><b>Why a standalone app, not a Portal module.</b> Each app has its own App Pool and JWT signing key, so a leak elsewhere cannot mint a token that reads 2028 individual results. The STI Portal links to <code>/kpi</code>; it does not host it.</p>
+      <p><b>In scope:</b> KPI register, target approval, monthly actuals with RAG and evidence, scoring, quarterly and year-end reviews, dashboards, ERP feed for production KPIs (2027); individual KPIs, self and manager assessment, HR calibration, privacy controls (2028).</p>
+      <p><b>Out of scope:</b> payroll and bonus calculation, a full HR system, replacing the ERP.</p>
+      <div class="callout"><b>Supersedes the plan's technology section.</b> The 27 Oct plan took its stack from the older IT roadmap (ASP.NET Core 8 MVC, jQuery, Windows Auth, EF Core). The August 2026 standard replaced that roadmap; this document follows the standard.</div>
+    </section>
+
+    <!-- 2 -->
+    <section class="sec" id="architecture">
+      <h2>2. Architecture <small lang="th">สถาปัตยกรรมระบบ</small></h2>
+      <p class="lead">One ASP.NET Core API on IIS serves the React SPA from <code>wwwroot</code>, accepts sign-ins from STI Main, runs the background jobs and is the only writer to <code>sti_kpi</code>. It sits behind the STI YARP gateway on port 8080 and never talks to Active Directory itself.</p>
+
+      <figure class="figure">
+        <svg viewBox="0 36 760 452" role="img" aria-label="One API on IIS serves the SPA and owns all KPI data" font-family="Open Sans, Segoe UI, sans-serif" font-size="13">
+          <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8C8C8C"/></marker></defs>
+          <g fill="none" stroke="#8C8C8C" stroke-width="1.25">
+            <path d="M380 108V134" marker-end="url(#arr)"/><path d="M380 192V222" marker-end="url(#arr)"/>
+            <path d="M119 352V398" marker-end="url(#arr)"/><path d="M293 352V398" marker-end="url(#arr)"/>
+            <path d="M467 352V398" marker-end="url(#arr)"/><path d="M641 352V398" marker-end="url(#arr)"/>
+          </g>
+          <text x="392" y="125" font-size="11.5" fill="var(--ink-3)">sti-apps:8080/kpi</text>
+          <g fill="var(--surface)" stroke="var(--silver)" stroke-width="1.25">
+            <rect x="230" y="52" width="300" height="56" rx="8"/><rect x="230" y="136" width="300" height="56" rx="8"/>
+            <rect x="24" y="224" width="712" height="128" rx="8" fill="var(--tint)" stroke="#00A3E0" stroke-width="1.5"/>
+            <rect x="40" y="264" width="158" height="72" rx="8"/><rect x="214" y="264" width="158" height="72" rx="8"/>
+            <rect x="388" y="264" width="158" height="72" rx="8"/><rect x="562" y="264" width="158" height="72" rx="8"/>
+            <rect x="40" y="400" width="158" height="72" rx="8" fill="var(--tint-g)" stroke="#00A878" stroke-width="2"/>
+            <rect x="214" y="400" width="158" height="72" rx="8"/><rect x="388" y="400" width="158" height="72" rx="8"/><rect x="562" y="400" width="158" height="72" rx="8"/>
+          </g>
+          <g text-anchor="middle">
+            <text x="380" y="76" font-weight="600" fill="var(--ink)">Browser</text>
+            <text x="380" y="92" font-size="11.5" fill="var(--ink-3)">Office PC, supervisor phone or tablet</text>
+            <text x="380" y="160" font-weight="600" fill="var(--ink)">STI Gateway (YARP :8080)</text>
+            <text x="380" y="176" font-size="11.5" fill="var(--ink-3)">routes /kpi and every path under it</text>
+            <text x="119" y="288" font-weight="600" fill="var(--ink)">React 19 SPA</text>
+            <text x="119" y="304" font-size="11.5" fill="var(--ink-3)">served from wwwroot</text>
+            <text x="119" y="320" font-size="11.5" fill="var(--ink-3)">Vite + TypeScript</text>
+            <text x="293" y="288" font-weight="600" fill="var(--ink)">Auth</text>
+            <text x="293" y="304" font-size="11.5" fill="var(--ink-3)">SSO from STI Main</text>
+            <text x="293" y="320" font-size="11.5" fill="var(--ink-3)">local admin login</text>
+            <text x="467" y="288" font-weight="600" fill="var(--ink)">Feature APIs</text>
+            <text x="467" y="304" font-size="11.5" fill="var(--ink-3)">register, entry</text>
+            <text x="467" y="320" font-size="11.5" fill="var(--ink-3)">reviews, admin</text>
+            <text x="641" y="288" font-weight="600" fill="var(--ink)">Background jobs</text>
+            <text x="641" y="304" font-size="11.5" fill="var(--ink-3)">reminders</text>
+            <text x="641" y="320" font-size="11.5" fill="var(--ink-3)">ERP import, close</text>
+            <text x="119" y="424" font-weight="600" fill="var(--ink)">MySQL 8 sti_kpi</text>
+            <text x="119" y="440" font-size="11.5" fill="var(--ink-2)">read / write</text>
+            <text x="119" y="456" font-size="11.5" fill="var(--ink-2)">app account</text>
+            <text x="293" y="424" font-weight="600" fill="var(--ink)">Evidence files</text>
+            <text x="293" y="440" font-size="11.5" fill="var(--ink-3)">on disk, not in DB</text>
+            <text x="293" y="456" font-size="11.5" fill="var(--ink-3)">shared\data\uploads</text>
+            <text x="467" y="424" font-weight="600" fill="var(--ink)">Resin DW</text>
+            <text x="467" y="440" font-size="11.5" fill="var(--ink-3)">read-only account</text>
+            <text x="467" y="456" font-size="11.5" fill="var(--ink-3)">fallback: pps2 SELECT</text>
+            <text x="641" y="424" font-weight="600" fill="var(--ink)">STI Main (SSO)</text>
+            <text x="641" y="440" font-size="11.5" fill="var(--ink-3)">code exchange, JWKS</text>
+            <text x="641" y="456" font-size="11.5" fill="var(--ink-3)">AD login lives here</text>
+          </g>
+          <text x="40" y="248" font-weight="600" fill="var(--ink)">STI.Kpi.Api · ASP.NET Core .NET 10 · IIS App Pool STI.Kpi · :5230 · PathBase /kpi</text>
+        </svg>
+        <figcaption>Requests reach the API only through the gateway. Staff are sent to STI Main to sign in; STI Main checks the AD account and hands KPI a signed identity. The ERP is read, never written.</figcaption>
+      </figure>
+
+      <h3>Technology stack</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>Layer</th><th>Choice</th><th>Note</th></tr></thead>
+        <tbody>
+          <tr><td>Runtime</td><td>ASP.NET Core on .NET 10</td><td>From <code>templates/tier1-core-dotnet</code></td></tr>
+          <tr><td>UI</td><td>React 19 + Vite + TypeScript + Tailwind 4</td><td>SPA served from the API's <code>wwwroot</code></td></tr>
+          <tr><td>Staff login</td><td>SSO relying party of STI Main (RS256 token via one-time code exchange)</td><td>KPI then issues its own app JWT; no LDAP code in KPI</td></tr>
+          <tr><td>Admin login</td><td>Local accounts, PBKDF2-SHA256 210k</td><td>KPI's own login page; never falls through to AD</td></tr>
+          <tr><td>Data access</td><td>Dapper + MySqlConnector</td><td>Numbered SQL migrations, <code>Database/Migrations/00N_*.sql</code></td></tr>
+          <tr><td>Database</td><td>MySQL 8, schema <code>sti_kpi</code></td><td>App owns its own DB</td></tr>
+          <tr><td>ERP data</td><td>Resin DW read-only; <code>pps2</code> SELECT-only fallback</td><td>No DDL in <code>pps2</code>, ever</td></tr>
+          <tr><td>Logging</td><td>Serilog</td><td>30-day files</td></tr>
+          <tr><td>Excel</td><td>ClosedXML</td><td>Template import, board and review export</td></tr>
+          <tr><td>Hosting</td><td>IIS, own App Pool, behind YARP</td><td>Port 5230</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Solution layout: frontend and backend</h3>
+      <p>The code is split into a <b>backend</b> and a <b>frontend</b>: two separate projects with their own build, tests and owners. They meet only at the REST API (<code>/kpi/api/*</code>, envelope contract in section 4).</p>
+      <div class="tbl"><table>
+        <thead><tr><th></th><th>Backend: <code>STI.Kpi.Api</code></th><th>Frontend: <code>STI.Kpi.Web</code></th></tr></thead>
+        <tbody>
+          <tr><td>Stack</td><td>ASP.NET Core .NET 10, Dapper, Serilog</td><td>React 19, Vite, TypeScript, Tailwind 4</td></tr>
+          <tr><td>Owns</td><td>Business rules, scoring, permissions, sign-in, jobs, all database and ERP access</td><td>Screens, navigation, TH/EN text, instant feedback while typing</td></tr>
+          <tr><td>Never does</td><td>Render pages</td><td>Touch the database or decide permissions (its route guards are UX only)</td></tr>
+          <tr><td>Develop</td><td><code>dotnet run</code> on :5230</td><td><code>npm run dev</code> on :5330, proxying <code>/api</code> to :5230</td></tr>
+          <tr><td>Ship</td><td colspan="2"><code>npm run build</code> output is copied into the backend's <code>wwwroot</code>, so both go live as one IIS site on one address: no CORS and a single deploy. The frontend could later move to its own host by changing only its API base URL.</td></tr>
+        </tbody>
+      </table></div>
+<pre><code>STI.Kpi.sln
+src/
+├─ STI.Kpi.Api/            ── BACKEND
+│  ├─ Common/      ApiResponse, PageQuery, ExceptionMiddleware, ErpDate, PasswordHasher
+│  ├─ Auth/        SsoController, StiMainClient (exchange, JWKS cache), LocalLoginController,
+│  │               JwtService, AuthSessionRepository, KpiPolicies.cs   (template's LdapService removed)
+│  ├─ Features/    Register/ Targets/ Entry/ Scoring/ Reviews/ YearEnd/ Boards/ Admin/ People/
+│  │               (Controller + Repository + Dtos per folder)
+│  ├─ Jobs/        ReminderJob, ErpImportJob, PeriodCloseJob (IHostedService)
+│  ├─ Database/Migrations/  001_core.sql · 003_kpi_org.sql · 004_kpi_register.sql …
+│  └─ wwwroot/     build output of STI.Kpi.Web
+└─ STI.Kpi.Web/            ── FRONTEND
+   └─ src/  lib/api.ts · stores/auth.tsx · i18n/index.ts · components/ · pages/ · features/scoring.ts</code></pre>
+
+      <h3>Deployment</h3>
+      <ul>
+        <li>Ports 5230 (API) and 5330 (Vite dev), recorded in the port registry (<code>Standard/docs/06-deploy.md</code>).</li>
+        <li>Gateway routes <code>kpi-bare</code> (<code>/kpi</code>) and <code>kpi-all</code> (<code>/kpi/{**catch-all}</code>) to cluster <code>kpi</code> → <code>http://localhost:5230/</code>.</li>
+        <li><code>App:PathBase = /kpi</code>; <code>base: '/kpi/'</code> in <code>vite.config.ts</code>; <code>basename="/kpi"</code> on the router.</li>
+        <li>Server folders <code>D:\STI\apps\kpi\{releases, current, shared\{config, logs, data\uploads}}</code>.</li>
+        <li>App Pool <code>STI.Kpi</code>: No Managed Code, AlwaysRunning, recycle 04:30 (after the DW ETL).</li>
+        <li>SSO registration in STI Main's <code>sso-clients.json</code>: <code>clientId</code> <code>sti-kpi</code>, a secret of at least 32 characters, <code>redirectUris</code> = the KPI callback URL exactly, <code>signoutUrl</code> = <code>/kpi/api/auth/signed-out</code>. STI Main is restarted to load it.</li>
+        <li>KPI config in <code>shared\config\appsettings.Production.json</code>: <code>Auth:Mode = sso</code>, <code>Auth:Sso:Issuer</code> (STI Main's <code>SSO_ISSUER</code>), <code>Auth:Sso:BaseUrl</code>, <code>ClientId</code>, <code>ClientSecret</code>, and KPI's own <code>Auth:Jwt:Key</code>. Never in the repository.</li>
+        <li>Network: the KPI server must reach STI Main over HTTPS (code exchange, JWKS) and STI Main must reach KPI's sign-out URL. Both hops cross hosts (STI Main runs on the Linux Docker host, KPI on IIS), so the firewall and certificate trust need checking.</li>
+        <li>Build: <code>npm run build</code> (<code>tsc -b</code> clean) → <code>dotnet publish -c Release</code> with 0 errors and 0 warnings. Never build on the server.</li>
+      </ul>
+    </section>
+
+    <!-- 3 -->
+    <section class="sec" id="data">
+      <h2>3. Data model <small lang="th">โครงสร้างข้อมูล</small></h2>
+      <p class="lead">All KPI data lives in its own MySQL 8 schema, <code>sti_kpi</code>; the ERP schemas are never written to.</p>
+      <p>Tables follow <code>Standard/docs/04-mysql.md</code>: <code>snake_case</code>, singular, real <code>DATETIME</code>, <code>id BIGINT AUTO_INCREMENT</code>, and on every business table <code>created_at</code>, <code>updated_at</code>, <code>created_by</code>, <code>updated_by</code> (AD username) and <code>is_active</code> (soft delete). User-facing names are <code>name</code> + <code>name_th</code>. The template's <code>001_core.sql</code> provides <code>local_user</code> (here: local admin accounts only), <code>audit_log</code> and <code>schema_migration</code>.</p>
+
+      <h3>Entity-relationship diagram</h3>
+      <figure class="figure">
+          <svg viewBox="0 0 760 736" role="img" aria-label="Entity-relationship diagram of the sti_kpi schema" font-family="Open Sans, Segoe UI, sans-serif" font-size="10.5">
+          <defs><marker id="er-one" viewBox="0 0 12 12" refX="12" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M6 1V11" fill="none" stroke="#8C8C8C" stroke-width="1.25"/></marker><marker id="er-many" viewBox="0 0 12 12" refX="12" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 6L12 1M0 6L12 6M0 6L12 11" fill="none" stroke="#8C8C8C" stroke-width="1.25"/></marker></defs>
+          <g fill="none" stroke="#8C8C8C" stroke-width="1.25" marker-start="url(#er-many)" marker-end="url(#er-one)">
+          <path d="M95 118V150"/>
+          <path d="M40 240V258H70V240" stroke-dasharray="4 3"/>
+          <path d="M364 60H396"/>
+          <path d="M586 60H554"/>
+          <path d="M285 150V103" stroke-dasharray="4 3"/>
+          <path d="M364 164H384V85H396"/>
+          <path d="M320 150V134H350V150" stroke-dasharray="4 3"/>
+          <path d="M206 195H174"/>
+          <path d="M475 150V103"/>
+          <path d="M396 195H364"/>
+          <path d="M640 150V128H530V103"/>
+          <path d="M174 295H206"/>
+          <path d="M396 295H364"/>
+          <path d="M554 320H570V225H586"/>
+          <path d="M665 290V255"/>
+          <path d="M174 430H190V310H206"/>
+          <path d="M174 470H206" stroke-dasharray="4 3"/>
+          <path d="M285 410V320"/>
+          <path d="M285 515V550" stroke-dasharray="4 3"/>
+          <path d="M396 430H376V310H364"/>
+          <path d="M554 440H578V240H586"/>
+          <path d="M174 595H206"/>
+          <path d="M245 640V668H8V225H16"/>
+          <path d="M325 640V680H752V200H744"/>
+          <path d="M396 600H364" stroke-dasharray="4 3"/>
+          <path d="M475 550V515" stroke-dasharray="4 3"/>
+          </g>
+          <g><rect x="16" y="28" width="158" height="90" rx="6" fill="var(--surface)" stroke="var(--silver)" stroke-width="1"/>
+          <path d="M17 51V34a5 5 0 0 1 5-5H168a5 5 0 0 1 5 5V51z" fill="var(--line)"/>
+          <path d="M16 51.5H174" stroke="var(--silver)" stroke-width="1"/>
+          <text x="24" y="44" font-weight="700" font-size="11.5" fill="var(--ink)">org_unit_role</text>
+          <text x="24" y="67" font-size="8.5" font-weight="700" fill="var(--ink)">PK</text>
+          <text x="44" y="67" fill="var(--ink-2)" font-weight="600">id</text>
+          <text x="24" y="82" font-size="8.5" font-weight="700" fill="#00A3E0">FK</text>
+          <text x="44" y="82" fill="var(--ink-2)">org_unit_id</text>
+          <text x="44" y="97" fill="var(--ink-2)">username</text>
+          <text x="44" y="112" fill="var(--ink-2)">role</text>
+          </g>
+          <g><rect x="206" y="28" width="158" height="75" rx="6" fill="var(--surface)" stroke="var(--silver)" stroke-width="1"/>
+          <path d="M207 51V34a5 5 0 0 1 5-5H358a5 5 0 0 1 5 5V51z" fill="var(--tint)"/>
+          <path d="M206 51.5H364" stroke="var(--silver)" stroke-width="1"/>
+          <text x="214" y="44" font-weight="700" font-size="11.5" fill="var(--ink)">strategy</text>
+          <text x="214" y="67" font-size="8.5" font-weight="700" fill="var(--ink)">PK</text>
+          <text x="234" y="67" fill="var(--ink-2)" font-weight="600">id</text>
+          <text x="214" y="82" font-size="8.5" font-weight="700" fill="#00A3E0">FK</text>
+          <text x="234" y="82" fill="var(--ink-2)">cycle_id</text>
+          <text x="234" y="97" fill="var(--ink-2)">code</text>
+          </g>
+          <g><rect x="396" y="28" width="158" height="75" rx="6" fill="var(--surface)" stroke="var(--silver)" stroke-width="1"/>
+          <path d="M397 51V34a5 5 0 0 1 5-5H548a5 5 0 0 1 5 5V51z" fill="var(--line)"/>
+          <path d="M396 51.5H554" stroke="var(--silver)" stroke-width="1"/>
+          <text x="404" y="44" font-weight="700" font-size="11.5" fill="var(--ink)">cycle</text>
+          <text x="404" y="67" font-size="8.5" font-weight="700" fill="var(--ink)">PK</text>
+          <text x="424" y="67" fill="var(--ink-2)" font-weight="600">id</text>
+          <text x="424" y="82" fill="var(--ink-2)">year</text>
+          <text x="424" y="97" fill="var(--ink-2)">status</text>
+          </g>
+          <g><rect x="586" y="28" width="158" height="90" rx="6" fill="var(--surface)" stroke="var(--silver)" stroke-width="1"/>
+          <path d="M587 51V34a5 5 0 0 1 5-5H738a5 5 0 0 1 5 5V51z" fill="var(--line)"/>
+          <path d="M586 51.5H744" stroke="var(--silver)" stroke-width="1"/>
+          <text x="594" y="44" font-weight="700" font-size="11.5" fill="var(--ink)">scoring_rule</text>
+          <text x="594" y="67" font-size="8.5" font-weight="700" fill="var(--ink)">PK</text>
+          <text x="614" y="67" fill="var(--ink-2)" font-weight="600">id</text>
+          <text x="594" y="82" font-size="8.5" font-weight="700" fill="#00A3E0">FK</text>
+          <text x="614" y="82" fill="var(--ink-2)">cycle_id</text>
+          <text x="614" y="97" fill="var(--ink-2)">green · amber · cap</text>
+          <text x="614" y="112" fill="var(--ink-2)">bands · layer_split</text>
+          </g>
+          <g><rect x="16" y="150" width="158" height="90" rx="6" fill="var(--surface)" stroke="var(--silver)" stroke-width="1"/>
+          <path d="M17 173V156a5 5 0 0 1 5-5H168a5 5 0 0 1 5 5V173z" fill="var(--line)"/>
+          <path d="M16 173.5H174" stroke="var(--silver)" stroke-width="1"/>
+          <text x="24" y="166" font-weight="700" font-size="11.5" fill="var(--ink)">org_unit</text>
+          <text x="24" y="189" font-size="8.5" font-weight="700" fill="var(--ink)">PK</text>
+          <text x="44" y="189" fill="var(--ink-2)" font-weight="600">id</text>
+          <text x="24" y="204" font-size="8.5" font-weight="700" fill="#00A878">UQ</text>
+          <text x="44" y="204" fill="var(--ink-2)">code</text>
+          <text x="24" y="219" font-size="8.5" font-weight="700" fill="#00A3E0">FK</text>
+          <text x="44" y="219" fill="var(--ink-2)">parent_id</text>
+          <text x="44" y="234" fill="var(--ink-2)">level</text>
+          </g>
+          <g><rect x="206" y="150" width="158" height="170" rx="6" fill="var(--surface)" stroke="#00A3E0" stroke-width="1.5"/>
+          <path d="M207 173V156a5 5 0 0 1 5-5H358a5 5 0 0 1 5 5V173z" fill="var(--tint)"/>
+          <path d="M206 173.5H364" stroke="#00A3E0" stroke-width="1.5"/>
+          <text x="214" y="166" font-weight="700" font-size="11.5" fill="var(--ink)">kpi</text>
+          <text x="214" y="189" font-size="8.5" font-weight="700" fill="var(--ink)">PK</text>
+          <text x="234" y="189" fill="var(--ink-2)" font-weight="600">id</text>
+          <text x="214" y="204" font-size="8.5" font-weight="700" fill="#00A3E0">FK</text>
+          <text x="234" y="204" fill="var(--ink-2)">cycle_id</text>
+          <text x="214" y="219" font-size="8.5" font-weight="700" fill="#00A3E0">FK</text>
+          <text x="234" y="219" fill="var(--ink-2)">org_unit_id</text>
+          <text x="214" y="234" font-size="8.5" font-weight="700" fill="#00A3E0">FK</text>
+          <text x="234" y="234" fill="var(--ink-2)">strategy_id</text>
+          <text x="214" y="249" font-size="8.5" font-weight="700" fill="#00A3E0">FK</text>
+          <text x="234" y="249" fill="var(--ink-2)">parent_kpi_id</text>
+          <text x="234" y="264" fill="var(--ink-2)">code</text>
+          <text x="234" y="279" fill="var(--ink-2)">layer (base / goal)</text>
+          <text x="234" y="294" fill="var(--ink-2)">direction · aggregation</text>
+          <text x="234" y="309" fill="var(--ink-2)">source · status</text>
+          </g>
+          <g><rect x="396" y="150" width="158" height="90" rx="6" fill="var(--surface)" stroke="var(--silver)" stroke-width="1"/>
+          <path d="M397 173V156a5 5 0 0 1 5-5H548a5 5 0 0 1 5 5V173z" fill="var(--tint)"/>
+          <path d="M396 173.5H554" stroke="var(--silver)" stroke-width="1"/>
+          <text x="404" y="166" font-weight="700" font-size="11.5" fill="var(--ink)">year_end_decision</text>
+          <text x="404" y="189" font-size="8.5" font-weight="700" fill="var(--ink)">PK</text>
+          <text x="424" y="189" fill="var(--ink-2)" font-weight="600">id</text>
+          <text x="404" y="204" font-size="8.5" font-weight="700" fill="#00A3E0">FK</text>
+          <text x="424" y="204" fill="var(--ink-2)">kpi_id</text>
+          <text x="404" y="219" font-size="8.5" font-weight="700" fill="#00A3E0">FK</text>
+          <text x="424" y="219" fill="var(--ink-2)">cycle_id</text>
+          <text x="424" y="234" fill="var(--ink-2)">decision</text>
+          </g>
+          <g><rect x="586" y="150" width="158" height="105" rx="6" fill="var(--surface)" stroke="var(--silver)" stroke-width="1"/>
+          <path d="M587 173V156a5 5 0 0 1 5-5H738a5 5 0 0 1 5 5V173z" fill="var(--line)"/>
+          <path d="M586 173.5H744" stroke="var(--silver)" stroke-width="1"/>
+          <text x="594" y="166" font-weight="700" font-size="11.5" fill="var(--ink)">period</text>
+          <text x="594" y="189" font-size="8.5" font-weight="700" fill="var(--ink)">PK</text>
+          <text x="614" y="189" fill="var(--ink-2)" font-weight="600">id</text>
+          <text x="594" y="204" font-size="8.5" font-weight="700" fill="#00A3E0">FK</text>
+          <text x="614" y="204" fill="var(--ink-2)">cycle_id</text>
+          <text x="614" y="219" fill="var(--ink-2)">kind · seq</text>
+          <text x="614" y="234" fill="var(--ink-2)">entry_due_on</text>
+          <text x="614" y="249" fill="var(--ink-2)">status</text>
+          </g>
+          <g><rect x="16" y="270" width="158" height="90" rx="6" fill="var(--surface)" stroke="var(--silver)" stroke-width="1"/>
+          <path d="M17 293V276a5 5 0 0 1 5-5H168a5 5 0 0 1 5 5V293z" fill="var(--tint)"/>
+          <path d="M16 293.5H174" stroke="var(--silver)" stroke-width="1"/>
+          <text x="24" y="286" font-weight="700" font-size="11.5" fill="var(--ink)">kpi_assignment</text>
+          <text x="24" y="309" font-size="8.5" font-weight="700" fill="var(--ink)">PK</text>
+          <text x="44" y="309" fill="var(--ink-2)" font-weight="600">id</text>
+          <text x="24" y="324" font-size="8.5" font-weight="700" fill="#00A3E0">FK</text>
+          <text x="44" y="324" fill="var(--ink-2)">kpi_id</text>
+          <text x="44" y="339" fill="var(--ink-2)">username</text>
+          <text x="44" y="354" fill="var(--ink-2)">role</text>
+          </g>
+          <g><rect x="396" y="270" width="158" height="105" rx="6" fill="var(--surface)" stroke="var(--silver)" stroke-width="1"/>
+          <path d="M397 293V276a5 5 0 0 1 5-5H548a5 5 0 0 1 5 5V293z" fill="var(--tint-g)"/>
+          <path d="M396 293.5H554" stroke="var(--silver)" stroke-width="1"/>
+          <text x="404" y="286" font-weight="700" font-size="11.5" fill="var(--ink)">assessment</text>
+          <text x="404" y="309" font-size="8.5" font-weight="700" fill="var(--ink)">PK</text>
+          <text x="424" y="309" fill="var(--ink-2)" font-weight="600">id</text>
+          <text x="404" y="324" font-size="8.5" font-weight="700" fill="#00A3E0">FK</text>
+          <text x="424" y="324" fill="var(--ink-2)">kpi_id</text>
+          <text x="404" y="339" font-size="8.5" font-weight="700" fill="#00A3E0">FK</text>
+          <text x="424" y="339" fill="var(--ink-2)">period_id</text>
+          <text x="424" y="354" fill="var(--ink-2)">kind</text>
+          <text x="424" y="369" fill="var(--ink-2)">score</text>
+          </g>
+          <g><rect x="586" y="290" width="158" height="75" rx="6" fill="var(--surface)" stroke="var(--silver)" stroke-width="1"/>
+          <path d="M587 313V296a5 5 0 0 1 5-5H738a5 5 0 0 1 5 5V313z" fill="var(--line)"/>
+          <path d="M586 313.5H744" stroke="var(--silver)" stroke-width="1"/>
+          <text x="594" y="306" font-weight="700" font-size="11.5" fill="var(--ink)">erp_import_run</text>
+          <text x="594" y="329" font-size="8.5" font-weight="700" fill="var(--ink)">PK</text>
+          <text x="614" y="329" fill="var(--ink-2)" font-weight="600">id</text>
+          <text x="594" y="344" font-size="8.5" font-weight="700" fill="#00A3E0">FK</text>
+          <text x="614" y="344" fill="var(--ink-2)">period_id</text>
+          <text x="614" y="359" fill="var(--ink-2)">rows · status</text>
+          </g>
+          <g><rect x="16" y="410" width="158" height="105" rx="6" fill="var(--surface)" stroke="var(--silver)" stroke-width="1"/>
+          <path d="M17 433V416a5 5 0 0 1 5-5H168a5 5 0 0 1 5 5V433z" fill="var(--tint)"/>
+          <path d="M16 433.5H174" stroke="var(--silver)" stroke-width="1"/>
+          <text x="24" y="426" font-weight="700" font-size="11.5" fill="var(--ink)">kpi_target</text>
+          <text x="24" y="449" font-size="8.5" font-weight="700" fill="var(--ink)">PK</text>
+          <text x="44" y="449" fill="var(--ink-2)" font-weight="600">id</text>
+          <text x="24" y="464" font-size="8.5" font-weight="700" fill="#00A3E0">FK</text>
+          <text x="44" y="464" fill="var(--ink-2)">kpi_id</text>
+          <text x="24" y="479" font-size="8.5" font-weight="700" fill="#00A3E0">FK</text>
+          <text x="44" y="479" fill="var(--ink-2)">change_request_id</text>
+          <text x="44" y="494" fill="var(--ink-2)">version</text>
+          <text x="44" y="509" fill="var(--ink-2)">target · weight</text>
+          </g>
+          <g><rect x="206" y="410" width="158" height="105" rx="6" fill="var(--surface)" stroke="var(--silver)" stroke-width="1"/>
+          <path d="M207 433V416a5 5 0 0 1 5-5H358a5 5 0 0 1 5 5V433z" fill="var(--tint)"/>
+          <path d="M206 433.5H364" stroke="var(--silver)" stroke-width="1"/>
+          <text x="214" y="426" font-weight="700" font-size="11.5" fill="var(--ink)">change_request</text>
+          <text x="214" y="449" font-size="8.5" font-weight="700" fill="var(--ink)">PK</text>
+          <text x="234" y="449" fill="var(--ink-2)" font-weight="600">id</text>
+          <text x="214" y="464" font-size="8.5" font-weight="700" fill="#00A3E0">FK</text>
+          <text x="234" y="464" fill="var(--ink-2)">kpi_id</text>
+          <text x="214" y="479" font-size="8.5" font-weight="700" fill="#00A3E0">FK</text>
+          <text x="234" y="479" fill="var(--ink-2)">decided_in_review_id</text>
+          <text x="234" y="494" fill="var(--ink-2)">to_target</text>
+          <text x="234" y="509" fill="var(--ink-2)">status</text>
+          </g>
+          <g><rect x="396" y="410" width="158" height="105" rx="6" fill="var(--surface)" stroke="var(--silver)" stroke-width="1"/>
+          <path d="M397 433V416a5 5 0 0 1 5-5H548a5 5 0 0 1 5 5V433z" fill="var(--tint-g)"/>
+          <path d="M396 433.5H554" stroke="var(--silver)" stroke-width="1"/>
+          <text x="404" y="426" font-weight="700" font-size="11.5" fill="var(--ink)">kpi_actual</text>
+          <text x="404" y="449" font-size="8.5" font-weight="700" fill="var(--ink)">PK</text>
+          <text x="424" y="449" fill="var(--ink-2)" font-weight="600">id</text>
+          <text x="404" y="464" font-size="8.5" font-weight="700" fill="#00A3E0">FK</text>
+          <text x="424" y="464" fill="var(--ink-2)">kpi_id</text>
+          <text x="404" y="479" font-size="8.5" font-weight="700" fill="#00A3E0">FK</text>
+          <text x="424" y="479" fill="var(--ink-2)">period_id</text>
+          <text x="424" y="494" fill="var(--ink-2)">value</text>
+          <text x="424" y="509" fill="var(--ink-2)">rag · achievement</text>
+          </g>
+          <g><rect x="16" y="550" width="158" height="90" rx="6" fill="var(--surface)" stroke="var(--silver)" stroke-width="1"/>
+          <path d="M17 573V556a5 5 0 0 1 5-5H168a5 5 0 0 1 5 5V573z" fill="var(--line)"/>
+          <path d="M16 573.5H174" stroke="var(--silver)" stroke-width="1"/>
+          <text x="24" y="566" font-weight="700" font-size="11.5" fill="var(--ink)">review_action</text>
+          <text x="24" y="589" font-size="8.5" font-weight="700" fill="var(--ink)">PK</text>
+          <text x="44" y="589" fill="var(--ink-2)" font-weight="600">id</text>
+          <text x="24" y="604" font-size="8.5" font-weight="700" fill="#00A3E0">FK</text>
+          <text x="44" y="604" fill="var(--ink-2)">review_id</text>
+          <text x="44" y="619" fill="var(--ink-2)">due_on</text>
+          <text x="44" y="634" fill="var(--ink-2)">status</text>
+          </g>
+          <g><rect x="206" y="550" width="158" height="90" rx="6" fill="var(--surface)" stroke="var(--silver)" stroke-width="1"/>
+          <path d="M207 573V556a5 5 0 0 1 5-5H358a5 5 0 0 1 5 5V573z" fill="var(--line)"/>
+          <path d="M206 573.5H364" stroke="var(--silver)" stroke-width="1"/>
+          <text x="214" y="566" font-weight="700" font-size="11.5" fill="var(--ink)">review</text>
+          <text x="214" y="589" font-size="8.5" font-weight="700" fill="var(--ink)">PK</text>
+          <text x="234" y="589" fill="var(--ink-2)" font-weight="600">id</text>
+          <text x="214" y="604" font-size="8.5" font-weight="700" fill="#00A3E0">FK</text>
+          <text x="234" y="604" fill="var(--ink-2)">org_unit_id</text>
+          <text x="214" y="619" font-size="8.5" font-weight="700" fill="#00A3E0">FK</text>
+          <text x="234" y="619" fill="var(--ink-2)">period_id</text>
+          <text x="234" y="634" fill="var(--ink-2)">stage</text>
+          </g>
+          <g><rect x="396" y="550" width="158" height="105" rx="6" fill="var(--surface)" stroke="var(--silver)" stroke-width="1"/>
+          <path d="M397 573V556a5 5 0 0 1 5-5H548a5 5 0 0 1 5 5V573z" fill="var(--tint-g)"/>
+          <path d="M396 573.5H554" stroke="var(--silver)" stroke-width="1"/>
+          <text x="404" y="566" font-weight="700" font-size="11.5" fill="var(--ink)">attachment</text>
+          <text x="404" y="589" font-size="8.5" font-weight="700" fill="var(--ink)">PK</text>
+          <text x="424" y="589" fill="var(--ink-2)" font-weight="600">id</text>
+          <text x="424" y="604" fill="var(--ink-2)">owner_type</text>
+          <text x="424" y="619" fill="var(--ink-2)">owner_id</text>
+          <text x="424" y="634" fill="var(--ink-2)">stored_path</text>
+          <text x="424" y="649" fill="var(--ink-2)">sha256</text>
+          </g>
+          <rect x="586" y="410" width="158" height="245" rx="6" fill="none" stroke="var(--silver)" stroke-dasharray="4 3"/>
+          <text x="594" y="428" font-weight="700" font-size="11.5" fill="var(--ink)">Platform &amp; reference</text>
+          <text x="594" y="442" font-size="9.5" fill="var(--ink-3)">no foreign keys drawn</text>
+          <text x="594" y="464" font-weight="600" fill="var(--ink)">local_user</text>
+          <text x="594" y="476" font-size="9.5" fill="var(--ink-3)">admin accounts</text>
+          <text x="594" y="490" font-weight="600" fill="var(--ink)">auth_session</text>
+          <text x="594" y="502" font-size="9.5" fill="var(--ink-3)">one row per sign-in</text>
+          <text x="594" y="516" font-weight="600" fill="var(--ink)">audit_log</text>
+          <text x="594" y="528" font-size="9.5" fill="var(--ink-3)">every change and sign</text>
+          <text x="594" y="542" font-weight="600" fill="var(--ink)">schema_migration</text>
+          <text x="594" y="554" font-size="9.5" fill="var(--ink-3)">from 001_core.sql</text>
+          <text x="594" y="568" font-weight="600" fill="var(--ink)">base_kpi</text>
+          <text x="594" y="580" font-size="9.5" fill="var(--ink-3)">2026 inventory, read-only</text>
+          <text x="594" y="594" font-weight="600" fill="var(--ink)">person_kpi</text>
+          <text x="594" y="606" font-size="9.5" fill="var(--ink-3)">2028, → kpi</text>
+          <text x="594" y="620" font-weight="600" fill="var(--ink)">person_assessment</text>
+          <text x="594" y="632" font-size="9.5" fill="var(--ink-3)">2028</text>
+          <g font-size="10" fill="var(--ink-2)">
+          <path d="M16 712H56" fill="none" stroke="#8C8C8C" stroke-width="1.25" marker-start="url(#er-many)" marker-end="url(#er-one)"/>
+          <text x="62" y="715.5">many → one (FK required)</text>
+          <path d="M200 712H240" fill="none" stroke="#8C8C8C" stroke-width="1.25" stroke-dasharray="4 3" marker-start="url(#er-many)" marker-end="url(#er-one)"/>
+          <text x="246" y="715.5">optional FK / attachment owner</text>
+          <rect x="430" y="706" width="12" height="12" rx="2" fill="var(--tint)" stroke="var(--silver)" stroke-width=".75"/>
+          <text x="447" y="715.5">KPI definition</text>
+          <rect x="543.4" y="706" width="12" height="12" rx="2" fill="var(--tint-g)" stroke="var(--silver)" stroke-width=".75"/>
+          <text x="560.4" y="715.5">Results</text>
+          <rect x="617.5999999999999" y="706" width="12" height="12" rx="2" fill="var(--line)" stroke="var(--silver)" stroke-width=".75"/>
+          <text x="634.5999999999999" y="715.5">Org, time, review</text>
+          </g>
+          </svg>
+        <figcaption>Each line runs from the table that holds the foreign key (crow's foot, "many") to the table it points to (bar, "one"). Dashed lines are optional keys; <code>attachment</code> links to a result or a review through <code>owner_type</code> + <code>owner_id</code>, so the database does not enforce that link. <code>kpi_actual</code> and <code>assessment</code> are unique per (<code>kpi_id</code>, <code>period_id</code>). Usernames (owners, entry staff, reviewers) are AD logins, not foreign keys. Standard audit columns are left off the boxes.</figcaption>
+      </figure>
+
+      <h3>Tables</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>Table</th><th>Key columns</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td><code>org_unit</code></td><td><code>code</code> (UNIQUE, e.g. INJ), <code>name</code>, <code>name_th</code>, <code>parent_id</code>, <code>level</code> (company / division / team)</td><td>Company → division → team</td></tr>
+          <tr><td><code>org_unit_role</code></td><td><code>org_unit_id</code>, <code>username</code>, <code>role</code> (owner / reviewer / member)</td><td>Per-unit assignments</td></tr>
+          <tr><td><code>cycle</code></td><td><code>year</code>, <code>status</code> (setting / open / closed / locked)</td><td>One per year</td></tr>
+          <tr><td><code>period</code></td><td><code>cycle_id</code>, <code>kind</code> (month / quarter / year), <code>seq</code>, <code>starts_on</code>, <code>entry_due_on</code>, <code>status</code></td><td>Entry due = 5th working day; locked periods reject writes</td></tr>
+          <tr><td><code>strategy</code></td><td><code>code</code> (G, S1–S4), <code>name</code>, <code>name_th</code>, <code>cycle_id</code></td><td>Goal and strategies per cycle</td></tr>
+          <tr><td><code>kpi</code></td><td><code>cycle_id</code>, <code>code</code> (UNIQUE per cycle), <code>org_unit_id</code>, <code>definition</code>, <code>formula</code>, <code>unit</code>, <code>direction</code> (up / down / range / pass), <code>aggregation</code> (avg / last / sum), <code>frequency</code>, <code>source</code> (manual / erp / excel), <code>source_ref</code>, <code>status</code>, <b><code>layer</code></b> (base / goal), <code>parent_kpi_id</code>, <code>strategy_id</code>, <code>base_kpi_code</code></td><td>Goal KPI: approval rejects it without a parent KPI or strategy (orphan rule). Base KPI: no parent needed; a <code>strategy_id</code> marks it goal-linked. See "Base and Goal KPIs" below</td></tr>
+          <tr><td><code>kpi_target</code></td><td><code>kpi_id</code>, <code>version</code>, <code>baseline</code>, <code>target</code>, <code>target_low</code> / <code>target_high</code>, <code>weight</code>, <code>milestones_json</code>, <code>approved_by</code>, <code>approved_at</code>, <code>change_request_id</code></td><td>New row per change; the original target is never overwritten</td></tr>
+          <tr><td><code>kpi_assignment</code></td><td><code>kpi_id</code>, <code>username</code>, <code>role</code> (entry)</td><td>Data-entry people</td></tr>
+          <tr><td><code>kpi_actual</code></td><td><code>kpi_id</code>, <code>period_id</code>, <code>value</code> DECIMAL(18,4), <code>is_pass</code>, <code>rag</code>, <code>achievement</code>, <code>comment</code>, <code>source</code>, <code>entered_by</code>, <code>entered_at</code></td><td>UNIQUE (kpi_id, period_id); RAG and achievement stored at save time so a later rule change cannot rewrite history</td></tr>
+          <tr><td><code>attachment</code></td><td><code>owner_type</code> (actual / review), <code>owner_id</code>, <code>file_name</code>, <code>stored_path</code>, <code>content_type</code>, <code>size_bytes</code>, <code>sha256</code></td><td>Files on disk under <code>shared\data\uploads</code>, never in the DB</td></tr>
+          <tr><td><code>scoring_rule</code></td><td><code>cycle_id</code>, <code>green_min</code>, <code>amber_min</code>, <code>cap</code>, <code>bands_json</code>, <code>layer_split_json</code></td><td>Defaults: green ≥ 100, amber ≥ 90, cap 120, bands 110/100/90/80 → 5/4/3/2/1. <code>layer_split_json</code> holds the Base-weight range per level (soft warning only)</td></tr>
+          <tr><td><code>assessment</code></td><td><code>kpi_id</code>, <code>period_id</code>, <code>kind</code> (system / self / reviewer), <code>score</code> 1–5, <code>comment</code></td><td>Final score = reviewer, else self, else system</td></tr>
+          <tr><td><code>review</code></td><td><code>org_unit_id</code>, <code>period_id</code>, <code>stage</code> (draft / sent / signed), <code>highlights</code>, <code>issues</code>, <code>attendees</code>, owner / reviewer / exec signatures</td><td>One per team per quarter or year</td></tr>
+          <tr><td><code>review_action</code></td><td><code>review_id</code>, <code>action</code>, <code>owner_name</code>, <code>due_on</code>, <code>status</code> (open / done / carried)</td><td>Open actions carry to the next quarter</td></tr>
+          <tr><td><code>change_request</code></td><td><code>kpi_id</code>, <code>from_target</code>, <code>to_target</code>, <code>reason</code>, <code>status</code>, <code>decided_in_review_id</code></td><td>Approved at a quarterly review</td></tr>
+          <tr><td><code>year_end_decision</code></td><td><code>kpi_id</code>, <code>cycle_id</code>, <code>decision</code> (keep / change / retire), <code>note</code></td><td>Carry-forward into the next cycle</td></tr>
+          <tr><td><code>erp_import_run</code></td><td><code>started_at</code>, <code>finished_at</code>, <code>period_id</code>, <code>rows</code>, <code>status</code>, <code>message</code></td><td>One row per import, shown in Admin</td></tr>
+          <tr><td><code>auth_session</code></td><td><code>session_id</code> (= KPI token <code>jti</code>), <code>username</code>, <code>auth_type</code> (AD / LOCAL), <code>sti_sid</code>, <code>sti_jti</code>, <code>issued_at</code>, <code>expires_at</code>, <code>revoked_at</code>, <code>client_ip</code></td><td>One row per sign-in. STI Main's sign-out ping sets <code>revoked_at</code>; also gives "last signed in" per username</td></tr>
+          <tr><td><code>base_kpi</code></td><td>2026 inventory fields (<code>code</code>, <code>dept</code>, <code>name_th</code>, <code>rule</code>, <code>months_json</code>, <code>decision</code>)</td><td>One-off import of the 2026 base-KPI inventory. Read-only source: kept KPIs are copied into <code>kpi</code> as the 2027 Base KPIs (<code>layer = base</code>, <code>base_kpi_code</code> points back here)</td></tr>
+          <tr><td><code>person_kpi</code>, <code>person_assessment</code> (2028)</td><td><code>username</code>, <code>kpi_id</code> or own definition, <code>share</code>, <code>weight</code>, scores</td><td>Privacy rules in section 6</td></tr>
+        </tbody>
+      </table></div>
+      <p><code>audit_log</code> records every create, update, submit, approve and sign, and every read of <code>person_*</code> data: who, what, before/after JSON, when.</p>
+
+      <h3>Base and Goal KPIs</h3>
+      <p>The app follows the two-layer framework (<code>STI_KPI_Framework_Summary_EN-TH.md</code>): <b>Base KPI + Goal KPI = Total KPI</b>. Each KPI carries <code>layer</code>. Both layers share the same targets, monthly entry, scoring, reviews and audit; they differ only in the rules below, not in separate screens.</p>
+      <div class="tbl"><table>
+        <thead><tr><th></th><th>Base KPI · <span lang="th">KPI พื้นฐาน</span></th><th>Goal KPI · <span lang="th">KPI ตามเป้าหมาย</span></th></tr></thead>
+        <tbody>
+          <tr><td>Comes from</td><td>The team's or role's job (on-time delivery, turnover)</td><td>The company goal and strategies S1–S4, cascaded</td></tr>
+          <tr><td>Parent link</td><td>Not required. An optional <code>strategy_id</code> marks it <b>goal-linked</b>: a goal that improves an existing KPI raises its target instead of creating a second KPI</td><td>Required: a strategy or a parent Goal KPI. Approval rejects an orphan</td></tr>
+          <tr><td>Start</td><td>2027 set seeded from the 2026 inventory (<code>base_kpi</code>, decision "keep")</td><td>Entered from the Council outcome, Nov–Dec 2026</td></tr>
+          <tr><td>Year end</td><td>Default decision <b>keep</b>: copied into the next cycle with its history link</td><td>No default: kept, changed or retired with the yearly goals</td></tr>
+          <tr><td>Shown</td><td colspan="2">Register, entry grid and boards show a Base / Goal badge and filter (<code>layer=</code>). The KPI tree shows Goal KPIs under their strategy, and goal-linked Base KPIs with a link marker</td></tr>
+        </tbody>
+      </table></div>
+      <p><b>Weight split: a soft warning, never a block.</b> Every KPI set (a team's now, a person's from 2028) shows the share of weight on Base and on Goal KPIs. When the Base share is outside the range for that level, an amber notice appears on the draft and in the approval view, so the approver sees it before deciding. Submit and approve still work, and the reviewer can note why the set differs. Ranges live in <code>scoring_rule.layer_split_json</code>, editable per cycle in Admin. Starting values from the framework:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Level</th><th>Base KPI weight</th><th>Goal KPI weight</th></tr></thead>
+        <tbody>
+          <tr><td>Manager</td><td>50–60%</td><td>40–50%</td></tr>
+          <tr><td>Supervisor</td><td>~70%</td><td>~30%</td></tr>
+          <tr><td>Operator</td><td>80–90%</td><td>10–20%</td></tr>
+          <tr><td>Division / team set (2027)</td><td colspan="2">To agree with the strategy team in Phase 0 (open item); no warning until set</td></tr>
+        </tbody>
+      </table></div>
+      <p>The same check gives a soft warning when a set holds more than 8 KPIs (the framework suggests about 5–8 per person). Scoring does not change: Σ(weight × score) ÷ Σ(weight) across both layers.</p>
+
+      <h3>Scoring rules</h3>
+      <p>The rules live in one C# class, <code>Features/Scoring/ScoringService.cs</code>. They are mirrored in <code>src/features/scoring.ts</code> only for instant feedback while typing; the server value is the one stored. Both are tested against the same table of cases.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Direction</th><th>Achievement</th></tr></thead>
+        <tbody>
+          <tr><td><code>up</code></td><td>actual ÷ target; if target = 0, any positive actual = cap</td></tr>
+          <tr><td><code>down</code></td><td>target ÷ actual; if actual ≤ 0, cap</td></tr>
+          <tr><td><code>range</code></td><td>1.0 inside [target_low, target_high]; outside, distance-based (rule still to agree with HR)</td></tr>
+          <tr><td><code>pass</code></td><td>pass = 1.0, fail = 0</td></tr>
+        </tbody>
+      </table></div>
+      <p>Achievement is capped at 120% by default. The period value uses the KPI's aggregation: <code>avg</code> of months with data, or <code>last</code> for cumulative KPIs. Team score = Σ(weight × score) ÷ Σ(weight), over approved KPIs that have a result.</p>
+
+      <h3>ERP and data-warehouse feed</h3>
+      <p>Production KPIs (OEE, %NG, breakdown downtime, on-time delivery, first-lot pass) have <code>source = erp</code> and are never typed in.</p>
+      <ul>
+        <li><b>Preferred source:</b> the Resin data warehouse (MySQL 8, nightly ETL 02:30–04:00), read through a read-only account. It already cleans VARCHAR dates, Buddhist-era years and mixed collations.</li>
+        <li><b>Fallback until the DW is live:</b> SELECT-only queries against <code>pps2</code> through the read-only ERP connection, using <code>ErpDate</code> and exclusive upper bounds. No views or other objects are created in <code>pps2</code>.</li>
+        <li><code>ErpImportJob</code> runs on the 1st working day at 08:00 for the month just closed, writes <code>kpi_actual</code> rows and logs an <code>erp_import_run</code>.</li>
+        <li>Each ERP KPI's query is named by <code>kpi.source_ref</code> and lives in code (<code>ErpKpiQueries.cs</code>), parameterised. No SQL is stored in the database.</li>
+        <li>An owner can comment on an ERP value but not overwrite it. A wrong value is fixed at the source and re-imported.</li>
+        <li><b>Known limit:</b> hourly production and downtime data are complete only from Apr–May 2026, so earlier OEE baselines are not comparable.</li>
+      </ul>
+    </section>
+
+    <!-- 4 -->
+    <section class="sec" id="flows">
+      <h2>4. Modules, flows and API <small lang="th">โมดูล ขั้นตอน และ API</small></h2>
+      <p class="lead">Nine modules map one-to-one to the prototype's nine screens, each with a React page and an API group. The build keeps the prototype's navigation and wording.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Module</th><th>React page</th><th>Main API</th><th>Phase</th></tr></thead>
+        <tbody>
+          <tr><td>M7 Company board</td><td><code>BoardPage</code></td><td><code>GET /api/boards/company?period=</code></td><td>1</td></tr>
+          <tr><td>M1 KPI register</td><td><code>RegisterPage</code>, <code>KpiDrawer</code></td><td><code>/api/kpis</code> (CRUD, tree, layer rules, split check)</td><td>1</td></tr>
+          <tr><td>M2 Targets and approval</td><td><code>KpiDrawer</code> → approval tab</td><td><code>POST /api/kpis/{id}/submit</code>, <code>/approve</code>, <code>/return</code></td><td>1</td></tr>
+          <tr><td>M3 Monthly results</td><td><code>EntryPage</code></td><td><code>GET/PUT /api/entries?unit=&amp;period=</code>, <code>/api/attachments</code></td><td>1</td></tr>
+          <tr><td>Goal + Base layers</td><td><code>BaseKpiPage</code> (2026 inventory, seed to 2027), layer view</td><td><code>/api/base-kpis</code>, <code>POST /api/base-kpis/seed?cycle=2027</code></td><td>1</td></tr>
+          <tr><td>M4/M5 Quarterly review</td><td><code>ReviewPage</code></td><td><code>/api/reviews?unit=&amp;quarter=</code>, <code>/actions</code>, <code>/change-requests</code></td><td>2</td></tr>
+          <tr><td>M6 Year-end review</td><td><code>YearEndPage</code></td><td><code>/api/year-end?unit=&amp;year=</code>, <code>/sign</code></td><td>3</td></tr>
+          <tr><td>M8 Admin</td><td><code>Admin*Pages</code></td><td><code>/api/admin/cycles</code>, <code>/periods</code>, <code>/org-units</code>, <code>/rules</code>, <code>/assignments</code>, <code>/audit</code></td><td>1–3</td></tr>
+          <tr><td>M9 My KPIs</td><td><code>MyKpiPage</code></td><td><code>/api/people/me/kpis</code></td><td>4 (2028)</td></tr>
+        </tbody>
+      </table></div>
+      <p>Every list screen implements the standard's four states: loading, error with retry, empty, data. A new search resets to page 1.</p>
+
+      <h3>Core flows</h3>
+      <ol>
+        <li><b>Set targets (January).</b> A team starts from its Base KPIs carried from last year (in 2027, seeded from the 2026 inventory) and adds the Goal KPIs cascaded to it, each linked to a parent KPI or a strategy, with baseline, target and weight. The draft shows the Base / Goal weight split, with an amber notice if it is outside the agreed range. Submit → approve or return with a comment. Route: team KPI → division head; division KPI → Council; strategy KPI → Executive.</li>
+        <li><b>Track (monthly).</b> The entry grid shows each KPI's target, last value and RAG. Actuals are due by the 5th working day; a comment is required for amber and red. ERP KPIs arrive by import and are read-only. Late entries trigger reminders and a "not updated" flag on the board.</li>
+        <li><b>Quarterly review (Apr, Jul, Oct).</b> The form is pre-filled with the quarter's actuals and scores. Owner self-assesses, reviewer assesses; highlights, issues, actions (owner, due date) and change requests are recorded, then signed. Open actions carry forward.</li>
+        <li><b>Year-end review (January).</b> Final actuals are locked; achievement and weighted score are computed; owner, reviewer and executive sign. Each KPI is kept, changed or retired for the next cycle; Base KPIs default to keep.</li>
+      </ol>
+
+      <h3>API contract</h3>
+      <p>Everything follows <code>Standard/docs/02-api-contract.md</code>.</p>
+      <ul>
+        <li>Envelope <code>{ success, message, data, pagination? }</code>. <code>message</code> is shown to staff verbatim, in the user's language (<code>Accept-Language: th|en</code>).</li>
+        <li>Paths lower-kebab plural (<code>/api/kpis</code>, <code>/api/review-actions</code>); query and JSON camelCase.</li>
+        <li>Lists accept <code>page</code>, <code>pageSize</code> (cap 200), <code>search</code>, <code>sort</code> (whitelist per endpoint).</li>
+        <li><code>GET /api/health</code> is anonymous and reports <code>database</code>, <code>dw</code> and <code>sso</code> (STI Main JWKS reachable) status.</li>
+        <li>Auth endpoints: <code>GET /sso/start</code>, <code>GET /sso/callback</code>, <code>POST /api/auth/session</code>, <code>GET /api/auth/me</code>, <code>POST /api/auth/signed-out</code> (STI Main only), <code>POST /api/auth/local-login</code> (local admin only), <code>POST /api/auth/logout</code>. Section 6 describes each.</li>
+        <li>Status codes: 400 validation (field errors in <code>data</code>), 401, 403, 404, and <b>409</b> for "period is locked" or "KPI changed since you opened it" (optimistic check on <code>updated_at</code>).</li>
+      </ul>
+<pre><code>GET  /api/kpis?cycle=2027&amp;unit=INJ&amp;layer=goal&amp;strategy=S2&amp;status=approved&amp;page=1&amp;pageSize=50
+GET  /api/kpis/tree?cycle=2027          → goal → strategy → company KPI → team KPI
+POST /api/kpis/{id}/submit | /approve | /return   → { comment }
+GET  /api/entries?unit=INJ&amp;period=2027-05         → grid rows with target, last value, RAG
+PUT  /api/entries        → [{ kpiId, periodId, value, comment }]
+POST /api/attachments    (multipart, ≤ 10 MB, pdf/jpg/png/xlsx)
+GET  /api/kpis/split?cycle=2027&amp;unit=INJ        → { baseWeight, goalWeight, count, range, warning }
+GET  /api/boards/company?period=2027-04&amp;layer=   → open to every signed-in user</code></pre>
+    </section>
+
+    <!-- 5 -->
+    <section class="sec" id="ui">
+      <h2>5. UI, branding and language <small lang="th">หน้าจอ แบรนด์ และภาษา</small></h2>
+      <p class="lead">The prototype (<code>prototype_src.html</code> → <code>build_prototype.py</code>) is the design reference for screens and wording. It is vanilla JS in one file and is not migrated as code; the build reproduces it as a React 19 SPA.</p>
+      <ul>
+        <li><b>Brand tokens:</b> STI Navy <code>#1B2D5B</code>, Tech Cyan <code>#00A3E0</code>, Precision Green <code>#00A878</code>, Precision Silver <code>#8C8C8C</code> only, ported into Tailwind's <code>@theme</code> in <code>index.css</code>.</li>
+        <li><b>Fonts:</b> Rajdhani (headings), Open Sans (EN body), Sarabun (Thai). Bundled with <code>@fontsource</code>, not loaded from Google Fonts.</li>
+        <li><b>Icons:</b> Bootstrap Icons, bundled, not from a CDN.</li>
+        <li><b>Logo:</b> the v2 STI logo plus the app's own STI K mark (<code>Template/Branding/k/</code>). No STI-X or Resin marks inside the app.</li>
+        <li><b>Bilingual:</b> Thai is the default; every string goes through <code>i18n/index.ts</code> as a TH/EN pair. The prototype's labels are already pairs and port directly.</li>
+        <li><b>Numbers:</b> a <code>.num</code> class with tabular figures for every value column.</li>
+        <li><b>Charts:</b> small in-house SVG components (the prototype's <code>chart()</code> ported to React). No charting library unless a screen needs one.</li>
+        <li><b>Shared components:</b> reuse the template's <code>KpiCard</code>, <code>StatusBadge</code>, <code>PaginationBar</code>. Promote new ones (RAG dot, team score card, entry grid) to <code>Standard/packages/sti-ui/</code> once a second app needs them.</li>
+        <li><b>Devices:</b> office PCs and supervisor phones or tablets; layouts work at 768 px with touch targets ≥ 44 px.</li>
+        <li><b>Accessibility:</b> visible focus, <code>aria-label</code> on icon buttons, <code>role="alert"</code> on errors (standard section 05).</li>
+      </ul>
+      <h3>Porting steps</h3>
+      <ol>
+        <li>Port the prototype's strings into <code>i18n/index.ts</code>.</li>
+        <li>Port its CSS tokens into Tailwind <code>@theme</code>; build pages from the template's shared components.</li>
+        <li>Port <code>ach</code>, <code>scoreOf</code>, <code>periodVal</code>, <code>teamScore</code> to <code>ScoringService.cs</code> and <code>scoring.ts</code>, using the prototype's sample data as the first test cases.</li>
+        <li>Replace the sample <code>KPIS</code>, <code>UNITS</code> and <code>STRATS</code> with API calls; load the real 2026 base KPIs from the inventory workbook and seed them as 2027 Base KPIs.</li>
+      </ol>
+    </section>
+
+    <!-- 6 -->
+    <section class="sec" id="security">
+      <h2>6. Security, access and non-functional requirements <small lang="th">ความปลอดภัยและข้อกำหนด</small></h2>
+      <p class="lead">Staff sign in only at STI Main, which checks the AD account and passes KPI a signed identity. KPI's own login page accepts local admin accounts only. Global roles come from the AD groups in that identity; KPI stores only per-KPI and per-unit assignments, keyed by <code>username</code>. Every permission is enforced on the server.</p>
+      <h3>Roles</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>Role</th><th>Source</th><th>Permissions</th></tr></thead>
+        <tbody>
+          <tr><td>Executive (MD)</td><td>AD group <code>STI_KPI_Executive</code></td><td>Read all; approve company and strategy KPIs; executive sign-off</td></tr>
+          <tr><td>Strategy Council</td><td>AD group <code>STI_KPI_Council</code></td><td>Read all; approve division KPIs; run and sign quarterly reviews</td></tr>
+          <tr><td>HR / KPI admin</td><td>AD group <code>STI_KPI_Admin</code></td><td>Cycles, periods, org units, rules, assignments, audit log</td></tr>
+          <tr><td>KPI owner</td><td>Assignment (<code>org_unit_role</code>)</td><td>Draft, submit, self-assess, sign as owner for their units</td></tr>
+          <tr><td>Data entry</td><td>Assignment (<code>kpi_assignment</code>)</td><td>Enter actuals and evidence for assigned KPIs</td></tr>
+          <tr><td>Reviewer</td><td>Assignment (<code>org_unit_role</code>)</td><td>Assess and approve for the units they review</td></tr>
+          <tr><td>All staff</td><td>Any user signed in through STI Main</td><td>Read the company board and their own unit</td></tr>
+          <tr><td>Local admin</td><td>KPI <code>local_user</code> (<code>auth_type = LOCAL</code>)</td><td>Admin module and health only; see "Local admin login" below</td></tr>
+        </tbody>
+      </table></div>
+      <p>Owner, data entry and reviewer are per KPI or per unit, so they cannot be AD groups without one group per team. Assignments hold no passwords, names or roles, so they are not a second user list. KPI has no directory access of its own, so Admin lists assignments whose username has not signed in for 90 days (from <code>auth_session</code>) for HR to check.</p>
+
+      <h3>Staff sign-in through STI Main</h3>
+      <p>KPI is a registered SSO client (<code>sti-kpi</code>) of STI Main, using the protocol STI Main already implements (<code>SSO-Handshake.md</code>): a one-time code in the redirect, exchanged server-to-server for an RS256 token. A user already signed in to STI Main reaches KPI with no prompt.</p>
+      <figure class="figure">
+        <svg viewBox="0 0 760 452" role="img" aria-label="Sign-in sequence: browser, KPI API, STI Main, Active Directory" font-family="Open Sans, Segoe UI, sans-serif" font-size="11.5">
+          <defs><marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8C8C8C"/></marker></defs>
+          <g fill="var(--surface)" stroke="var(--silver)" stroke-width="1.25">
+            <rect x="30" y="16" width="120" height="36" rx="8"/>
+            <rect x="230" y="16" width="120" height="36" rx="8" fill="var(--tint)" stroke="#00A3E0" stroke-width="1.5"/>
+            <rect x="440" y="16" width="120" height="36" rx="8"/>
+            <rect x="620" y="16" width="120" height="36" rx="8"/>
+          </g>
+          <g text-anchor="middle" font-size="13" font-weight="600" fill="var(--ink)">
+            <text x="90" y="39">Browser</text><text x="290" y="39">KPI API</text><text x="500" y="39">STI Main</text><text x="680" y="39">Active Directory</text>
+          </g>
+          <g stroke="var(--line)" stroke-width="1.25" stroke-dasharray="4 4"><path d="M90 52V436M290 52V436M500 52V436M680 52V436"/></g>
+          <g fill="none" stroke="#8C8C8C" stroke-width="1.25">
+            <path d="M90 84H288" marker-end="url(#arr2)"/>
+            <path d="M290 116H92" marker-end="url(#arr2)"/>
+            <path d="M90 148H498" marker-end="url(#arr2)"/>
+            <path d="M500 180H678" marker-end="url(#arr2)" stroke-dasharray="5 3"/>
+            <path d="M500 212H92" marker-end="url(#arr2)"/>
+            <path d="M90 244H288" marker-end="url(#arr2)"/>
+            <path d="M290 276H498" marker-end="url(#arr2)"/>
+            <path d="M500 308H292" marker-end="url(#arr2)"/>
+            <path d="M290 340H92" marker-end="url(#arr2)"/>
+            <path d="M90 372H288" marker-end="url(#arr2)"/>
+            <path d="M290 404H92" marker-end="url(#arr2)" stroke="#00A878" stroke-width="2"/>
+          </g>
+          <g fill="var(--ink-2)">
+            <text x="98" y="78">1 open /kpi, no token</text>
+            <text x="112" y="110">2 302 to STI Main authorize</text>
+            <text x="98" y="142">3 /api/sso/authorize?client_id=sti-kpi&amp;state=…</text>
+            <text x="508" y="174">4 sign in once (if no session)</text>
+            <text x="112" y="206">5 302 /kpi/sso/callback?code&amp;state</text>
+            <text x="98" y="238">6 callback (code, state)</text>
+            <text x="298" y="270">7 POST /api/sso/exchange</text>
+            <text x="298" y="302">8 RS256 token, aud sti-kpi</text>
+            <text x="112" y="334">9 302 to page + handoff cookie</text>
+            <text x="98" y="366">10 POST /api/auth/session</text>
+            <text x="112" y="398" font-weight="600" fill="var(--ink)">11 KPI app token (≤ 8 h)</text>
+          </g>
+        </svg>
+        <figcaption>Steps 3–5 are silent when the user already has an STI Main session. The STI Main token never reaches the browser; KPI keeps it server-side and issues its own token.</figcaption>
+      </figure>
+      <ol>
+        <li><b>Start.</b> The SPA has no token (or gets a 401), so it sends the browser to <code>/kpi/sso/start?returnUrl=…</code>. KPI creates a random <code>state</code>, stores it with the return URL in a short-lived HttpOnly cookie, and redirects to STI Main's <code>/api/sso/authorize</code> with <code>client_id=sti-kpi</code> and the registered <code>redirect_uri</code>.</li>
+        <li><b>STI Main.</b> If the user has no STI Main session, STI Main shows its own sign-in page and checks the AD account (Kerberos, then LDAPS profile). It then redirects back with a one-time code (60 s).</li>
+        <li><b>Callback.</b> <code>/kpi/sso/callback</code> checks <code>state</code> against the cookie, then calls <code>POST /api/sso/exchange</code> server-to-server with the client secret (Basic auth).</li>
+        <li><b>Validate.</b> KPI checks the returned token against STI Main's JWKS (cached 10 min, refetched on an unknown <code>kid</code>): <code>alg</code> must be RS256, <code>iss</code> = the configured issuer, <code>aud</code> = <code>sti-kpi</code>, <code>exp</code> with 2 min skew. Anything else is refused and logged.</li>
+        <li><b>KPI session.</b> KPI writes an <code>auth_session</code> row and mints its own HS256 app token, signed with its own <code>Auth:Jwt:Key</code>. It carries the standard claims (<code>username</code>, <code>full_name</code>, <code>ou</code>, <code>ous</code>, <code>groups</code>, <code>auth_type = AD</code>) and expires no later than STI Main's token.</li>
+        <li><b>Handoff.</b> KPI redirects to the return URL with a single-use, 60-second HttpOnly handoff cookie. The SPA calls <code>POST /api/auth/session</code>, receives the app token in the response body and carries it as <code>Authorization: Bearer</code>, as the standard's <code>lib/api.ts</code> does. No token ever appears in a URL.</li>
+      </ol>
+      <div class="callout"><b>Why KPI issues its own token.</b> One bearer format for both SSO staff and local admins; KPI's policies, audit and revocation stay inside KPI; and the standard's per-app key rule still holds, since KPI can verify STI Main's tokens but cannot mint them.</div>
+
+      <h3>Sign-out and session checks</h3>
+      <ul>
+        <li><b>Sign-out at STI Main:</b> STI Main calls <code>POST /kpi/api/auth/signed-out</code> with <code>{ username, jti, signedOutAt }</code> and Basic <code>sti-kpi:secret</code>. KPI sets <code>revoked_at</code> on the matching <code>auth_session</code>; the next request with that token gets 401.</li>
+        <li><b>Backup check:</b> STI Main keeps its issued-token list in memory, so a ping can be lost on restart. KPI therefore calls <code>GET /api/sso/userinfo</code> with the stored STI Main token at most every 15 minutes per active session; <code>401 signed_out</code> revokes the KPI session.</li>
+        <li><b>Sign-out in KPI:</b> revokes the KPI session, then sends the browser to STI Main so the user can end the STI Main session too.</li>
+        <li><b>Revocation check:</b> every request checks the token's <code>jti</code> against <code>auth_session</code> (cached in memory for 60 s).</li>
+        <li><b>Groups are login-time.</b> AD group changes take effect at the next STI Main sign-in, within one shift at most.</li>
+      </ul>
+
+      <h3>Local admin login (KPI's own login page)</h3>
+      <p>KPI's login page, <code>/kpi/admin/login</code>, exists only for local administration: setup before SSO is live, and IT access when STI Main or AD is down. It is not linked from the staff navigation.</p>
+      <ul>
+        <li><b>Local accounts only.</b> <code>POST /api/auth/local-login</code> checks <code>local_user</code> and nothing else. It never binds to AD and never accepts an AD username/password, so staff cannot sign in there.</li>
+        <li><b>Few accounts:</b> at most two (e.g. <code>kpi.admin</code>, held by IT), PBKDF2-SHA256 with 210,000 iterations and per-user salt, rotated on staff change.</li>
+        <li><b>Limited reach:</b> the token carries <code>auth_type = LOCAL</code> and role <code>LocalAdmin</code>, valid for 2 hours. It opens the Admin module (cycles, periods, org units, scoring rules, assignments, import runs, audit log) and the health page. It cannot enter results, approve, assess, sign reviews, or read <code>person_*</code> data; those policies require <code>auth_type = AD</code>.</li>
+        <li><b>Protected:</b> rate limit of 5 attempts per 15 minutes per IP, then a 15-minute lock; every attempt (success or failure) written to <code>audit_log</code>; optional allow-list restricting the page to the IT subnet.</li>
+      </ul>
+
+      <h3>Authorisation and data protection</h3>
+      <ul>
+        <li><b>Policies:</b> each controller action uses an ASP.NET Core policy in <code>KpiPolicies.cs</code> (<code>CanApprove</code>, <code>CanEnter(kpiId)</code>, <code>CanReview(unitId)</code>, <code>IsAdmin</code>). React route guards and hidden buttons are UX only.</li>
+        <li><b>401 vs 403:</b> a missing, expired or revoked token → 401, and the SPA restarts the STI Main sign-in (step 1), which is silent if the STI Main session is still alive. A valid user requesting another team's grid → 403 with a bilingual message, e.g. "<span class="thai-text" lang="th">คุณไม่มีสิทธิ์บันทึกผล KPI ของทีมนี้</span> / You are not assigned to enter results for this team."</li>
+        <li><b>2028 privacy:</b> <code>person_*</code> rows are readable only by the person, their reviewer line, <code>STI_KPI_Admin</code> and <code>STI_KPI_Executive</code>. The repository filters in SQL on the caller's scope, not after loading. Reads of individual results are audited as well as writes.</li>
+        <li><b>Uploads:</b> ≤ 10 MB, pdf/jpg/png/xlsx, stored on disk with a SHA-256 hash.</li>
+        <li><b>Transport:</b> HTTPS end to end: KPI's callback, the code exchange and the sign-out ping carry codes, tokens and the client secret. TLS on the gateway is required before go-live.</li>
+        <li><b>Secrets:</b> the SSO client secret and <code>Auth:Jwt:Key</code> live only in <code>shared\config</code>. Tokens and secrets are never logged; logs carry <code>username</code> and <code>jti</code> only.</li>
+      </ul>
+
+      <h3>Non-functional requirements</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>Area</th><th>Requirement</th></tr></thead>
+        <tbody>
+          <tr><td>Users</td><td>~20 active KPI owners and Council members; all staff can read the board</td></tr>
+          <tr><td>Volume</td><td>~300 KPIs × 12 months a year; no caching layer needed</td></tr>
+          <tr><td>Response</td><td>Board and entry grid &lt; 1 s on the intranet</td></tr>
+          <tr><td>Offline intranet</td><td>No CDN at runtime: fonts, icons and charts bundled</td></tr>
+          <tr><td>Excel</td><td>Import of the KPI template (Phase 0 fallback) and export of boards and reviews with ClosedXML</td></tr>
+          <tr><td>Email reminders</td><td>SMTP relay (to confirm with IT); TH + EN text</td></tr>
+          <tr><td>Logging</td><td>Serilog, 30-day files</td></tr>
+          <tr><td>Audit</td><td>All writes and all reads of individual data</td></tr>
+          <tr><td>Backup</td><td><code>sti_kpi</code> schema nightly, plus <code>shared\config</code> and <code>shared\data\uploads</code></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- 7 -->
+    <section class="sec" id="roadmap">
+      <h2>7. Roadmap, risks and open items <small lang="th">แผนงาน ความเสี่ยง และประเด็นค้าง</small></h2>
+      <p class="lead">The MVP (register, approval, monthly entry, company board, basic admin) is due in Q1 2027, so all team KPIs are in the app before the first quarterly review.</p>
+      <div class="phases">
+        <div class="phase"><b>0 · Define</b><em>Nov–Dec 2026</em>Roles, scoring and review forms agreed; standard KPI Excel template as fallback.</div>
+        <div class="phase p1"><b>1 · MVP</b><em>Jan–Mar 2027</em>M1, M2, M3, M7, basic M8. All team KPIs in the app by end of Q1.</div>
+        <div class="phase"><b>2 · Reviews</b><em>Apr–Jun 2027</em>M4 assessment, M5 quarterly review. Q2 review in the app.</div>
+        <div class="phase"><b>3 · Year end</b><em>Jul–Dec 2027</em>M6, change requests, reminders, ERP feed, exports.</div>
+        <div class="phase"><b>4 · Individuals</b><em>2028</em>M9, privacy, HR calibration. Pilot one division in H1, all staff in H2.</div>
+      </div>
+
+      <h3>Technical risks</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>Risk</th><th>Response</th></tr></thead>
+        <tbody>
+          <tr><td>STI Main down or unreachable: staff cannot sign in to KPI</td><td>Existing KPI sessions run to expiry; local admin login still works; health page reports <code>sso</code> status. KPI's availability for staff equals STI Main's</td></tr>
+          <tr><td>SSO integration not yet tested end to end with KPI</td><td>Develop with <code>Auth:Mode = local</code>; run the seven acceptance checks from <code>SSO-Handshake.md</code> against <code>sti-kpi</code> early in Phase 1</td></tr>
+          <tr><td>Lost sign-out pings (STI Main keeps them in memory)</td><td><code>userinfo</code> check every 15 minutes; 8-hour token cap</td></tr>
+          <tr><td>No TLS on the gateway yet</td><td>No go-live until TLS is in place</td></tr>
+          <tr><td>Resin DW go-live date unknown</td><td>Fall back to SELECT-only <code>pps2</code> queries for the ERP feed</td></tr>
+          <tr><td>ASP.NET / React skill gap</td><td>Small MVP; the Tier-1 template and <code>sale-system-net</code> as working references; Excel template as fallback</td></tr>
+          <tr><td>Rule changes rewriting history</td><td>Store RAG and achievement at save time; version targets</td></tr>
+          <tr><td>Privacy of individual results (2028)</td><td>SQL-level scope filters, read auditing, HR owns the rules before M9 starts</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Open items</h3>
+      <p><b>IT</b></p>
+      <ul class="check">
+        <li>Register <code>sti-kpi</code> in STI Main's <code>sso-clients.json</code> (secret, callback URL, sign-out URL) and share the issuer URL</li>
+        <li>Open HTTPS both ways between the KPI server (IIS) and STI Main (Linux Docker host); confirm certificate trust</li>
+        <li>Username lookup for the assignment picker: KPI has no directory access. Can STI Main expose a staff search endpoint, or do admins type usernames?</li>
+        <li>Use STI Main's per-app permissions (granted in its <code>/admin/settings</code>) or AD groups for the Executive, Council and Admin roles? This design assumes AD groups</li>
+        <li>Enable TLS on the gateway</li>
+        <li>Confirm the Resin DW go-live date</li>
+        <li>Provide an SMTP relay for reminders</li>
+        <li>Create AD groups <code>STI_KPI_Executive</code>, <code>STI_KPI_Council</code>, <code>STI_KPI_Admin</code></li>
+      </ul>
+      <p><b>Business</b></p>
+      <ul class="check">
+        <li>Scoring scale, RAG thresholds and the <code>range</code> rule</li>
+        <li>Base / Goal weight range for division and team KPI sets (person-level ranges come from the framework); confirm which 2026 base KPIs are kept for 2027</li>
+        <li>Link to pay (changes approval and privacy rules for 2028)</li>
+        <li>Fiscal year, number of teams and owners, who builds it, process owner</li>
+      </ul>
+
+      <h3>Decisions requested</h3>
+      <ul class="check">
+        <li>Confirm Tier 1 and a standalone app at <code>/kpi</code></li>
+        <li>Adopt the standard's stack in place of the plan's technology section</li>
+        <li>Allocate ports 5230 / 5330 and the <code>/kpi</code> gateway route</li>
+        <li>Staff sign in only through STI Main; KPI's login page is for local admin accounts only, with the limited reach in section 6</li>
+        <li>Approve the AD groups and the assignment model</li>
+        <li>Agree that the ERP feed reads the Resin DW, with <code>pps2</code> SELECT-only as the fallback</li>
+      </ul>
+
+      <h3>Sources</h3>
+      <ul>
+        <li><code>STI_KPI_App_Design.md</code> (draft v0.1, 30 Oct 2026)</li>
+        <li><code>STI_KPI_WebApp_Plan.md</code> (draft v0.1, 27 Oct 2026)</li>
+        <li><code>STI_KPI_Framework_Summary_EN-TH.md</code> (two-layer KPI framework, Oct 2026)</li>
+        <li><code>STI_KPI_App_Prototype.html</code> (screen reference)</li>
+        <li>STI-STD-2026-001 <i>STI Application Development Standard</i> (27 Aug 2026), <code>docs/03-auth.md</code></li>
+        <li><code>STI-TH-Group/Mainpage/SSO-Handshake.md</code> and <code>Backend/sso/</code> (STI Main SSO protocol as implemented)</li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<footer class="wrap">
+  <span><span class="sl">PRECISION YOU CAN TRUST</span> · <span class="thai-text" lang="th">ความแม่นยำที่คุณวางใจ</span></span>
+  <span>STI Precision Co., Ltd. · 32/3 Moo 7, Rama 2 Road, Pantainorasing, Muang, Samut Sakhon 74000 · Tel +66 34 812 597-600 · www.sti-th.com</span>
+</footer>
+
+</body>
+</html>

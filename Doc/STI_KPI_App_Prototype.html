@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>STI KPI App Prototype</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAwIDIwMDAiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iU1RJIEsiPg0KICA8IS0tIFNUSSBLIG1hcmssIHNxdWFyZSBhcHAgaWNvbiAoU1RJIFByZWNpc2lvbiBLUEkgYXBwKS4gVmVjdG9yIG1hc3RlciwgYnJhbmQgY29sb3JzLiBVU0UgT05MWTogZG8gbm90IGVkaXQsIHJlY29sb3IsIHJlZHJhdyBvciBkaXN0b3J0LiAtLT4NCiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNDA4LjQgMzE5LjQpIj4NCiAgICA8cGF0aCBmaWxsPSIjMUIyRDVCIiBkPSJNMC4wIDAuMEwzMDAuMCAwLjBMMzAwLjAgMTM2MS4yTDAuMCAxMzYxLjJaIi8+DQogICAgPHBhdGggZmlsbD0iIzAwQTNFMCIgZD0iTTgwMi4xIDAuMEwxMTgzLjMgMC4wTDM0NC4yIDEwMDAuMEwzNDQuMiA1NDUuN1oiLz4NCiAgICA8cGF0aCBmaWxsPSIjMDBBODc4IiBkPSJNNDUwLjUgOTQyLjFMNjQxLjEgNzE1LjBMMTE4My4zIDEzNjEuMkw4MDIuMSAxMzYxLjJaIi8+DQogIDwvZz4NCjwvc3ZnPg0K">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Open+Sans:wght@400;600;700&family=Sarabun:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+  /* Layout: navy STI top bar; a module rail on the left (tabs on phones); one work area; KPI cards slide in from the right. */
+  :root {
+    --navy: #1B2D5B; --navy-2: #243A73; --cyan: #00A3E0; --green: #00A878; --silver: #8C8C8C;
+    --bg: #F2F4F8; --paper: #FFFFFF; --paper-2: #F7F9FC; --ink: #1B2333; --ink-2: #47536A; --ink-3: #6B7488; --line: #DFE4EC;
+    --good: #00875F; --good-dot: #00A878; --good-soft: #E2F5EE;
+    --warn: #A86A00; --warn-dot: #E0A100; --warn-soft: #FFF3D9;
+    --bad: #C23A3A; --bad-dot: #D64545; --bad-soft: #FCE9E9;
+    --none: #6B7488; --none-dot: #B4BAC6; --none-soft: #EEF0F4;
+    --cyan-soft: #E2F3FB; --navy-soft: #E7EBF4; --focus: #00A3E0;
+    --shadow: 0 1px 2px rgba(27,45,91,.06), 0 4px 16px rgba(27,45,91,.06);
+    --f-th: 'Sarabun', 'Open Sans', system-ui, sans-serif;
+    --f-en: 'Open Sans', 'Sarabun', system-ui, sans-serif;
+    --f-head: 'Rajdhani', 'Sarabun', system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0E1628; --paper: #16213A; --paper-2: #1B2843; --ink: #E6EAF2; --ink-2: #B5BFD3; --ink-3: #8C97AE; --line: #2A3753;
+      --good: #3CCB98; --good-soft: #10342A; --warn: #F0B54A; --warn-soft: #33290F; --bad: #F07A7A; --bad-soft: #3A1C21;
+      --none: #9AA4B8; --none-soft: #222D45; --cyan-soft: #0F2E40; --navy-soft: #1E2A47; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0E1628; --paper: #16213A; --paper-2: #1B2843; --ink: #E6EAF2; --ink-2: #B5BFD3; --ink-3: #8C97AE; --line: #2A3753;
+    --good: #3CCB98; --good-soft: #10342A; --warn: #F0B54A; --warn-soft: #33290F; --bad: #F07A7A; --bad-soft: #3A1C21;
+    --none: #9AA4B8; --none-soft: #222D45; --cyan-soft: #0F2E40; --navy-soft: #1E2A47; color-scheme: dark;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--bg); color: var(--ink); font: 15px/1.6 var(--f-th); -webkit-font-smoothing: antialiased; }
+  html[lang="en"] body { font-family: var(--f-en); font-size: 14px; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  h1, h2, h3 { font-family: var(--f-head); margin: 0; line-height: 1.25; text-wrap: balance; }
+  .num, td.n, .tile b, .score b { font-variant-numeric: tabular-nums; }
+
+  /* Top bar: white STI logo, slogan, then the app's own STI K logo (the KPI app is not part of STI-X or Resin) */
+  .topbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; background: var(--navy); color: #fff;
+    padding: 10px max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px));
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  .brand > img { height: 26px; width: auto; display: block; }
+  .slogan { font: 600 12px/1.35 var(--f-en); letter-spacing: 1px; color: var(--cyan); }
+  .slogan span { display: block; letter-spacing: 0; font: 400 12px/1.35 'Sarabun', sans-serif; color: rgba(255,255,255,.75); }
+  .appname { padding-left: 14px; border-left: 1px solid rgba(255,255,255,.25); line-height: 1.2; }
+  .appname { display: flex; align-items: center; gap: 10px; }
+  .appname img { height: 26px; width: auto; display: block; }
+  .appname span { font-size: 12px; color: rgba(255,255,255,.65); }
+  .tb-right { margin-left: auto; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .demo-chip { font-size: 12px; color: #fff; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.22); border-radius: 14px; padding: 3px 10px; white-space: nowrap; }
+  .demo-chip i { color: var(--cyan); margin-right: 4px; }
+  .tb-select { background: rgba(255,255,255,.1); color: #fff; border: 1px solid rgba(255,255,255,.3); border-radius: 6px; padding: 5px 8px; font-size: 13px; max-width: 230px; }
+  .tb-select option { color: #1B2333; }
+  .lang { display: inline-flex; border: 1px solid rgba(255,255,255,.3); border-radius: 16px; padding: 2px; }
+  .lang button { background: none; border: 0; color: rgba(255,255,255,.75); padding: 3px 10px; border-radius: 14px; cursor: pointer; font-size: 12.5px; font-weight: 600; }
+  .lang button[aria-pressed="true"] { background: var(--cyan); color: #fff; }
+  @media (max-width: 1100px) { .slogan { display: none; } }
+  @media (max-width: 640px) { .appname span, .demo-chip { display: none; } .tb-select { max-width: 160px; } }
+
+  /* Shell */
+  .shell { display: grid; grid-template-columns: 232px minmax(0, 1fr); min-height: calc(100vh - var(--tbh, 56px)); }
+  .rail { background: var(--paper); border-right: 1px solid var(--line); padding: 16px 10px; position: sticky; top: var(--tbh, 56px); align-self: start; height: calc(100vh - var(--tbh, 56px)); overflow-y: auto; }
+  .rail .grp { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--ink-3); padding: 12px 12px 6px; }
+  html[lang="th"] .rail .grp { letter-spacing: 0; text-transform: none; font-size: 12px; }
+  .nav { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: none; border: 0; border-radius: 8px; padding: 9px 12px; cursor: pointer; color: var(--ink-2); font-size: 14.5px; }
+  .nav i { font-size: 17px; width: 20px; color: var(--ink-3); }
+  .nav:hover { background: var(--paper-2); color: var(--ink); }
+  .nav[aria-current="page"] { background: var(--navy-soft); color: var(--navy); font-weight: 700; }
+  :root[data-theme="dark"] .nav[aria-current="page"] { color: var(--ink); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .nav[aria-current="page"] { color: var(--ink); } }
+  .nav[aria-current="page"] i { color: var(--cyan); }
+  .nav .badge { margin-left: auto; font: 700 11px/1 var(--f-en); background: var(--bad-dot); color: #fff; border-radius: 10px; padding: 3px 7px; }
+  .nav .tag28 { margin-left: auto; font: 700 10.5px/1 var(--f-en); color: var(--cyan); border: 1px solid var(--cyan); border-radius: 10px; padding: 2px 6px; }
+  .rail-foot { margin: 18px 12px 0; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--ink-3); }
+  .rail-foot button { margin-top: 8px; background: none; border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px; cursor: pointer; color: var(--ink-2); font-size: 12.5px; }
+  .work { min-width: 0; padding: 22px max(16px, env(safe-area-inset-right, 0px)) 48px max(16px, env(safe-area-inset-left, 0px)); }
+  .work-in { max-width: 1240px; margin: 0 auto; display: grid; gap: 18px; }
+  @media (min-width: 1001px) { .work { padding-left: 28px; padding-right: 28px; } }
+  @media (max-width: 1000px) {
+    .shell { grid-template-columns: minmax(0, 1fr); }
+    .rail { position: sticky; top: var(--tbh, 56px); z-index: 20; height: auto; display: flex; gap: 4px; overflow-x: auto; padding: 8px max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px)); border-right: 0; border-bottom: 1px solid var(--line); }
+    .rail .grp, .rail-foot { display: none; }
+    .nav { width: auto; white-space: nowrap; flex: none; padding: 7px 10px; font-size: 13.5px; }
+  }
+
+  /* Page head */
+  .phead { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .phead h1 { font-size: 28px; color: var(--ink); }
+  .phead p { margin: 2px 0 0; color: var(--ink-3); font-size: 14px; }
+  .eyebrow { font: 700 12px/1.2 var(--f-en); letter-spacing: 1.2px; text-transform: uppercase; color: var(--cyan); margin-bottom: 4px; }
+  html[lang="th"] .eyebrow { letter-spacing: 0; text-transform: none; font-family: var(--f-th); font-size: 13px; }
+  .tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+  /* Building blocks */
+  .panel { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; min-width: 0; }
+  .panel > h2 { font-size: 19px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .panel > h2 small { font: 400 13px var(--f-th); color: var(--ink-3); }
+  .grid { display: grid; gap: 14px; }
+  .g2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .g3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .g4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .g5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  @media (max-width: 1100px) { .g4, .g5 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .g3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 640px) { .g2, .g3, .g4, .g5 { grid-template-columns: minmax(0, 1fr); } }
+  .btn { display: inline-flex; align-items: center; gap: 6px; border-radius: 7px; border: 1px solid var(--line); background: var(--paper); padding: 7px 13px; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--ink); }
+  .btn:hover { border-color: var(--ink-3); }
+  .btn.pri { background: var(--navy); border-color: var(--navy); color: #fff; }
+  .btn.go { background: var(--green); border-color: var(--green); color: #fff; }
+  .btn.ghost { background: none; }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+  .inp, .sel, .ta { border: 1px solid var(--line); background: var(--paper); border-radius: 7px; padding: 6px 9px; font-size: 14px; min-width: 0; }
+  .ta { width: 100%; min-height: 72px; resize: vertical; }
+  .inp:disabled, .sel:disabled, .ta:disabled { background: var(--paper-2); color: var(--ink-3); }
+  .inp.err, .ta.err { border-color: var(--bad-dot); box-shadow: 0 0 0 2px var(--bad-soft); }
+  label.f { display: grid; gap: 4px; font-size: 13px; color: var(--ink-2); font-weight: 600; }
+  .chip { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; border-radius: 12px; padding: 1px 9px; white-space: nowrap; background: var(--none-soft); color: var(--ink-2); }
+  .chip.s { background: var(--navy-soft); color: var(--navy); font-family: var(--f-en); }
+  :root[data-theme="dark"] .chip.s { color: var(--ink); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .chip.s { color: var(--ink); } }
+  .chip.erp { background: var(--cyan-soft); color: var(--cyan); }
+  .chip.draft { background: var(--warn-soft); color: var(--warn); }
+  .chip.ok { background: var(--good-soft); color: var(--good); }
+  .chip.late { background: var(--bad-soft); color: var(--bad); }
+  .pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; border-radius: 12px; padding: 2px 10px 2px 8px; white-space: nowrap; }
+  .pill::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+  .pill.good { background: var(--good-soft); color: var(--good); }
+  .pill.warn { background: var(--warn-soft); color: var(--warn); }
+  .pill.bad { background: var(--bad-soft); color: var(--bad); }
+  .pill.none { background: var(--none-soft); color: var(--none); }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; flex: none; }
+  .dot.good { background: var(--good-dot); } .dot.warn { background: var(--warn-dot); } .dot.bad { background: var(--bad-dot); } .dot.none { background: var(--none-dot); }
+  .note { border-radius: 8px; padding: 10px 14px; font-size: 13.5px; display: flex; gap: 10px; align-items: flex-start; background: var(--cyan-soft); color: var(--ink-2); }
+  .note i { color: var(--cyan); font-size: 16px; line-height: 1.4; }
+  .note.warn { background: var(--warn-soft); } .note.warn i { color: var(--warn); }
+  .note.lock { background: var(--none-soft); } .note.lock i { color: var(--ink-3); }
+  .muted { color: var(--ink-3); }
+  .sample { font: 600 11px/1 var(--f-en); letter-spacing: .6px; text-transform: uppercase; color: var(--warn); background: var(--warn-soft); border-radius: 4px; padding: 3px 6px; }
+
+  /* Tables */
+  .tw { position: relative; overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th { text-align: left; font-size: 12px; font-weight: 700; color: var(--ink-3); background: var(--paper-2); padding: 9px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  tr:last-child td { border-bottom: 0; }
+  td.n, th.n { text-align: right; white-space: nowrap; }
+  tr.click { cursor: pointer; } tr.click:hover td { background: var(--paper-2); }
+  td.kname { min-width: 190px; }
+  .kname b { display: block; font-weight: 600; color: var(--ink); }
+  .kname span { font-size: 12.5px; color: var(--ink-3); }
+  .code { font: 600 12px var(--f-en); color: var(--ink-3); white-space: nowrap; }
+
+  /* Board */
+  .tile { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; display: flex; flex-direction: column; gap: 2px; }
+  .tile span { font-size: 13px; color: var(--ink-3); display: flex; align-items: center; gap: 6px; }
+  .tile b { font: 700 30px/1.1 var(--f-head); color: var(--ink); }
+  .month-tabs { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--paper); }
+  .month-tabs button { border: 0; background: none; padding: 6px 12px; cursor: pointer; font-size: 13.5px; color: var(--ink-2); border-right: 1px solid var(--line); }
+  .month-tabs button:last-child { border-right: 0; }
+  .month-tabs button[aria-pressed="true"] { background: var(--navy); color: #fff; font-weight: 700; }
+  .goalrow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  @media (max-width: 760px) { .goalrow { grid-template-columns: minmax(0, 1fr); } }
+  .kbox { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: var(--paper-2); cursor: pointer; text-align: left; display: grid; gap: 4px; width: 100%; }
+  .kbox:hover { border-color: var(--ink-3); }
+  .kbox .t { font-size: 13.5px; font-weight: 600; color: var(--ink); }
+  .kbox .v { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .kbox .v b { font: 700 22px/1.1 var(--f-head); }
+  .kbox .v small { color: var(--ink-3); font-size: 12.5px; }
+  .scol { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; min-width: 0; }
+  .scol header { background: var(--navy); color: #fff; padding: 10px 14px; }
+  .scol header b { font: 700 13px/1 var(--f-en); color: var(--cyan); letter-spacing: 1px; }
+  .scol header div { font-weight: 600; font-size: 14.5px; line-height: 1.35; margin-top: 3px; }
+  .scol ul { list-style: none; margin: 0; padding: 6px; display: grid; gap: 2px; }
+  .scol li button { width: 100%; display: flex; align-items: center; gap: 8px; text-align: left; background: none; border: 0; padding: 7px 8px; border-radius: 6px; cursor: pointer; font-size: 13.5px; color: var(--ink-2); }
+  .scol li button:hover { background: var(--paper-2); }
+  .scol li button .lbl { flex: 1; min-width: 0; }
+  .scol li button .lbl em { display: block; font-style: normal; font-size: 12px; color: var(--ink-3); }
+  .scol li.co button { color: var(--ink); font-weight: 600; }
+  .scol li.sep { border-top: 1px dashed var(--line); margin: 4px 6px; }
+  .tcard { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: grid; gap: 8px; cursor: pointer; text-align: left; width: 100%; }
+  .tcard:hover { border-color: var(--ink-3); }
+  .tcard .top { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; }
+  .tcard .top b { display: block; font-size: 14.5px; color: var(--ink); }
+  .tcard .top span { font-size: 12.5px; color: var(--ink-3); }
+  .score { text-align: right; line-height: 1; }
+  .score b { font: 700 26px/1 var(--f-head); color: var(--ink); }
+  .score small { display: block; font-size: 11px; color: var(--ink-3); margin-top: 2px; }
+  .tcard .dots { display: flex; gap: 5px; flex-wrap: wrap; }
+
+  /* Drawer */
+  .scrim { position: fixed; inset: 0; background: rgba(14,22,40,.45); z-index: 40; }
+  .drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(560px, 100%); background: var(--paper); z-index: 41; display: flex; flex-direction: column; box-shadow: -8px 0 30px rgba(0,0,0,.18);
+    padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); padding-right: env(safe-area-inset-right, 0px); }
+  .drawer header { padding: 16px 20px; border-bottom: 1px solid var(--line); display: flex; gap: 12px; align-items: flex-start; }
+  .drawer header h2 { font-size: 21px; }
+  .drawer header .x { margin-left: auto; background: none; border: 0; font-size: 22px; cursor: pointer; color: var(--ink-3); line-height: 1; padding: 2px 4px; }
+  .drawer .body { padding: 16px 20px 28px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; flex: 1; min-height: 0; margin: 0; }
+  .drawer .body > * { flex: none; }
+  .dl { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 6px 12px; font-size: 14px; margin: 0; }
+  .dl dt { color: var(--ink-3); } .dl dd { margin: 0; color: var(--ink); }
+  .chain { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 13px; }
+  .chain i { color: var(--ink-3); }
+  .hist { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 13.5px; }
+  .hist li { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 10px; }
+  .hist li span:first-child { color: var(--ink-3); font-size: 12.5px; }
+  @media (max-width: 520px) { .dl { grid-template-columns: minmax(0, 1fr); } .dl dt { margin-top: 6px; } }
+
+  /* Review */
+  .steps { display: flex; gap: 0; flex-wrap: wrap; counter-reset: s; }
+  .steps li { list-style: none; counter-increment: s; display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--ink-3); padding: 4px 14px 4px 0; }
+  .steps li::before { content: counter(s); width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font: 700 12px var(--f-en); background: var(--none-soft); color: var(--ink-3); }
+  .steps li.done { color: var(--good); } .steps li.done::before { content: "✓"; background: var(--good-dot); color: #fff; }
+  .steps li.now { color: var(--ink); font-weight: 700; } .steps li.now::before { background: var(--cyan); color: #fff; }
+  .steps li + li { padding-left: 14px; border-left: 1px solid var(--line); }
+  .bigscore { display: flex; align-items: baseline; gap: 6px; }
+  .bigscore b { font: 700 40px/1 var(--f-head); }
+  .bigscore span { color: var(--ink-3); }
+  .rowform { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) auto; gap: 8px; align-items: end; }
+  @media (max-width: 760px) { .rowform { grid-template-columns: minmax(0, 1fr); } }
+  .hbar { display: grid; grid-template-columns: 150px minmax(0, 1fr) 46px; align-items: center; gap: 10px; font-size: 13.5px; }
+  .hbar .track { height: 12px; background: var(--none-soft); border-radius: 6px; overflow: hidden; }
+  .hbar .track i { display: block; height: 100%; border-radius: 6px; }
+  @media (max-width: 520px) { .hbar { grid-template-columns: 96px minmax(0, 1fr) 40px; } }
+
+  /* Goal + base KPIs */
+  .real { font: 600 11px/1 var(--f-en); letter-spacing: .6px; text-transform: uppercase; color: var(--good); background: var(--good-soft); border-radius: 4px; padding: 3px 6px; }
+  .layer { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--paper); }
+  .layer > header { grid-column: 1 / -1; background: var(--navy); color: #fff; padding: 10px 14px; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+  .layer > header b { font: 700 13px/1 var(--f-en); color: var(--cyan); letter-spacing: 1px; }
+  .layer > header span { font-weight: 600; font-size: 15px; }
+  .layer > header small { margin-left: auto; color: rgba(255,255,255,.72); font-size: 12.5px; }
+  .lcol { padding: 10px 14px 14px; min-width: 0; }
+  .lcol + .lcol { border-left: 1px solid var(--line); background: var(--paper-2); }
+  .lcol h3 { font: 700 12px/1.3 var(--f-en); letter-spacing: .8px; text-transform: uppercase; color: var(--ink-3); margin: 2px 0 6px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  html[lang="th"] .lcol h3 { letter-spacing: 0; text-transform: none; font-family: var(--f-th); font-size: 13px; }
+  @media (max-width: 860px) { .layer { grid-template-columns: minmax(0, 1fr); } .lcol + .lcol { border-left: 0; border-top: 1px solid var(--line); } }
+  .gk { list-style: none; margin: 0; padding: 0; }
+  .gk li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 10px; padding: 7px 0; border-bottom: 1px dashed var(--line); font-size: 13.5px; }
+  .gk li:last-child { border-bottom: 0; }
+  .gk .t { color: var(--ink); font-weight: 600; }
+  .gk .tg { color: var(--ink-3); font-size: 12.5px; text-align: right; white-space: nowrap; }
+  .gk .by { grid-column: 1 / -1; display: flex; gap: 4px; flex-wrap: wrap; align-items: center; font-size: 12px; color: var(--ink-3); }
+  button.chip { border: 0; cursor: pointer; }
+  .bk { width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; align-items: center; text-align: left; background: none; border: 0; border-bottom: 1px dashed var(--line); padding: 7px 4px; cursor: pointer; font-size: 13.5px; color: var(--ink-2); }
+  .bk:last-child { border-bottom: 0; }
+  .bk:hover { background: var(--paper); }
+  .bk .lbl b { font-weight: 600; color: var(--ink); }
+  .bk .lbl em { display: block; font-style: normal; font-size: 12px; color: var(--ink-3); }
+  .bk .meta { display: flex; gap: 6px; align-items: center; justify-content: flex-end; flex-wrap: wrap; }
+  .strip { display: inline-grid; grid-template-columns: repeat(12, 7px); gap: 2px; vertical-align: middle; }
+  .strip i { width: 7px; height: 14px; border-radius: 2px; background: var(--none-soft); box-shadow: inset 0 0 0 1px var(--line); }
+  .strip i.g { background: var(--good-dot); box-shadow: none; } .strip i.b { background: var(--bad-dot); box-shadow: none; } .strip i.p, .strip i.u { background: var(--none-dot); box-shadow: none; }
+  .chip.d-keep { background: var(--none-soft); color: var(--ink-2); }
+  .chip.d-fix { background: var(--warn-soft); color: var(--warn); }
+  .chip.d-link { background: var(--cyan-soft); color: var(--cyan); }
+  .chip.d-merge { background: var(--navy-soft); color: var(--navy); }
+  :root[data-theme="dark"] .chip.d-merge { color: var(--ink); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .chip.d-merge { color: var(--ink); } }
+  .chip.d-retire { background: var(--bad-soft); color: var(--bad); }
+  .chip.d-add { background: var(--good-soft); color: var(--good); }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--ink-3); align-items: center; }
+  .legend .strip { grid-template-columns: 7px; }
+  .dept-h { font-size: 18px; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; margin: 4px 0 -6px; }
+  .dept-h small { font: 400 13px var(--f-th); color: var(--ink-3); }
+  .scol .more { margin: 0 6px 8px; border: 1px dashed var(--line); border-radius: 6px; background: none; padding: 6px 8px; font-size: 12.5px; color: var(--ink-3); cursor: pointer; text-align: left; display: flex; gap: 6px; align-items: center; }
+  .scol .more:hover { color: var(--ink); border-color: var(--ink-3); }
+
+  /* Toast */
+  .toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--navy); color: #fff; border-radius: 8px; padding: 10px 16px; font-size: 14px; z-index: 60; box-shadow: var(--shadow); display: flex; gap: 8px; align-items: center; max-width: calc(100% - 32px); }
+  .toast i { color: var(--green); }
+  .sr { position: absolute; left: 0; top: 0; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+  @media (prefers-reduced-motion: no-preference) { .drawer { animation: slide .18s ease-out; } @keyframes slide { from { transform: translateX(24px); opacity: .6; } } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMjcuNDcgODMuNCIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSJTVEkgUHJlY2lzaW9uIj4KICA8IS0tIFNUSSBQcmVjaXNpb24gQ28uLCBMdGQuIC0gTG9nbyB2Miwgd2hpdGUgKHJldmVyc2VkKSBmb3IgZGFyayBiYWNrZ3JvdW5kcyAoRFJBRlQsIGF3YWl0aW5nIGJyYW5kLW93bmVyIGNvbmZpcm1hdGlvbikuIFZlY3RvciBtYXN0ZXIuIFVTRSBPTkxZOiBkbyBub3QgZWRpdCwgcmVjb2xvciwgcmVkcmF3IG9yIGRpc3RvcnQuIC0tPgogIDxwYXRoIGZpbGw9IiNGRkZGRkYiIGQ9Ik0zOS43NyA4LjIzTDc3LjQzIDQwLjdBMjMuOTggMjMuOTkgNDAuNzcgMCAxIDQ2LjA5IDc3LjA0TDguNDMgNDQuNTZBMjQuMTggMjMuOTkgNDAuNzcgMCAxIDM5Ljc3IDguMjNaTTEuODIgNDYuODJMNDQuODMgODMuNEwxLjgyIDgzLjRMMS44MiA0Ni44MlpNODguNyAwTDE3MC4xIDBMMTcwLjEgMjYuOTFMMTUzLjMyIDI2LjkxTDE1My4zMiA4My40TDEwNi4zMSA4My40TDEwNi4zMSAyNi45MUw4OC43IDI2LjkxTDg4LjcgMFpNMTgwLjQ0IDBMMjI3LjQ3IDBMMjI3LjQ3IDgzLjRMMTgwLjQ0IDgzLjRMMTgwLjQ0IDBaIi8+CiAgPHBhdGggZmlsbD0iIzAwQTNFMCIgZD0iTTQwLjIyIDBMODEuMDEgMEw4MS4wMSAzNC43TDQwLjIyIDBaIi8+Cjwvc3ZnPgo=" alt="STI Precision" class="sti-logo">
+    <div class="slogan">PRECISION YOU CAN TRUST<span>ความแม่นยำที่คุณวางใจ</span></div>
+    <div class="appname"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMzY0LjcgMTM2MS4yIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IlNUSSBLIj4NCiAgPCEtLSBTVEkgSyBsb2dvLCB3aGl0ZSAoZGFyayBiYWNrZ3JvdW5kcykgKFNUSSBQcmVjaXNpb24gS1BJIGFwcCkuIFZlY3RvciBtYXN0ZXIsIGJyYW5kIGNvbG9ycy4gVVNFIE9OTFk6IGRvIG5vdCBlZGl0LCByZWNvbG9yLCByZWRyYXcgb3IgZGlzdG9ydC4gLS0+DQogIDxwYXRoIGZpbGw9IiNGRkZGRkYiIGQ9Ik0wLjAgMC4wTDMwMC4wIDAuMEwzMDAuMCAxMzYxLjJMMC4wIDEzNjEuMloiLz4NCiAgPHBhdGggZmlsbD0iIzAwQTNFMCIgZD0iTTgwMi4xIDAuMEwxMTgzLjMgMC4wTDM0NC4yIDEwMDAuMEwzNDQuMiA1NDUuN1oiLz4NCiAgPHBhdGggZmlsbD0iIzAwQTg3OCIgZD0iTTQ1MC41IDk0Mi4xTDY0MS4xIDcxNS4wTDExODMuMyAxMzYxLjJMODAyLjEgMTM2MS4yWiIvPg0KICA8cGF0aCBmaWxsPSIjRkZGRkZGIiBkPSJNOTUzLjMgMzQyLjkgMTI0MSAwSDE1MTQuM1ExNjc5LjQgMCAxNzcwLjQgOTBRMTg2MS41IDE3OS45IDE4NjEuNSAzNDUuMVY1NDguM1ExODYxLjUgNzEzLjQgMTc3MC40IDgwMy40UTE2NzkuNCA4OTMuNCAxNTE0LjMgODkzLjRIMTI0Ny42UTEyMjIuMiA4OTMuNCAxMjIyLjIgOTE2LjZWMTMxNi43UTEyMjIuMiAxMzI3LjUgMTIxOS42IDEzMzUuNkw5NTMuMyAxMDE4LjNWMzQyLjlaTTIzNTQuNyA0NC41VjEzMTYuN1EyMzU0LjcgMTM2MS4yIDIzMTAuMyAxMzYxLjJIMjEzMC4zUTIwODUuOSAxMzYxLjIgMjA4NS45IDEzMTYuN1Y0NC41UTIwODUuOSAwIDIxMzAuMyAwSDIzMTAuM1EyMzU0LjcgMCAyMzU0LjcgNDQuNVpNMTI0NS40IDY1OC40SDE0NjkuOFExNTM3LjYgNjU4LjQgMTU2NS4xIDYyOS44UTE1OTIuNiA2MDEuMiAxNTkyLjYgNTM1LjZWMzU3LjhRMTU5Mi42IDI5MCAxNTY1LjEgMjYxLjRRMTUzNy42IDIzMi45IDE0NjkuOCAyMzIuOUgxMjQ1LjRRMTIyMi4yIDIzMi45IDEyMjIuMiAyNTYuMlY2MzUuMVExMjIyLjIgNjU4LjQgMTI0NS40IDY1OC40WiIvPg0KPC9zdmc+DQo=" alt="STI K · KPI"><span id="appSub">ระบบติดตาม KPI · ต้นแบบ</span></div>
+  </div>
+  <div class="tb-right">
+    <span class="demo-chip" id="demoChip"></span>
+    <label class="sr" for="roleSel">Role</label>
+    <select class="tb-select" id="roleSel"></select>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="th" aria-pressed="true">ไทย</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" id="rail" aria-label="Modules"></nav>
+  <main class="work"><div class="work-in" id="view"></div></main>
+</div>
+<div id="layer"></div>
+<div id="toastHost" aria-live="polite"></div>
+
+<script>
+/* ───────────── Sample data (examples only, not STI's real figures) ───────────── */
+const MONTHS = { th: ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'], en: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] };
+const OPEN_MONTH = 4;            // May 2027 is the open entry period
+const LAST_CLOSED = 3;           // April 2027 is the latest closed month
+const STRATS = [
+  { id: 'G',  th: 'กลับมามีกำไร', en: 'Return to profit' },
+  { id: 'S1', th: 'ลดต้นทุนในทุกส่วน', en: 'Reduce cost across the business' },
+  { id: 'S2', th: 'ใช้เครื่องจักรให้เต็มศักยภาพ', en: 'Put every machine to full use' },
+  { id: 'S3', th: 'ยกระดับทักษะ', en: 'Upskill our people' },
+  { id: 'S4', th: 'ขยายฐานลูกค้าสู่อุตสาหกรรมใหม่', en: 'Expand into new industries' },
+];
+const UNITS = [
+  { id: 'CO', th: 'บริษัท', en: 'Company' },
+  { id: 'PROD', th: 'ฝ่ายผลิต', en: 'Production', parent: 'CO' },
+  { id: 'QA', th: 'ฝ่ายคุณภาพ', en: 'Quality', parent: 'CO' },
+  { id: 'SCM', th: 'ฝ่ายวางแผนและคลังสินค้า', en: 'Planning & Warehouse', parent: 'CO' },
+  { id: 'SAL', th: 'ฝ่ายขาย', en: 'Sales', parent: 'CO' },
+  { id: 'ADM', th: 'ฝ่ายบริหาร', en: 'Administration', parent: 'CO' },
+  { id: 'INJ', th: 'ทีมฉีดพลาสติก', en: 'Injection', parent: 'PROD' },
+  { id: 'MNT', th: 'ทีมซ่อมบำรุง', en: 'Maintenance', parent: 'PROD' },
+  { id: 'QC',  th: 'ทีมตรวจสอบคุณภาพ (QC)', en: 'Quality Control', parent: 'QA' },
+  { id: 'DCC', th: 'ทีมจัดการข้อร้องเรียน (DCC)', en: 'Complaint Control', parent: 'QA' },
+  { id: 'PP',  th: 'ทีมวางแผนการผลิต (PP)', en: 'Production Planning', parent: 'SCM' },
+  { id: 'WH',  th: 'ทีมคลังสินค้าและบรรจุ', en: 'Warehouse & Packing', parent: 'SCM' },
+  { id: 'CS',  th: 'ทีมขายและบริการลูกค้า', en: 'Sales & Customer Service', parent: 'SAL' },
+  { id: 'HR',  th: 'ทีมทรัพยากรบุคคล', en: 'Human Resources', parent: 'ADM' },
+  { id: 'COST', th: 'ทีมต้นทุน', en: 'Costing', parent: 'ADM' },
+];
+const TEAMS = UNITS.filter(u => ['PROD','QA','SCM','SAL','ADM'].includes(u.parent));
+// k(id, unit, parent, th, en, unitLabel, dir, baseline, target, weight, source, values Jan..May, extra)
+const K = (id, unit, parent, th, en, u, dir, base, tgt, w, src, a, x = {}) => Object.assign({ id, unit, parent, th, en, u, dir, base, tgt, w, src, a, agg: 'avg', status: 'approved' }, x);
+const KPIS = [
+  K('G-01', 'CO', 'G', 'กำไรสุทธิ', 'Net profit', 'ล้านบาท/เดือน', 'up', -0.8, 1.5, 0, 'manual', [-0.4, 0.2, 0.6, 0.9]),
+  K('G-02', 'CO', 'G', 'ยอดหนี้ธนาคาร', 'Bank debt', 'ล้านบาท', 'down', 128, 118, 0, 'manual', [126, 125, 123, 121], { agg: 'last' }),
+  K('G-03', 'CO', 'G', 'สัดส่วนยอดขายลูกค้ารายใหญ่สุด', 'Sales share of largest customer', '%', 'down', 48, 40, 0, 'manual', [47, 46, 45, 44]),
+  K('S1-01', 'CO', 'S1', 'ต้นทุนต่อชิ้น (ดัชนี ฐาน 100)', 'Cost per part (index, base 100)', 'ดัชนี', 'down', 100, 95, 0, 'manual', [100, 99, 98, 97]),
+  K('S1-02', 'CO', 'S1', 'ของเสีย', 'Scrap and reject rate', '%', 'down', 3.0, 2.1, 0, 'erp', [2.9, 2.6, 2.4, 2.2, 2.1]),
+  K('S1-03', 'CO', 'S1', 'พลังงานต่อกิโลกรัม', 'Energy per kg of output', 'kWh/kg', 'down', 1.80, 1.62, 0, 'manual', [1.78, 1.74, 1.70, 1.66]),
+  K('S1-04', 'CO', 'S1', 'คำสั่งและข้อตกลงสำคัญที่มีบันทึก', 'Key orders and agreements with a written record', '%', 'up', 55, 100, 0, 'manual', [62, 71, 80, 86]),
+  K('S2-01', 'CO', 'S2', 'อัตราการใช้เครื่อง', 'Machine utilisation', '%', 'up', 60, 75, 0, 'erp', [61, 64, 67, 70, 72]),
+  K('S3-01', 'CO', 'S3', 'ผลผลิตต่อคน', 'Output per person', 'ชิ้น/คน/วัน', 'up', 380, 420, 0, 'manual', [384, 392, 401, 409]),
+  K('S4-01', 'CO', 'S4', 'ลูกค้าใหม่นอกยานยนต์และอิเล็กทรอนิกส์ (สะสม)', 'New customers outside automotive and electronics (to date)', 'ราย', 'up', 0, 4, 0, 'manual', [0, 1, 1, 2], { agg: 'last', ms: [0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4] }),
+
+  K('INJ-01', 'INJ', 'S2-01', 'OEE เครื่องฉีด', 'Injection OEE', '%', 'up', 64, 75, 40, 'erp', [66, 69, 71, 74, 75]),
+  K('INJ-02', 'INJ', 'S1-02', '%NG งานฉีด', 'Injection %NG', '%', 'down', 2.4, 1.5, 35, 'erp', [2.3, 2.0, 1.8, 1.6, 1.5]),
+  K('INJ-03', 'INJ', 'S1-01', 'เวลาเปลี่ยนแม่พิมพ์เฉลี่ย (SMED)', 'Average mould changeover (SMED)', 'นาที', 'down', 75, 45, 25, 'manual', [70, 62, 55, 44]),
+  K('INJ-04', 'INJ', 'S1-02', 'วัสดุบดที่นำกลับเข้ากระบวนการ', 'Regrind returned to the process', '%', 'up', 40, 80, 0, 'manual', [], { status: 'submitted', submittedOn: '2 มิ.ย. 2027' }),
+  K('MNT-01', 'MNT', 'S2-01', 'เวลาเครื่องหยุดจากการเสีย', 'Breakdown downtime', 'ชม./เดือน', 'down', 62, 40, 50, 'erp', [58, 51, 46, 38, 36]),
+  K('MNT-02', 'MNT', 'S2-01', 'งานบำรุงรักษาเชิงป้องกันตามแผน', 'Preventive maintenance done on plan', '%', 'up', 78, 95, 30, 'manual', [80, 86, 90, 93]),
+  K('MNT-03', 'MNT', 'S3-01', 'การแบ่งปันความรู้ในทีม', 'In-team knowledge sharing', 'ครั้ง/เดือน', 'up', 0, 1, 20, 'manual', [0, 1, 1, 1]),
+  K('QC-01', 'QC', 'S1-02', 'อัตราของเสียภายใน', 'Internal defect rate', '%', 'down', 2.2, 1.5, 40, 'erp', [2.1, 1.9, 1.7, 1.7, 1.6]),
+  K('QC-02', 'QC', 'G-03', 'ผ่านการตรวจล็อตแรก', 'First-lot inspection pass rate', '%', 'up', 94, 98, 30, 'erp', [95, 96, 97, 98, 98.5]),
+  K('QC-03', 'QC', 'G-03', 'ข้อร้องเรียนจากลูกค้า', 'Customer complaints', 'ครั้ง/เดือน', 'down', 3, 1, 30, 'manual', [3, 2, 2, 1, 1]),
+  K('DCC-01', 'DCC', 'G-03', 'ปิดข้อร้องเรียนภายใน 30 วัน', 'Complaints closed within 30 days', '%', 'up', 55, 90, 60, 'manual', [60, 70, 75, 85]),
+  K('DCC-02', 'DCC', 'S1-04', 'รายงาน 8D ครบถ้วน', 'Complete 8D reports', '%', 'up', 60, 100, 40, 'manual', [70, 80, 90, 100]),
+  K('PP-01', 'PP', 'G-03', 'ส่งมอบตรงเวลา', 'On-time delivery', '%', 'up', 90, 97, 60, 'erp', [91, 93, 94, 95, 95.5]),
+  K('PP-02', 'PP', 'S2-01', 'ความแม่นยำของแผนการผลิต', 'Production plan accuracy', '%', 'up', 72, 90, 40, 'manual', [74, 77, 79, 80]),
+  K('WH-01', 'WH', 'S1-01', 'ความแม่นยำของสต็อก', 'Stock accuracy', '%', 'up', 95, 99, 50, 'manual', [96, 97, 98, 99.2]),
+  K('WH-02', 'WH', 'S1-02', 'ของเสียและวัสดุบดที่บันทึกครบทุกกิโลกรัม', 'Scrap and regrind recorded to the kilogram', '%', 'up', 50, 100, 50, 'manual', [55, 70, 82, 90]),
+  K('CS-01', 'CS', 'S4-01', 'ใบเสนอราคาถึงลูกค้าใหม่', 'Quotations to new customers', 'ฉบับ/เดือน', 'up', 1, 4, 50, 'manual', [1, 3, 4, 5]),
+  K('CS-02', 'CS', 'S2-01', 'ยอดขายเพิ่มจากลูกค้าเดิม', 'Added sales from existing customers', 'ล้านบาท/เดือน', 'up', 0.5, 2, 50, 'manual', [0.8, 1.1, 1.5, 1.7]),
+  K('HR-01', 'HR', 'S3-01', 'พนักงานที่ผ่านหลักสูตรค่านิยม STI (สะสม)', 'Staff who completed the STI core values course (to date)', '%', 'up', 0, 100, 40, 'manual', [8, 25, 48, 66], { agg: 'last', ms: [10, 25, 40, 55, 70, 85, 100, 100, 100, 100, 100, 100] }),
+  K('HR-02', 'HR', 'S3-01', 'ผู้สมัครที่ทำแบบทดสอบก่อนสัมภาษณ์', 'Candidates who take the pre-interview test', '%', 'up', 0, 100, 30, 'manual', [null, null, 80, 100]),
+  K('HR-03', 'HR', 'S3-01', 'ทีมที่จัดแบ่งปันความรู้ภายในทีมทุกเดือน', 'Teams holding monthly in-team knowledge sharing', '%', 'up', 0, 100, 30, 'manual', [33, 56, 67, 78]),
+  K('COST-01', 'COST', 'S1-01', 'ต้นทุนต่อชิ้น สายผลิตหลัก (ดัชนี)', 'Cost per part, main lines (index)', 'ดัชนี', 'down', 100, 95, 60, 'manual', [100, 99, 98, 97]),
+  K('COST-02', 'COST', 'S1-04', 'รายงานต้นทุนส่งภายในวันที่ 10', 'Cost report issued by the 10th', '%', 'up', 70, 100, 40, 'manual', [100, 100, 100, 100]),
+];
+// Monthly submission by team: Jan–Apr closed; May open (only some teams have sent)
+const SUB = Object.fromEntries(TEAMS.map(t => [t.id, [1, 1, 1, 1, ['QC', 'MNT'].includes(t.id) ? 1 : 0]]));
+KPIS.filter(k => k.unit === 'MNT' && k.src === 'manual').forEach(k => { if (k.a.length === 4) k.a.push(k.id === 'MNT-02' ? 94 : 1); });
+KPIS.filter(k => k.unit === 'QC' && k.src === 'manual').forEach(k => { if (k.a.length === 4) k.a.push(1); });
+// Quarterly review (Q1 2027) state per team: 0 draft · 1 sent to reviewer · 2 signed
+const REV = Object.fromEntries(TEAMS.map(t => [t.id, { stage: 0, self: {}, rev: {}, hi: '', issues: '', actions: [], changes: [] }]));
+Object.assign(REV.INJ, { stage: 1, self: { 'INJ-01': 3, 'INJ-02': 2, 'INJ-03': 3 },
+  hi: 'OEE เพิ่มขึ้นทุกเดือน จาก 66% เป็น 71% หลังเริ่มบันทึกสาเหตุเครื่องหยุดใน ERP',
+  issues: '%NG ยังสูงกว่าเป้า สาเหตุหลักคือแม่พิมพ์ 3 ชุดที่ต้องปรับปรุง และการตั้งค่าเครื่องหลังเปลี่ยนแม่พิมพ์',
+  actions: [{ a: 'ปรับปรุงแม่พิมพ์ 3 ชุดที่มี %NG สูง', o: 'หัวหน้าทีมฉีด', d: '30 มิ.ย. 2027', s: 'open' }, { a: 'จัดทำมาตรฐานการตั้งค่าเครื่องหลังเปลี่ยนแม่พิมพ์', o: 'ทีมฉีด + QC', d: '31 พ.ค. 2027', s: 'done' }],
+  changes: [{ k: 'INJ-03', from: 45, to: 40, why: 'SMED ทำได้ดีกว่าคาด ขอปรับเป้าให้ท้าทายขึ้น', s: 'pending' }] });
+Object.assign(REV.QC, { stage: 2, self: { 'QC-01': 2, 'QC-02': 3, 'QC-03': 3 }, rev: { 'QC-01': 2, 'QC-02': 3, 'QC-03': 3 }, hi: 'ล็อตแรกผ่านเพิ่มขึ้นต่อเนื่อง', issues: 'ของเสียภายในยังสูงกว่าเป้า' });
+// Year-end (preview) state per team
+const YE = Object.fromEntries(TEAMS.map(t => [t.id, { dec: {}, note: '', sign: 0 }]));
+const LOG = [
+  { t: '2 มิ.ย. 2027 14:05', w: 'เจ้าของ KPI · ทีมฉีด', x: 'เสนอ KPI ใหม่ INJ-04 วัสดุบดที่นำกลับเข้ากระบวนการ' },
+  { t: '1 มิ.ย. 2027 08:00', w: 'ระบบ', x: 'ดึงผลเดือน พ.ค. จาก ERP: OEE, %NG, เวลาเครื่องหยุด, ของเสีย, ส่งมอบตรงเวลา' },
+  { t: '28 เม.ย. 2027 16:40', w: 'สภากลยุทธ์', x: 'ลงนามทบทวนไตรมาส 1 ทีม QC' },
+];
+const ROLES = [
+  { id: 'exec', th: 'ผู้บริหาร (MD)', en: 'Executive (MD)', can: ['approve', 'review', 'signExec'] },
+  { id: 'council', th: 'สภากลยุทธ์', en: 'Strategy Council', can: ['approve', 'review'] },
+  { id: 'owner', th: 'เจ้าของ KPI · หัวหน้าทีมฉีด', en: 'KPI owner · Injection lead', team: 'INJ', can: ['enter', 'self', 'add', 'signOwner'] },
+  { id: 'entry', th: 'ผู้บันทึกข้อมูล · ทีมฉีด', en: 'Data entry · Injection', team: 'INJ', can: ['enter'] },
+  { id: 'hr', th: 'HR / ผู้ดูแลระบบ', en: 'HR / KPI admin', can: ['admin'] },
+  { id: 'staff', th: 'พนักงานทั่วไป', en: 'All staff', can: [] },
+];
+
+/* ───────────── Goal + base KPIs (Oct 2026: v3 goal KPIs and the real 2026 department KPIs) ───────────── */
+// The v3 goal KPIs as in Section 06 of the v3 strategy: samples; Council still sets baselines and targets.
+// p: the same KPI in the 2027 sample data above; by: base KPIs that already measure the same thing.
+const V = (s, th, en, tTh, tEn, p, by = []) => ({ s, th, en, tTh, tEn, p, by });
+const V3 = [
+  V('G', 'กำไรสุทธิ', 'Net profit', 'รอกำหนด', 'To be set', 'G-01'),
+  V('G', 'ยอดหนี้ธนาคาร', 'Bank debt', 'ลดลง · รอกำหนด', 'Lower · to be set', 'G-02'),
+  V('G', 'สัดส่วนยอดขายของลูกค้ารายใหญ่สุด', 'Sales share of the largest customer', 'ลดลง · รอกำหนด', 'Lower · to be set', 'G-03'),
+  V('S1', 'ต้นทุนต่อชิ้น', 'Cost per part', '−5 ถึง −10%', '−5 to −10%', 'S1-01', ['PD-69-09', 'PD-69-08']),
+  V('S1', 'ของเสีย', 'Scrap and reject rate', '−30%', '−30%', 'S1-02', ['PD-69-01', 'PD-69-02', 'PD-69-03', 'PD-69-04', 'PD-69-05', 'PD-69-06']),
+  V('S1', 'ยอดขายต่อพนักงาน', 'Sales per employee', 'เพิ่มขึ้น · รอกำหนด', 'Higher · to be set'),
+  V('S1', 'พลังงานต่อกิโลกรัม', 'Energy per kg of output', '−10%', '−10%', 'S1-03', ['EMS-69-01']),
+  V('S1', 'คำสั่งและข้อตกลงสำคัญที่มีบันทึก (สุ่มตรวจรายเดือน)', 'Key orders and agreements with a written record (monthly spot check)', '100%', '100%', 'S1-04'),
+  V('S2', 'อัตราการใช้เครื่อง', 'Machine utilisation', '75–80%', '75–80%', 'S2-01', ['PD-69-07', 'EN-69-08']),
+  V('S2', 'ยอดขายเพิ่มจากลูกค้าเดิม (ชิ้นงานใหม่หรือยอดเพิ่ม)', 'Added sales from existing customers (new parts or higher volumes)', 'รอกำหนด', 'To be set'),
+  V('S2', 'ยอดขายจากลูกค้าใหม่ในอุตสาหกรรมใหม่ (S4)', 'Added sales from new customers in new industries (S4)', 'รอกำหนด', 'To be set'),
+  V('S3', 'ผลผลิตต่อคน', 'Output per person', 'เพิ่มขึ้น · รอกำหนด', 'Higher · to be set', 'S3-01'),
+  V('S3', 'เวลาที่ใช้ในงานหลัก', 'Time spent on key tasks', 'ลดลง · รอกำหนด', 'Lower · to be set'),
+  V('S3', 'พนักงานที่ทำ skill matrix แล้ว', 'Staff with a completed skill matrix', '100%', '100%'),
+  V('S3', 'พนักงานหลายทักษะ', 'Multi-skilled operators', '60%', '60%'),
+  V('S3', 'Kaizen ที่นำไปใช้จริงต่อเดือน', 'Kaizen ideas implemented per month', '1 เรื่อง / 10 คน', '1 per 10 staff'),
+  V('S3', 'แผนพัฒนาทักษะใหม่ สำหรับทุกคนที่งานเปลี่ยนไปจากระบบอัตโนมัติ', 'Reskilling plan for everyone whose work changes with automation', 'รอกำหนด', 'To be set'),
+  V('S3', 'พนักงานที่ผ่านหลักสูตรค่านิยม STI (ภาคบังคับ)', 'Staff who have completed the mandatory STI core values course', '100%', '100%', 'HR-01', ['HR-69-03']),
+  V('S3', 'ผู้สมัครที่ทำแบบทดสอบก่อนสัมภาษณ์', 'Candidates who take the pre-interview test', '100%', '100%', 'HR-02'),
+  V('S3', 'ทีมที่จัดแบ่งปันความรู้ภายในทีมทุกเดือน', 'Teams holding monthly in-team knowledge sharing', '100%', '100%', 'HR-03'),
+  V('S3', 'การแบ่งปันความรู้ในวงกว้าง ข้ามทีมหรือข้ามฝ่าย', 'Knowledge sharing across teams or divisions', 'อย่างน้อยไตรมาสละ 1 ครั้ง', 'At least once a quarter'),
+  V('S4', 'ลูกค้าใหม่นอกยานยนต์และอิเล็กทรอนิกส์', 'New customers outside automotive and electronics', '3–5 ราย', '3–5', 'S4-01'),
+  V('S4', 'รายได้จากกลุ่มอุตสาหกรรมใหม่', 'Revenue share from new sectors', 'ราว 10%', 'About 10%'),
+  V('S4', 'ใบเสนอราคาถึงลูกค้าใหม่จากโอกาสตามแนวโน้มตลาด', 'Quotations to new customers from emerging market trends', 'รอกำหนด', 'To be set'),
+];
+// Real data: the 60 KPIs in use in 2026 (objectives register S-DC-01 + QMS KPI 2026 report), via build_prototype.py.
+// fl per month: g met · b missed · p PASS only · u target unclear · n no result. dec: proposed decision for the division to confirm.
+const BASE = {"kpis":[{"c":"QC-69-01","d":"QC","th":"ลดจำนวนการเคลมจากลูกค้า","en":"Customer claims per month","tTh":"ไม่เกิน 2 ครั้ง/เดือน","tEn":"≤ 2 claims/month","how":"เอกสาร1 ฉบับจะนับเป็น 1ครั้ง","f":"รายเดือน / Monthly","since":"2024","b25":"avg 3.00 · met 7/12","last":"Jul","m":["3","4","3","4","4","2","1","","","","",""],"fl":["b","b","b","b","b","g","g","n","n","n","n","n"],"v":[3.0,4.0,3.0,4.0,4.0,2.0,1.0,null,null,null,null,null],"rule":["<=",2],"st":"mix","sTh":"ผ่าน 2 จาก 7 เดือน","sEn":"Met 2 of 7","lk":["G"],"dec":"link","obs":"Company-level goal too. Target moved 6 → 0 → 2 in three years. 2025: 36 claims (avg 3/month). 2026 met in 2 of 7 months. CS-69-02 reports 0 customer complaints in the same months, so the two definitions need to be reconciled."},{"c":"QC-69-02","d":"QC","th":"ไม่มีปัญหาของเสียยก LOT ใน TNS.","en":"Lot rejections at TNS (whole lot NG)","tTh":"ทุก LOT ที่ส่งขายTNS.","tEn":"0 lots","how":"การติดตามผลให้นับจำนวนครั้งที่ส่งขายลูกค้าพบ NG 100 % ทั้ง LOT ที่ส่งขาย)","f":"รายเดือน / Monthly","since":"2024","b25":"avg 0.00 · met 12/12","last":"Jul","m":["0","0","0","0","0","0","0","","","","",""],"fl":["g","g","g","g","g","g","g","n","n","n","n","n"],"v":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,null,null,null,null,null],"rule":["<=",0],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":[],"dec":"keep","obs":"Zero every month for 2 years. One customer only."},{"c":"QC-69-03","d":"QC","th":"ส่งชิ้นส่วนใหม่ต้องเป็น ZERO DEFECT (TNS WARRANTEE 3 เดือน อื่นๆ WARRANTEE 1 เดือน","en":"New parts shipped with zero defects (warranty 3 months TNS, 1 month others)","tTh":"ทุก NEW MODEL ที่ส่งขาย","tEn":"0 defects","how":"การติดตามผลให้ตรวจสอบจากใบบันทึกผล FM-QC-070 ต้องไม่พบNG เกิดขึ้น ในเวลา 3 เดือน ถือว่าผ่านเป้าหมาย)","f":"รายเดือน / Monthly","since":"2024","b25":"ไม่มีข้อมูล / no data","last":"Jul","m":["0","0","0","0","0","0","0","","","","",""],"fl":["g","g","g","g","g","g","g","n","n","n","n","n"],"v":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,null,null,null,null,null],"rule":["<=",0],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":["S4"],"dec":"keep","obs":"Zero every month. Matters more once S4 brings new customers and new parts."},{"c":"QC-69-04","d":"QC","th":"ส่งมอบ PPAP ได้ก่อน DELIVERY ทุกครั้ง","en":"PPAP submitted before first delivery","tTh":"100% (เขียนว่า \"1\")","tEn":"100%","how":"ส่งมอบ PPAP ได้ก่อนวันที่กำหนดส่ง","f":"รายเดือน / Monthly","since":"2024","b25":"ไม่มีข้อมูล / no data","last":"—","m":["N/A","N/A","N/A","N/A","N/A","N/A","N/A","","","","",""],"fl":["n","n","n","n","n","n","n","n","n","n","n","n"],"v":[null,null,null,null,null,null,null,null,null,null,null,null],"rule":[">=",100],"st":"none","sTh":"ไม่มีข้อมูล","sEn":"No data","lk":["S4"],"dec":"fix","obs":"N/A in every month of 2025 and 2026: no figure has been reported for two years. Report the count of new parts and PPAP on time when they occur."},{"c":"QC-69-05","d":"QC","th":"ควบคุมการส่ง CALIBRATION เครื่องมือวัดให้ตรงตามกำหนด","en":"Gauge calibration sent on schedule","tTh":"100% (เขียนว่า \"1\")","tEn":"100%","how":"ส่ง Calibration ได้ตามกำหนด","f":"รายเดือน / Monthly","since":"2024","b25":"avg 100.00 · met 9/9","last":"Jun","m":["100","100","100","100","100","100","N/A","","","","",""],"fl":["g","g","g","g","g","g","n","n","n","n","n","n"],"v":[100.0,100.0,100.0,100.0,100.0,100.0,null,null,null,null,null,null],"rule":[">=",100],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":[],"dec":"keep","obs":"100% whenever reported. Compliance item (IATF)."},{"c":"QC-69-06","d":"QC","th":"ติดตามการตอบกลับปัญหางานเคลมให้ลูกค้าได้ตาม Due ที่ลูกค้ากำหนด","en":"Claim replies to customers by the customer's due date","tTh":"100% (เขียนว่า \"1\")","tEn":"100%","how":"ตรวจสอบวันที่อนุมัติการตอบกลับในเอกสารเคลมเทียบกับวันที่ลูกค้ากำหนด","f":"รายเดือน / Monthly","since":"2024","b25":"avg 100.00 · met 12/12","last":"Jul","m":["3","4","3","4","4","2","1","","","","",""],"fl":["b","b","b","b","b","b","b","n","n","n","n","n"],"v":[3.0,4.0,3.0,4.0,4.0,2.0,1.0,null,null,null,null,null],"rule":[">=",100],"st":"miss","sTh":"ไม่ผ่านทุกเดือน","sEn":"Missed every month","lk":[],"dec":"fix","obs":"2026 figures (3 4 3 4 4 2 1) are identical to QC-69-01 claim counts, so the row looks copied. 2025 was 100% every month."},{"c":"PD-69-01","d":"PD","th":"ควบคุมปริมาณของเสียของ INJECTION","en":"Scrap rate, injection","tTh":"ไม่เกิน 2%/ต่อเดือน","tEn":"≤ 2%","how":"","f":"รายเดือน / Monthly","since":"2024","b25":"avg 1.84 · met 10/12","last":"Apr","m":["2.19","1.53","1.78","1.82","","","","","","","",""],"fl":["b","g","g","g","n","n","n","n","n","n","n","n"],"v":[2.19,1.53,1.78,1.82,null,null,null,null,null,null,null,null],"rule":["<=",2],"st":"mix","sTh":"ผ่าน 3 จาก 4 เดือน","sEn":"Met 3 of 4","lk":["S1"],"dec":"link","obs":"2025 avg 1.84%. 2026 met 3 of 4 months. Same measure as v3 S1 \"scrap −30%\". Data reported only to April."},{"c":"PD-69-02","d":"PD","th":"ควบคุมปริมาณของเสียของ Screen","en":"Scrap rate, screen printing","tTh":"ไม่เกิน1%/ต่อเดือน","tEn":"≤ 1%","how":"","f":"รายเดือน / Monthly","since":"2024","b25":"avg 0.51 · met 9/12","last":"Apr","m":["0","0.57","0.64","0.93","","","","","","","",""],"fl":["g","g","g","g","n","n","n","n","n","n","n","n"],"v":[0.0,0.57,0.64,0.93,null,null,null,null,null,null,null,null],"rule":["<=",1],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":["S1"],"dec":"link","obs":"Target tightened 5% → 1% in 2026. 2025 avg 0.51%."},{"c":"PD-69-03","d":"PD","th":"ควบคุมปริมาณของเสียของ Spray","en":"Scrap rate, spray","tTh":"ไม่เกิน1%/ต่อเดือน","tEn":"≤ 1%","how":"","f":"รายเดือน / Monthly","since":"2024","b25":"avg 0.85 · met 8/12","last":"Apr","m":["0","0","0","0","","","","","","","",""],"fl":["g","g","g","g","n","n","n","n","n","n","n","n"],"v":[0.0,0.0,0.0,0.0,null,null,null,null,null,null,null,null],"rule":["<=",1],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":["S1"],"dec":"link","obs":"Target tightened 6% → 1%. 2026 shows 0 in all 4 months; check the data is collected."},{"c":"PD-69-04","d":"PD","th":"ควบคุมปริมาณของเสียของ Printing","en":"Scrap rate, printing (hot stamp)","tTh":"ไม่เกิน 0.35 %/ต่อเดือน","tEn":"≤ 0.35%","how":"","f":"รายเดือน / Monthly","since":"2024","b25":"avg 0.57 · met 3/12","last":"Apr","m":["0.3","0.5","0.28","0.18","","","","","","","",""],"fl":["g","b","g","g","n","n","n","n","n","n","n","n"],"v":[0.3,0.5,0.28,0.18,null,null,null,null,null,null,null,null],"rule":["<=",0.35],"st":"mix","sTh":"ผ่าน 3 จาก 4 เดือน","sEn":"Met 3 of 4","lk":["S1"],"dec":"link","obs":"2025 avg 0.57%, missed 10 of 12 months. 2026 met 3 of 4."},{"c":"PD-69-05","d":"PD","th":"ควบคุมปริมาณของเสียของ Local Ass'y","en":"Scrap rate, local assembly","tTh":"ไม่เกิน2%/ต่อเดือน","tEn":"≤ 2%","how":"","f":"รายเดือน / Monthly","since":"2026","b25":"","last":"Apr","m":["0.8","0.73","0.79","0.71","","","","","","","",""],"fl":["g","g","g","g","n","n","n","n","n","n","n","n"],"v":[0.8,0.73,0.79,0.71,null,null,null,null,null,null,null,null],"rule":["<=",2],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":["S1"],"dec":"link","obs":"New in 2026. Runs at 0.7–0.8% against 2%: target could be set from the baseline."},{"c":"PD-69-06","d":"PD","th":"ควบคุมปริมาณของเสียของ Ass'y TAP-C","en":"Scrap rate, assembly TAP-C","tTh":"ไม่เกิน 0.3%/ต่อเดือน","tEn":"≤ 0.3%","how":"","f":"รายเดือน / Monthly","since":"2026","b25":"","last":"Apr","m":["0.21","0.5","0.35","0.26","","","","","","","",""],"fl":["g","b","b","g","n","n","n","n","n","n","n","n"],"v":[0.21,0.5,0.35,0.26,null,null,null,null,null,null,null,null],"rule":["<=",0.3],"st":"mix","sTh":"ผ่าน 2 จาก 4 เดือน","sEn":"Met 2 of 4","lk":["S1"],"dec":"link","obs":"New in 2026."},{"c":"PD-69-07","d":"PD","th":"ประสิทธิภาพในการทำงาน(OEE)ส่วนงาน INJECTION","en":"OEE, injection","tTh":"ต้องไม่น้อยกว่า 80% ต่อเดือน","tEn":"≥ 80%","how":"","f":"รายเดือน / Monthly","since":"2025","b25":"avg 76.71 · met 1/12","last":"Apr","m":["72.41","73.74","74.67","73.73","","","","","","","",""],"fl":["b","b","b","b","n","n","n","n","n","n","n","n"],"v":[72.41,73.74,74.67,73.73,null,null,null,null,null,null,null,null],"rule":[">=",80],"st":"miss","sTh":"ไม่ผ่านทุกเดือน","sEn":"Missed every month","lk":["S1","S2"],"dec":"link","obs":"Target raised 70% → 80% for 2026 while 2025 averaged 76.7%. 2026 is 72–75%: missed every month. The closest existing measure to v3 S2 \"machine utilisation\", but not the same thing."},{"c":"PD-69-08","d":"PD","th":"ควบคุมค่าใช้จ่ายเนื่องจากการปฏิบัติงานที่ผิดพลาดของแผนก PDต้อง","en":"Cost of production errors (baht/month)","tTh":"ไม่เกิน 10,000 บาท ต่อเดือน","tEn":"≤ 10,000 baht/month","how":"","f":"รายเดือน / Monthly","since":"2025","b25":"avg 10,582 · met 11/12","last":"Apr","m":["13,421.44","26,740.00","34,732.00","22914.81","","","","","","","",""],"fl":["b","b","b","b","n","n","n","n","n","n","n","n"],"v":[13421.44,26740.0,34732.0,22914.81,null,null,null,null,null,null,null,null],"rule":["<=",10000],"st":"miss","sTh":"ไม่ผ่านทุกเดือน","sEn":"Missed every month","lk":["S1"],"dec":"fix","obs":"Target halved 20,000 → 10,000. 2025 avg 10,582. 2026 missed all 4 months (13k–35k). Definition of what is counted needs writing down."},{"c":"PD-69-09","d":"PD","th":"ควบคุมค่าใช้จ่ายเนื่องจากชิ้นงาน NG (Loss in process ตามราคาMat'l)","en":"In-process NG loss at material price (baht/month)","tTh":"ต้องไม่เกิน 343,703 บาท ต่อเดือน","tEn":"≤ 343,703 baht/month","how":"","f":"รายเดือน / Monthly","since":"2026","b25":"","last":"Apr","m":["12,988.20","403,117.00","439,781.00","362,419.00","","","","","","","",""],"fl":["g","b","b","b","n","n","n","n","n","n","n","n"],"v":[12988.2,403117.0,439781.0,362419.0,null,null,null,null,null,null,null,null],"rule":["<=",343703],"st":"mix","sTh":"ผ่าน 1 จาก 4 เดือน","sEn":"Met 1 of 4","lk":["S1"],"dec":"link","obs":"New in 2026; the baht view of PD-69-01…06. Jan 12,988 vs 362k–440k in Feb–Apr: check January. Missed 3 of 4."},{"c":"PD-69-10","d":"PD","th":"ควบคุมการเบิกวัตถุดิบเพิ่ม/เกินจาก M/O อันมีสาเหตุมาจาก PD","en":"Extra material issued over the MO, caused by production","tTh":"ต้องไม่เกิน 0/ ต่อเดือน","tEn":"0","how":"","f":"รายเดือน / Monthly","since":"2026","b25":"","last":"Apr","m":["0","0","0","0","","","","","","","",""],"fl":["g","g","g","g","n","n","n","n","n","n","n","n"],"v":[0.0,0.0,0.0,0.0,null,null,null,null,null,null,null,null],"rule":["<=",0],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":["S1"],"dec":"keep","obs":"Zero every month. Could become a monitored item rather than a KPI."},{"c":"PD-69-11","d":"PD","th":"ลดจำนวนงานเคลมจากหน่วยงานQA Line Ass'y TAP-C","en":"Internal NCRs from QA, line Assy TAP-C","tTh":"ต้องไม่เกิน 2/ ต่อเดือน","tEn":"≤ 2 NCRs/month","how":"เอกสาร NCR 1 ฉบับจะนับเป็น 1ครั้ง","f":"รายเดือน / Monthly","since":"2026","b25":"","last":"Apr","m":["0","0","0","0","","","","","","","",""],"fl":["g","g","g","g","n","n","n","n","n","n","n","n"],"v":[0.0,0.0,0.0,0.0,null,null,null,null,null,null,null,null],"rule":["<=",2],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":[],"dec":"merge","obs":"Four KPIs (PD-69-11…14) measure the same thing on four lines."},{"c":"PD-69-12","d":"PD","th":"ลดจำนวนงานเคลมจากหน่วยงานQA Line Check TAP-C","en":"Internal NCRs from QA, line Check TAP-C","tTh":"ต้องไม่เกิน 2/ ต่อเดือน","tEn":"≤ 2 NCRs/month","how":"เอกสาร NCR 1 ฉบับจะนับเป็น 1ครั้ง","f":"รายเดือน / Monthly","since":"2026","b25":"","last":"Apr","m":["0","1","0","0","","","","","","","",""],"fl":["g","g","g","g","n","n","n","n","n","n","n","n"],"v":[0.0,1.0,0.0,0.0,null,null,null,null,null,null,null,null],"rule":["<=",2],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":[],"dec":"merge","obs":"See PD-69-11."},{"c":"PD-69-13","d":"PD","th":"ลดจำนวนงานเคลมจากหน่วยงานQA Line Check MNB","en":"Internal NCRs from QA, line Check MNB","tTh":"ต้องไม่เกิน 2/ ต่อเดือน","tEn":"≤ 2 NCRs/month","how":"เอกสาร NCR 1 ฉบับจะนับเป็น 1ครั้ง","f":"รายเดือน / Monthly","since":"2026","b25":"","last":"Apr","m":["3","2","9","0","","","","","","","",""],"fl":["b","g","b","g","n","n","n","n","n","n","n","n"],"v":[3.0,2.0,9.0,0.0,null,null,null,null,null,null,null,null],"rule":["<=",2],"st":"mix","sTh":"ผ่าน 2 จาก 4 เดือน","sEn":"Met 2 of 4","lk":[],"dec":"merge","obs":"See PD-69-11. 9 NCRs in March."},{"c":"PD-69-14","d":"PD","th":"ลดจำนวนงานเคลมจากหน่วยงานQA Line Check TUC","en":"Internal NCRs from QA, line Check TUC","tTh":"ต้องไม่เกิน 2/ ต่อเดือน","tEn":"≤ 2 NCRs/month","how":"เอกสาร NCR 1 ฉบับจะนับเป็น 1ครั้ง","f":"รายเดือน / Monthly","since":"2026","b25":"","last":"Apr","m":["0","0","0","0","","","","","","","",""],"fl":["g","g","g","g","n","n","n","n","n","n","n","n"],"v":[0.0,0.0,0.0,0.0,null,null,null,null,null,null,null,null],"rule":["<=",2],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":[],"dec":"merge","obs":"See PD-69-11."},{"c":"EN-69-01","d":"EN","th":"ลดการสูญเสียจากการอุด CAVITY แม่พิมพ์ภายใน","en":"Loss from blocked mold cavities (baht/month)","tTh":"≤ 150,000 บาท / เดือน","tEn":"≤ 150,000 baht/month","how":"ค่าใช้จ่ายจากการซ่อมแม่พิมพ์","f":"รายเดือน / Monthly","since":"2024","b25":"avg 31,490 · met 12/12","last":"Aug","m":["139037","70257","128726","96941","31713","137862","94290","121253","","","",""],"fl":["g","g","g","g","g","g","g","g","n","n","n","n"],"v":[139037.0,70257.0,128726.0,96941.0,31713.0,137862.0,94290.0,121253.0,null,null,null,null],"rule":["<=",150000],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":["S1"],"dec":"fix","obs":"Met every month: 2025 averaged 31,490 (the sheet's own average cell says 18,136) and 2026 runs 32k–139k, far under the 150,000 target, so the target does not flag the rise."},{"c":"EN-69-02","d":"EN","th":"ลดการขึ้น-ลงแม่พิมพ์ซ้ำซ้อนเนื่องจากปัญหาต่างๆ ในกระบวนการ PM.","en":"Repeat mold changes caused by PM issues","tTh":"ZERO DEFECT","tEn":"0","how":"ลดการขึ้น-ลงแม่พิมพ์ซ้ำซ้อนPM","f":"รายเดือน / Monthly","since":"2024","b25":"avg 0.42 · met 9/12","last":"Aug","m":["0","0","0","0","0","0","0","1","","","",""],"fl":["g","g","g","g","g","g","g","b","n","n","n","n"],"v":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0,null,null,null,null],"rule":["<=",0],"st":"mix","sTh":"ผ่าน 7 จาก 8 เดือน","sEn":"Met 7 of 8","lk":["S2"],"dec":"keep","obs":"1 in August 2026."},{"c":"EN-69-03","d":"EN","th":"ติดตามการแก้ไขแม่พิมพ์ในปัญหาที่ทำให้เกิดของเสียใน LINE ผลิต","en":"Molds repaired for line-scrap problems (count/month)","tTh":"≥ 20 MOLD / เดือน","tEn":"≥ 20 molds/month","how":"นับจากเอกสารการซ่อมแม่พิมพ์","f":"รายเดือน / Monthly","since":"2024","b25":"avg 94.17 · met 12/12","last":"Aug","m":["47","63","49","39","32","40","68","99","","","",""],"fl":["g","g","g","g","g","g","g","g","n","n","n","n"],"v":[47.0,63.0,49.0,39.0,32.0,40.0,68.0,99.0,null,null,null,null],"rule":[">=",20],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":[],"dec":"fix","obs":"A count of work done (more repairs reads as better). Always far above 20. Better as an outcome, e.g. scrap-causing mold issues closed within X days."},{"c":"EN-69-04","d":"EN","th":"ประสิทธิภาพการทำงานของแม่พิมพ์ (MTBF)","en":"Mold MTBF (shots)","tTh":"≥ 450,000 SHOT","tEn":"≥ 450,000 shots","how":"MTBF MOLD","f":"รายเดือน / Monthly","since":"2024","b25":"PASS 12/12","last":"Sep","m":["PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS","","",""],"fl":["p","p","p","p","p","p","p","p","p","n","n","n"],"v":[null,null,null,null,null,null,null,null,null,null,null,null],"rule":"pass","st":"none","sTh":"PASS เท่านั้น ไม่มีตัวเลข","sEn":"PASS only, no figure","lk":["S2"],"dec":"fix","obs":"Reported only as PASS for 3 years; no figure behind it."},{"c":"EN-69-05","d":"EN","th":"ความเร็วเฉลี่ยในการซ่อมแม่พิมพ์ ( MTTR )","en":"Mold MTTR (hours)","tTh":"≥ 336ชั่วโมง","tEn":"≤ 336 h (register says ≥)","how":"MTTR MOLD","f":"รายเดือน / Monthly","since":"2024","b25":"PASS 12/12","last":"Sep","m":["PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS","","",""],"fl":["p","p","p","p","p","p","p","p","p","n","n","n"],"v":[null,null,null,null,null,null,null,null,null,null,null,null],"rule":"pass","st":"none","sTh":"PASS เท่านั้น ไม่มีตัวเลข","sEn":"PASS only, no figure","lk":["S2"],"dec":"fix","obs":"PASS only. Target direction differs: register \"≥ 336 h\", report \"≤ 336 h\" (repair time should be ≤)."},{"c":"EN-69-06","d":"EN","th":"ประสิทธิภาพการทำงานของเครื่องจักร (MTBF)","en":"Machine MTBF (hours)","tTh":"≤ 145,000 ชั่วโมง","tEn":"≥ 145,000 h (register says ≤)","how":"MTBF MACHINE","f":"รายเดือน / Monthly","since":"2024","b25":"PASS 12/12","last":"Sep","m":["PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS","","",""],"fl":["p","p","p","p","p","p","p","p","p","n","n","n"],"v":[null,null,null,null,null,null,null,null,null,null,null,null],"rule":"pass","st":"none","sTh":"PASS เท่านั้น ไม่มีตัวเลข","sEn":"PASS only, no figure","lk":["S2"],"dec":"fix","obs":"PASS only. Register \"≤ 145,000 h\", report \"≥ 145,000 h\"; 145,000 h is about 16 years, so check the unit."},{"c":"EN-69-07","d":"EN","th":"ความเร็วเฉลี่ยในการซ่อมแครื่องจักร( MTTR )","en":"Machine MTTR (hours)","tTh":"≤ 168 ชั่วโมง","tEn":"≤ 168 h","how":"MTTR MACHINE","f":"รายเดือน / Monthly","since":"2024","b25":"PASS 12/12","last":"Sep","m":["PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS","PASS","","",""],"fl":["p","p","p","p","p","p","p","p","p","n","n","n"],"v":[null,null,null,null,null,null,null,null,null,null,null,null],"rule":"pass","st":"none","sTh":"PASS เท่านั้น ไม่มีตัวเลข","sEn":"PASS only, no figure","lk":["S2"],"dec":"fix","obs":"PASS only; no figure behind it."},{"c":"EN-69-08","d":"EN","th":"ลดเวลาการเสียของเครื่องจักรในปัญหาที่สามารถแก้ไขได้เอง","en":"Machine downtime on self-fixable problems (hours/month)","tTh":"≤ 10 ชั่วโมง","tEn":"≤ 10 h/month","how":"นับจากเอกสารการซ่อมเครื่องจักร","f":"รายเดือน / Monthly","since":"2024","b25":"avg 17.19 · met 11/12","last":"Sep","m":["9","6.5","9.08","9.91","9","9.83","9.33","9.16","9.16","","",""],"fl":["g","g","g","g","g","g","g","g","g","n","n","n"],"v":[9.0,6.5,9.08,9.91,9.0,9.83,9.33,9.16,9.16,null,null,null],"rule":["<=",10],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":["S2"],"dec":"keep","obs":"Met every month, always just under 10 (9.0–9.9). 2025 Feb shows 99.92, likely a typo."},{"c":"EN-69-09","d":"EN","th":"ลด CYCLE TIME การผลิตงาน INJECTION MOLDING MACHINE","en":"Injection cycle time reduction","tTh":"≥ 30 วินาที/เดือน","tEn":"\"≥ 30 s/month\" (unclear)","how":"ทบทวน Condition std","f":"รายเดือน / Monthly","since":"2026","b25":"","last":"Apr","m":["35","32","31","30","","","","","","","",""],"fl":["u","u","u","u","n","n","n","n","n","n","n","n"],"v":[35.0,32.0,31.0,30.0,null,null,null,null,null,null,null,null],"rule":null,"st":"none","sTh":"เป้าไม่ชัด","sEn":"Target unclear","lk":["S1","S2"],"dec":"fix","obs":"Target \"≥ 30 s/month\" is unclear (seconds saved? cycle time?). Values 35, 32, 31, 30."},{"c":"EN-69-10","d":"EN","th":"ลดความเสียหายของแม่พิมพ์ที่เกิดจากการปฏิบัติงานของ Technician","en":"Mold damage from operation","tTh":"ZERO DEFECT","tEn":"0","how":"เกิดจากการเสียหายของแม่พิมพ์","f":"รายเดือน / Monthly","since":"2026","b25":"","last":"Apr","m":["0","0","0","1","","","","","","","",""],"fl":["g","g","g","b","n","n","n","n","n","n","n","n"],"v":[0.0,0.0,0.0,1.0,null,null,null,null,null,null,null,null],"rule":["<=",0],"st":"mix","sTh":"ผ่าน 3 จาก 4 เดือน","sEn":"Met 3 of 4","lk":["S2"],"dec":"keep","obs":"1 case in April. Source wording names a job role; word it by process."},{"c":"HR-69-01","d":"HR","th":"จัดหาบุคคลากรให้ได้ตามใบร้องขอ","en":"Hiring filled by the requested date","tTh":"≥ 80%","tEn":"≥ 80%","how":"นับจากการระบุวันที่ตามใบร้องขอบุคคลากร","f":"รายเดือน / Monthly","since":"2024","b25":"avg 56.27 · met 2/12","last":"Sep","m":["100","100","38.46","100","100","100","100","100","100","","",""],"fl":["g","g","b","g","g","g","g","g","g","n","n","n"],"v":[100.0,100.0,38.46,100.0,100.0,100.0,100.0,100.0,100.0,null,null,null],"rule":[">=",80],"st":"mix","sTh":"ผ่าน 8 จาก 9 เดือน","sEn":"Met 8 of 9","lk":["S3"],"dec":"keep","obs":"2025 avg 56% (met 2 of 12). 2026 100% except March (38%). The 2026 report numbers all three HR KPIs HR-69-01."},{"c":"HR-69-02","d":"HR","th":"ระยะเวลาอบรมในกระบวนการ (On The Job training)","en":"Training: on-the-job training done within 7 days (register) / training to plan (report)","tTh":"แล้วเสร็จภายใน 7 วัน","tEn":"100% (OJT within 7 days)","how":"นับจากการวันเข้าทำงาน","f":"รายปี / Yearly","since":"2024","b25":"avg 100.00 · met 12/12","last":"Sep","m":["100","100","100","100","100","100","100","100","100","","",""],"fl":["g","g","g","g","g","g","g","g","g","n","n","n"],"v":[100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,null,null,null],"rule":[">=",100],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":["S3"],"dec":"fix","obs":"Register and report describe different KPIs. 100% every month."},{"c":"HR-69-03","d":"HR","th":"ผลการประเมินจิตสำนึกของพนักงาน","en":"Staff awareness assessment","tTh":"ไม่น้อยกว่า 80 %","tEn":"≥ 80%","how":"ตามแผนการประเมินประจำปี","f":"รายปี / Yearly","since":"2024","b25":"avg 100.00 · met 12/12","last":"Sep","m":["N/A","100","100","100","100","100","100","100","100","","",""],"fl":["n","g","g","g","g","g","g","g","g","n","n","n"],"v":[null,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,null,null,null],"rule":[">=",80],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":["S3"],"dec":"link","obs":"Yearly assessment but reported monthly at 100%. Can carry the v3 core values course."},{"c":"PU-69-01","d":"PU","th":"ติดตามสินค้าที่สั่งให้ส่งตรงตามกำหนด","en":"Supplier on-time delivery against PO","tTh":"≥ 95 %","tEn":"≥ 95%","how":"ตามวันที่การระบุวันที่ตามP/O","f":"รายเดือน / Monthly","since":"2024","b25":"avg 99.95 · met 12/12","last":"Sep","m":["100","100","100","100","100","100","100","100","100","","",""],"fl":["g","g","g","g","g","g","g","g","g","n","n","n"],"v":[100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,null,null,null],"rule":[">=",95],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":["S1"],"dec":"keep","obs":"100% every month. The report shows the target as \"< 95%\" (sign error)."},{"c":"PU-69-02","d":"PU","th":"พัฒนาผู้ส่งมอบให้ปฎิบัติตามระบบ EMS,QMS","en":"Suppliers meeting EMS/QMS requirements","tTh":"% ผู้ส่งมอบที่สามารถปฎิบัติตามระบบ EMS,QMS ไม่น้อยกว่า80% ภายใน 5 ปี","tEn":"≥ 80% within 5 years","how":"ติดตามในแผนพัฒนาผู้ส่งมอบ","f":"รายเดือน / Monthly","since":"2024","b25":"avg 0.00 · met 0/12","last":"—","m":["N/A","N/A","N/A","N/A","N/A","N/A","N/A","N/A","N/A","","",""],"fl":["n","n","n","n","n","n","n","n","n","n","n","n"],"v":[null,null,null,null,null,null,null,null,null,null,null,null],"rule":[">=",80],"st":"none","sTh":"ไม่มีข้อมูล","sEn":"No data","lk":[],"dec":"fix","obs":"Target \"≥ 80% within 5 years\". 0 in 2025 and N/A in 2026: no data for two years."},{"c":"PU-69-03","d":"PU","th":"ติดตามผลทดสอบ SVHC และ IPC DATA ในผลิตภัณฑ์ วัตถุดิบหลัก และวัตถุดิบรอง","en":"SVHC and ICP tests done before certificates expire","tTh":"ทดสอบ SVHC ปีละ 2 ครั้ง , IPC DATA ปีละ 1ครั้ง ก่อน Cer เก่าหมดอายุ 100 %","tEn":"100%","how":"ผลิตภัณฑ์ วัตถุดิบหลัก และวัตถุดิบรอง","f":"รายเดือน / Monthly","since":"2024","b25":"avg 0.00 · met 0/12","last":"Sep","m":["100","100","100","100","100","100","100","100","100","","",""],"fl":["g","g","g","g","g","g","g","g","g","n","n","n"],"v":[100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,null,null,null],"rule":[">=",100],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":[],"dec":"keep","obs":"100% in 2026; 0 in 2025. Compliance item."},{"c":"PP-69-01","d":"PP","th":"การควบคุมการเลื่อนส่งสินค้าที่มีสาเหตุมาจาก Planning","en":"Delivery postponements caused by planning","tTh":"การเลื่อนส่งสินค้า 0 ครั้ง/เดือน","tEn":"0","how":"นับเอกสารการเลื่อนส่งสินค้า","f":"รายเดือน / Monthly","since":"2024","b25":"avg 1.42 · met 6/12","last":"Oct","m":["0","0","0","0","0","0","0","0","0","0","",""],"fl":["g","g","g","g","g","g","g","g","g","g","n","n"],"v":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,null,null],"rule":["<=",0],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":[],"dec":"keep","obs":"2025: 17 postponements (met 6 of 12). 2026: 0 in every month."},{"c":"PP-69-02","d":"PP","th":"ลดใบปรับแผนการผลิต","en":"Production plan change notes (≤ 5/month)","tTh":"5 ครั้ง/เดือน","tEn":"≤ 5/month","how":"นับจากออกเอกสารใบปรับแผน","f":"รายเดือน / Monthly","since":"2025","b25":"avg 0.00 · met 12/12","last":"Sep","m":["1","0","4","0","1","1","1","3","1","","",""],"fl":["g","g","g","g","g","g","g","g","g","n","n","n"],"v":[1.0,0.0,4.0,0.0,1.0,1.0,1.0,3.0,1.0,null,null,null],"rule":["<=",5],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":["S2"],"dec":"keep","obs":"Met every month."},{"c":"CS-69-01","d":"CS","th":"ความพึงพอใจของลูกค้า","en":"Customer satisfaction","tTh":"มากกว่า 97.50 %","tEn":"> 97.5%","how":"ผลสำรวจความพึงพอใจ","f":"รายเดือน / Monthly","since":"2024","b25":"avg 98.98 · met 11/12","last":"Aug","m":["99","98.75","99.25","99","99","99.5","99.75","99.75","","","",""],"fl":["g","g","g","g","g","g","g","g","n","n","n","n"],"v":[99.0,98.75,99.25,99.0,99.0,99.5,99.75,99.75,null,null,null,null],"rule":[">=",97.5],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":["G"],"dec":"link","obs":"Company-level goal. Target 95 → 97 → 97.5. Actual 98.75–99.75%."},{"c":"CS-69-02","d":"CS","th":"ลดข้อร้องเรียนจากลูกค้า (Customer Claim)","en":"Customer complaints (customer claims)","tTh":"100% (เขียนว่า \"1\")","tEn":"0 (written as \"1\")","how":"นับจากเอกสารข้อร้องเรียน","f":"รายเดือน / Monthly","since":"2024","b25":"","last":"Aug","m":["0","0","0","0","0","0","0","0","","","",""],"fl":["g","g","g","g","g","g","g","g","n","n","n","n"],"v":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,null,null,null,null],"rule":["<=",0],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":["G"],"dec":"merge","obs":"Reported 0 every month while QC-69-01 reports 1–4 claims a month. Moved between CS and DEL across the years."},{"c":"WH-69-01","d":"WH","th":"ควบคุมปริมาณสินค้าสำเร็จรูปให้ถูกต้อง","en":"Finished-goods stock accuracy","tTh":"100% (เขียนว่า \"1\")","tEn":"100%","how":"ไม่พบข้อผิดพลาดจากจ่ายสินค้าFG","f":"รายเดือน / Monthly","since":"2024","b25":"avg 99.98 · met 8/12","last":"Oct","m":["100","100","100","99","100","100","100","100","100","100","",""],"fl":["g","g","g","b","g","g","g","g","g","g","n","n"],"v":[100.0,100.0,100.0,99.0,100.0,100.0,100.0,100.0,100.0,100.0,null,null],"rule":[">=",100],"st":"mix","sTh":"ผ่าน 9 จาก 10 เดือน","sEn":"Met 9 of 10","lk":[],"dec":"fix","obs":"99–100% every month. \"Accuracy\" = no issue errors; a count-based stock accuracy would say more."},{"c":"WH-69-02","d":"WH","th":"ความคุมปริมาณสินค้ากึ่งสำเร็จรูปให้ถูกต้อง","en":"Semi-finished stock accuracy","tTh":"100% (เขียนว่า \"1\")","tEn":"100%","how":"ไม่พบข้อผิดพลาดจากจ่ายสินค้าSG","f":"รายเดือน / Monthly","since":"2024","b25":"avg 100.00 · met 12/12","last":"May","m":["100","100","100","100","100","","","","","","",""],"fl":["g","g","g","g","g","n","n","n","n","n","n","n"],"v":[100.0,100.0,100.0,100.0,100.0,null,null,null,null,null,null,null],"rule":[">=",100],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":[],"dec":"keep","obs":"100% every month."},{"c":"WH-69-03","d":"WH","th":"ควบคุมการจ่ายงานให้ตรงตามเวลาที่กำหนด","en":"Semi-finished issued to the line on time","tTh":"100% (เขียนว่า \"1\")","tEn":"100%","how":"ไม่พบข้อผิดพลาดจากจ่ายสินค้าSG","f":"รายเดือน / Monthly","since":"2026","b25":"","last":"May","m":["100","100","100","100","100","","","","","","",""],"fl":["g","g","g","g","g","n","n","n","n","n","n","n"],"v":[100.0,100.0,100.0,100.0,100.0,null,null,null,null,null,null,null],"rule":[">=",100],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":["S2"],"dec":"fix","obs":"100%. The measuring method is copied from WH-69-02."},{"c":"WH-69-04","d":"WH","th":"ความคุมปริมาณสินค้า PACKING ให้ถูกต้อง","en":"Packing material stock accuracy","tTh":"100% (เขียนว่า \"1\")","tEn":"100%","how":"ไม่พบข้อผิดพลาดจากจ่ายPACKING","f":"รายเดือน / Monthly","since":"2025","b25":"avg 99.58 · met 11/12","last":"May","m":["94","100","100","100","100","","","","","","",""],"fl":["b","g","g","g","g","n","n","n","n","n","n","n"],"v":[94.0,100.0,100.0,100.0,100.0,null,null,null,null,null,null,null],"rule":[">=",100],"st":"mix","sTh":"ผ่าน 4 จาก 5 เดือน","sEn":"Met 4 of 5","lk":[],"dec":"keep","obs":"94% in January, then 100%."},{"c":"DEL-69-01","d":"DEL","th":"การจัดส่งมอบสินค้าตรงเวลา","en":"On-time delivery","tTh":"100% (เขียนว่า \"1\")","tEn":"100%","how":"จัดส่งตาม due date","f":"รายเดือน / Monthly","since":"2024","b25":"","last":"May","m":["100","100","100","100","100","","","","","","",""],"fl":["g","g","g","g","g","n","n","n","n","n","n","n"],"v":[100.0,100.0,100.0,100.0,100.0,null,null,null,null,null,null,null],"rule":[">=",100],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":["G"],"dec":"link","obs":"Company-level goal. 100% every reported month; data only to May. Could become on-time-in-full from the ERP."},{"c":"MC-69-01","d":"MC","th":"ควบคุมปริมาณวัตถุดิบในคลัง(เม็ดพลาสติก)ให้ถูกต้อง","en":"Raw material (resin) stock accuracy","tTh":"100% (เขียนว่า \"1\")","tEn":"100%","how":"ไม่พบข้อผิดพลาดจากจ่ายMAT'l","f":"รายเดือน / Monthly","since":"2024","b25":"avg 100.00 · met 12/12","last":"Oct","m":["100","100","100","100","100","100","100","100","100","100","",""],"fl":["g","g","g","g","g","g","g","g","g","g","n","n"],"v":[100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,null,null],"rule":[">=",100],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":[],"dec":"keep","obs":"100% every month for 3 years."},{"c":"MC-69-02","d":"MC","th":"ควบคุมการจ่ายเม็ดพลาสติกในการผลิตให้ถูกต้องตาม MO","en":"Resin issued to production per MO","tTh":"100% (เขียนว่า \"1\")","tEn":"100%","how":"ไม่พบข้อผิดพลาดจากจ่ายMAT'l","f":"รายเดือน / Monthly","since":"2024","b25":"avg 100.00 · met 12/12","last":"Oct","m":["100","100","100","100","100","100","100","100","100","100","",""],"fl":["g","g","g","g","g","g","g","g","g","g","n","n"],"v":[100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,null,null],"rule":[">=",100],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":["S1"],"dec":"keep","obs":"100% every month for 3 years."},{"c":"IT-69-01","d":"IT","th":"ควบคุมเวลาในการแก้ไขปัญหาจากระบบ Computer","en":"Computer issue resolution time (min/job)","tTh":"< 3 hr / job","tEn":"< 180 min/job","how":"การแจ้งซ่อม Compute","f":"รายเดือน / Monthly","since":"2024","b25":"avg 0.21 · met 12/12","last":"Sep","m":["16","13","20","25","20","23","12","10","7","","",""],"fl":["g","g","g","g","g","g","g","g","g","n","n","n"],"v":[16.0,13.0,20.0,25.0,20.0,23.0,12.0,10.0,7.0,null,null,null],"rule":["<",180],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":[],"dec":"keep","obs":"Always far under 180 (7–25 min). 2025 was reported in hours, 2026 in minutes."},{"c":"IT-69-02","d":"IT","th":"ควบคุมเวลาในการแก้ไขปัญหาจากระบบ Network","en":"Network issue resolution time (min/job)","tTh":"< 1 hr / job","tEn":"< 60 min/job","how":"การแจ้งปัญหาระบบ Network","f":"รายเดือน / Monthly","since":"2024","b25":"avg 0.39 · met 12/12","last":"Sep","m":["30","30","15","27","23","25","50","26","55","","",""],"fl":["g","g","g","g","g","g","g","g","g","n","n","n"],"v":[30.0,30.0,15.0,27.0,23.0,25.0,50.0,26.0,55.0,null,null,null],"rule":["<",60],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":[],"dec":"keep","obs":"Met every month (15–55 min)."},{"c":"DC-69-01","d":"DC","th":"INTERNAL AUDIT ON TIME","en":"Internal audit done on time","tTh":"100% (เขียนว่า \"1\")","tEn":"100%","how":"Action plan on time","f":"รายปี / Yearly","since":"2024","b25":"avg 100.00 · met 2/2","last":"Aug","m":["N/A","N/A","N/A","N/A","N/A","N/A","N/A","100","","","",""],"fl":["n","n","n","n","n","n","n","g","n","n","n","n"],"v":[null,null,null,null,null,null,null,100.0,null,null,null,null],"rule":[">=",100],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":[],"dec":"keep","obs":"Yearly."},{"c":"DC-69-02","d":"DC","th":"ควบคุมการแจกจ่ายเอกสารตรงวันที่อนุมัติใช้","en":"Documents issued on the approved date","tTh":"100% (เขียนว่า \"1\")","tEn":"100%","how":"scheduled date.","f":"รายเดือน / Monthly","since":"2024","b25":"avg 100.00 · met 5/5","last":"Aug","m":["100","100","100","100","100","100","100","100","","","",""],"fl":["g","g","g","g","g","g","g","g","n","n","n","n"],"v":[100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,null,null,null,null],"rule":[">=",100],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":[],"dec":"keep","obs":"100% every month."},{"c":"EMS-69-01","d":"EMS","th":"ควบคุมการใช้พลังงานไฟฟ้า","en":"Electricity use vs last year (%)","tTh":"มากว่าหรือเท่ากับ 3 % เทียบกับปีก่อน","tEn":"−3% vs last year","how":"","f":"รายเดือน / Monthly","since":"ทะเบียน EMS / EMS register","b25":"","last":"Jun","m":["90.55","96.3","106.6","99.5","111.4","101.55","","","","","",""],"fl":["g","g","b","b","b","b","n","n","n","n","n","n"],"v":[90.55,96.3,106.6,99.5,111.4,101.55,null,null,null,null,null,null],"rule":["<=",97],"st":"mix","sTh":"ผ่าน 2 จาก 6 เดือน","sEn":"Met 2 of 6","lk":["S1"],"dec":"link","obs":"EMS KPIs are in the 2026 report but not in the S-DC-01 register. Target \"≥ 3% vs last year\": read as a 3% cut. v3 S1 uses energy per kg, which this could become."},{"c":"EMS-69-02","d":"EMS","th":"ควบคุมการใช้น้ำ","en":"Water use vs last year (%)","tTh":"( ลดลง > 3% เทียบกับปีก่อน)","tEn":"−3% vs last year","how":"","f":"รายเดือน / Monthly","since":"ทะเบียน EMS / EMS register","b25":"","last":"Jun","m":["82.68","84.32","73.51","79.85","69.16","75.56","","","","","",""],"fl":["g","g","g","g","g","g","n","n","n","n","n","n"],"v":[82.68,84.32,73.51,79.85,69.16,75.56,null,null,null,null,null,null],"rule":["<=",97],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":[],"dec":"keep","obs":"Reported 69–84%, well under last year."},{"c":"EMS-69-03","d":"EMS","th":"คัดแยกขยะให้ถูกต้องตามแต่ละประเภทที่กำหนด","en":"Waste sorted correctly","tTh":"100% (เขียนว่า \"1\")","tEn":"100%","how":"","f":"รายเดือน / Monthly","since":"ทะเบียน EMS / EMS register","b25":"","last":"Jun","m":["98","98","98","98","98","98","","","","","",""],"fl":["b","b","b","b","b","b","n","n","n","n","n","n"],"v":[98.0,98.0,98.0,98.0,98.0,98.0,null,null,null,null,null,null],"rule":[">=",100],"st":"miss","sTh":"ไม่ผ่านทุกเดือน","sEn":"Missed every month","lk":[],"dec":"keep","obs":"98% every month against 100%."},{"c":"EMS-69-04","d":"EMS","th":"ลดการใช้กล่องกระดาษใหม่","en":"New cardboard boxes used (pcs/month)","tTh":"น้อยกว่าหรือเท่ากับ 4000 ชิ้น/เดือน","tEn":"≤ 4,000 pcs/month","how":"","f":"รายเดือน / Monthly","since":"ทะเบียน EMS / EMS register","b25":"","last":"Jun","m":["562","100","1140","470","450","0","","","","","",""],"fl":["g","g","g","g","g","g","n","n","n","n","n","n"],"v":[562.0,100.0,1140.0,470.0,450.0,0.0,null,null,null,null,null,null],"rule":["<=",4000],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":["S1"],"dec":"keep","obs":"Far under target."},{"c":"EMS-69-05","d":"EMS","th":"ลดการใช้ถุงพลาสติกใหม่","en":"New plastic bags used (pcs/month)","tTh":"น้อยกว่าหรือเท่ากับ 7000 ชิ้น/เดือน","tEn":"≤ 7,000 pcs/month","how":"","f":"รายเดือน / Monthly","since":"ทะเบียน EMS / EMS register","b25":"","last":"Jun","m":["3700","8100","9363","8400","8400","8400","","","","","",""],"fl":["g","b","b","b","b","b","n","n","n","n","n","n"],"v":[3700.0,8100.0,9363.0,8400.0,8400.0,8400.0,null,null,null,null,null,null],"rule":["<=",7000],"st":"mix","sTh":"ผ่าน 1 จาก 6 เดือน","sEn":"Met 1 of 6","lk":["S1"],"dec":"keep","obs":"Missed 5 of 6 months (8,100–9,363)."},{"c":"EMS-69-06","d":"EMS","th":"ดำเนินการตรวจตามแผนด้านกฎหมายด้านสิ่งแวดล้อม","en":"Environmental legal checks done to plan","tTh":"100% (เขียนว่า \"1\")","tEn":"100%","how":"","f":"รายเดือน / Monthly","since":"ทะเบียน EMS / EMS register","b25":"","last":"Jun","m":["100","100","100","100","100","100","","","","","",""],"fl":["g","g","g","g","g","g","n","n","n","n","n","n"],"v":[100.0,100.0,100.0,100.0,100.0,100.0,null,null,null,null,null,null],"rule":[">=",100],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":[],"dec":"keep","obs":"100%."},{"c":"EMS-69-07","d":"EMS","th":"การใช้ PPE (อุปกรณ์ป้องกัน) ในขั้นตอนการปฏิบัติงาน","en":"PPE used in operations","tTh":"100% (เขียนว่า \"1\")","tEn":"100%","how":"","f":"รายเดือน / Monthly","since":"ทะเบียน EMS / EMS register","b25":"","last":"Jun","m":["100","100","100","100","100","100","","","","","",""],"fl":["g","g","g","g","g","g","n","n","n","n","n","n"],"v":[100.0,100.0,100.0,100.0,100.0,100.0,null,null,null,null,null,null],"rule":[">=",100],"st":"met","sTh":"ผ่านทุกเดือน","sEn":"Met every month","lk":[],"dec":"keep","obs":"100%."},{"c":"EMS-69-08","d":"EMS","th":"ลดอุบัติเหตุภายในโรงงานถึงขั้นหยุดงานต่อเนื่องเกินกว่า 3 วัน ภายใต้กิจกรรม CCCF","en":"Lost-time accidents (> 3 days)","tTh":"Zero Accident","tEn":"0 accidents","how":"","f":"รายเดือน / Monthly","since":"ทะเบียน EMS / EMS register","b25":"","last":"Jun","m":["0","0","1","1","1","0","","","","","",""],"fl":["g","g","b","b","b","g","n","n","n","n","n","n"],"v":[0.0,0.0,1.0,1.0,1.0,0.0,null,null,null,null,null,null],"rule":["<=",0],"st":"mix","sTh":"ผ่าน 3 จาก 6 เดือน","sEn":"Met 3 of 6","lk":[],"dec":"keep","obs":"One a month in March, April and May."},{"c":"EMS-69-09","d":"EMS","th":"กิจกรรม 5 ส.","en":"5S audit score","tTh":"มากว่าหรือเท่ากับ 95%","tEn":"≥ 95%","how":"","f":"รายเดือน / Monthly","since":"ทะเบียน EMS / EMS register","b25":"","last":"Jun","m":["95.2","96.1","96.7","96.5","95.8","94.7","","","","","",""],"fl":["g","g","g","g","g","b","n","n","n","n","n","n"],"v":[95.2,96.1,96.7,96.5,95.8,94.7,null,null,null,null,null,null],"rule":[">=",95],"st":"mix","sTh":"ผ่าน 5 จาก 6 เดือน","sEn":"Met 5 of 6","lk":[],"dec":"keep","obs":"Met 5 of 6."}],"depts":[{"id":"QC","th":"ควบคุมคุณภาพ","en":"Quality Control","sth":"ควบคุมคุณภาพ","sen":"Quality Control"},{"id":"PD","th":"ฝ่ายผลิต","en":"Production","sth":"ฝ่ายผลิต","sen":"Production"},{"id":"EN","th":"วิศวกรรม (แม่พิมพ์และเครื่องจักร)","en":"Engineering (molds and machines)","sth":"วิศวกรรม","sen":"Engineering"},{"id":"PP","th":"วางแผนการผลิต","en":"Production Planning","sth":"วางแผนการผลิต","sen":"Planning"},{"id":"MC","th":"ควบคุมวัตถุดิบ","en":"Material Control","sth":"ควบคุมวัตถุดิบ","sen":"Material Control"},{"id":"WH","th":"คลังสินค้า (FG / กึ่งสำเร็จรูป / Packing)","en":"Warehouse (FG / semi-finished / packing)","sth":"คลังสินค้า","sen":"Warehouse"},{"id":"DEL","th":"จัดส่ง","en":"Delivery","sth":"จัดส่ง","sen":"Delivery"},{"id":"CS","th":"บริการลูกค้า","en":"Customer Service","sth":"บริการลูกค้า","sen":"Customer Service"},{"id":"PU","th":"จัดซื้อ","en":"Purchasing","sth":"จัดซื้อ","sen":"Purchasing"},{"id":"HR","th":"ทรัพยากรบุคคล","en":"Human Resources","sth":"ทรัพยากรบุคคล","sen":"HR"},{"id":"IT","th":"เทคโนโลยีสารสนเทศ","en":"IT","sth":"ไอที","sen":"IT"},{"id":"DC","th":"ควบคุมเอกสาร (DCC)","en":"Document Control (DCC)","sth":"ควบคุมเอกสาร","sen":"Document Control"},{"id":"EMS","th":"สิ่งแวดล้อม พลังงาน และความปลอดภัย","en":"Environment, energy and safety","sth":"สิ่งแวดล้อมและความปลอดภัย","sen":"Environment & safety"}]};
+BASE.kpis.forEach(b => { b.dec0 = b.dec; });
+const BDEC = { keep: ['คงไว้', 'Keep'], fix: ['ปรับปรุง', 'Fix'], link: ['เชื่อมเป้าหมาย', 'Link to goal'], merge: ['รวม', 'Merge'], retire: ['เลิกใช้เป็น KPI', 'Retire as KPI'], add: ['เพิ่ม', 'Add'] };
+const BST = { met: ['ผ่านทุกเดือน', 'Met every month', 'good'], mix: ['ผ่านบางเดือน', 'Met some months', 'warn'], miss: ['ไม่ผ่านทุกเดือน', 'Missed every month', 'bad'], none: ['ไม่มีตัวเลข / เป้าไม่ชัด', 'No figure / unclear target', 'none'] };
+const BGAPS = [['ฝ่ายขาย', 'Sales / Marketing', 'S4 · S2'], ['บัญชีและการเงิน', 'Accounting / Finance', 'G'], ['ต้นทุน', 'Costing', 'S1'], ['ผู้บริหาร (ระดับบริษัท)', 'Management (company level)', 'G']];
+
+/* ───────────── State ───────────── */
+const S = { lang: 'th', role: 'council', view: 'board', month: LAST_CLOSED, entryTeam: 'INJ', revTeam: 'INJ', yeTeam: 'INJ',
+  regQ: '', regUnit: 'ALL', regStrat: 'ALL', rules: { green: 100, amber: 90, cap: 120 }, draft: {}, errs: {}, drawer: null, toast: null,
+  lyTab: 'strat', bQ: '', bDept: 'ALL', bLink: 'ALL', bSt: 'ALL', bDec: 'ALL' };
+const store = { get(k) { try { return localStorage.getItem('sti-kpi-proto-' + k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem('sti-kpi-proto-' + k, v); } catch (e) {} } };
+S.lang = store.get('lang') === 'en' ? 'en' : 'th';
+S.role = ROLES.some(r => r.id === store.get('role')) ? store.get('role') : 'council';
+
+/* ───────────── Helpers ───────────── */
+const L = (th, en) => S.lang === 'en' ? en : th;
+const N = o => o ? (S.lang === 'en' ? o.en : o.th) : '';
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const role = () => ROLES.find(r => r.id === S.role);
+const can = p => role().can.includes(p);
+const unit = id => UNITS.find(u => u.id === id);
+const kpi = id => KPIS.find(k => k.id === id);
+const strat = id => STRATS.find(s => s.id === id);
+const mon = i => MONTHS[S.lang][i];
+const fmt = v => v == null || v === '' || Number.isNaN(v) ? '—' : (Math.abs(v) >= 100 ? Math.round(v * 10) / 10 : Math.round(v * 100) / 100).toLocaleString(S.lang === 'en' ? 'en-GB' : 'th-TH');
+const uLabel = k => S.lang === 'en' ? ({ 'ล้านบาท/เดือน': 'THB m / month', 'ล้านบาท': 'THB m', 'ดัชนี': 'index', 'ชิ้น/คน/วัน': 'parts / person / day', 'ราย': 'customers', 'นาที': 'min', 'ชม./เดือน': 'h / month', 'ครั้ง/เดือน': 'per month', 'ฉบับ/เดือน': 'per month' }[k.u] || k.u) : k.u;
+const strategyOf = k => STRATS.some(s => s.id === k.parent) ? k.parent : strategyOf(kpi(k.parent));
+const target = (k, m) => k.ms ? k.ms[m] : k.tgt;
+const val = (k, m) => { const d = S.draft[k.id]; if (m === OPEN_MONTH && d != null && d !== '') return Number(d); const v = k.a[m]; return v == null ? null : v; };
+function ach(k, v, m) {
+  if (v == null || Number.isNaN(v)) return null;
+  const t = target(k, m); let r;
+  if (k.dir === 'up') r = t === 0 ? (v > 0 ? 9 : 1) : v / t; else r = v <= 0 ? 9 : t / v;
+  return Math.max(0, Math.min(r, S.rules.cap / 100));
+}
+const rag = r => r == null ? 'none' : r * 100 >= S.rules.green ? 'good' : r * 100 >= S.rules.amber ? 'warn' : 'bad';
+const ragText = g => ({ good: L('ตามเป้า', 'On track'), warn: L('เฝ้าระวัง', 'Watch'), bad: L('ต่ำกว่าเป้า', 'Off track'), none: L('ยังไม่มีผล', 'No result') }[g]);
+const scoreOf = r => r == null ? null : r >= 1.10 ? 5 : r >= 1.00 ? 4 : r >= 0.90 ? 3 : r >= 0.80 ? 2 : 1;
+const pill = g => `<span class="pill ${g}">${ragText(g)}</span>`;
+const pct = r => r == null ? '—' : Math.round(r * 100) + '%';
+function periodVal(k, ms) {
+  const vs = ms.map(m => ({ m, v: val(k, m) })).filter(x => x.v != null);
+  if (!vs.length) return { v: null, m: ms[ms.length - 1] };
+  const last = vs[vs.length - 1];
+  return k.agg === 'last' ? last : { v: vs.reduce((s, x) => s + x.v, 0) / vs.length, m: last.m };
+}
+const live = () => KPIS.filter(k => k.status === 'approved');
+const teamKpis = id => live().filter(k => k.unit === id);
+function teamScore(id, ms, pick) {
+  let sw = 0, ss = 0;
+  teamKpis(id).forEach(k => { const p = periodVal(k, ms); const s = pick ? pick(k, p) : scoreOf(ach(k, p.v, p.m)); if (s != null && k.w) { sw += k.w; ss += k.w * s; } });
+  return sw ? ss / sw : null;
+}
+const chainOf = k => { const out = [k]; let c = k; while (!STRATS.some(s => s.id === c.parent)) { c = kpi(c.parent); out.push(c); } return out; };
+const parentLabel = k => STRATS.some(s => s.id === k.parent) ? `<span class="chip s">${k.parent}</span>` : `<span class="chip s">${strategyOf(k)}</span> <span class="muted">${esc(kpi(k.parent).id)}</span>`;
+const pendingCount = () => KPIS.filter(k => k.status === 'submitted').length;
+const lateTeams = () => TEAMS.filter(t => !SUB[t.id][OPEN_MONTH]);
+function log(x) { LOG.unshift({ t: L('วันนี้ ', 'Today ') + new Date().toTimeString().slice(0, 5), w: N(role()), x }); }
+function toast(msg) { S.toast = msg; renderToast(); clearTimeout(toast.h); toast.h = setTimeout(() => { S.toast = null; renderToast(); }, 3200); }
+
+/* ───────────── Chrome ───────────── */
+const NAV = [
+  { grp: ['ติดตาม', 'Track'] },
+  { id: 'board', i: 'bi-grid-1x2', th: 'กระดานภาพรวม', en: 'Company board' },
+  { id: 'register', i: 'bi-journal-text', th: 'ทะเบียน KPI', en: 'KPI register', badge: () => can('approve') ? pendingCount() : 0 },
+  { id: 'entry', i: 'bi-pencil-square', th: 'บันทึกผลรายเดือน', en: 'Monthly results', badge: () => lateTeams().length },
+  { id: 'layers', i: 'bi-layers', th: 'KPI เป้าหมาย + พื้นฐาน', en: 'Goal + base KPIs', tag: '2026' },
+  { grp: ['ทบทวน', 'Review'] },
+  { id: 'review', i: 'bi-clipboard-check', th: 'ทบทวนรายไตรมาส', en: 'Quarterly review' },
+  { id: 'yearend', i: 'bi-award', th: 'ประเมินผลปลายปี', en: 'Year-end review' },
+  { grp: ['ปี 2028', '2028'] },
+  { id: 'mine', i: 'bi-person-badge', th: 'KPI ของฉัน', en: 'My KPIs', tag: '2028' },
+  { grp: ['ระบบ', 'System'] },
+  { id: 'admin', i: 'bi-sliders', th: 'ตั้งค่าและบันทึกระบบ', en: 'Settings & audit log' },
+];
+function renderChrome() {
+  document.documentElement.lang = S.lang;
+  document.querySelectorAll('.lang button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === S.lang)));
+  document.getElementById('appSub').textContent = L('ระบบติดตาม KPI · ต้นแบบ', 'KPI tracking · prototype');
+  document.getElementById('demoChip').innerHTML = `<i class="bi bi-calendar3"></i>${L('วันที่จำลอง 9 มิ.ย. 2027 · ข้อมูลตัวอย่าง', 'Demo date 9 Jun 2027 · sample data')}`;
+  const rs = document.getElementById('roleSel');
+  rs.innerHTML = ROLES.map(r => `<option value="${r.id}" ${r.id === S.role ? 'selected' : ''}>${L('มุมมอง: ', 'View as: ')}${esc(N(r))}</option>`).join('');
+  document.getElementById('rail').innerHTML = NAV.map(n => n.grp ? `<div class="grp">${L(...n.grp)}</div>` : (() => {
+    const b = n.badge ? n.badge() : 0;
+    return `<button class="nav" type="button" data-go="${n.id}" ${S.view === n.id ? 'aria-current="page"' : ''}><i class="bi ${n.i}"></i><span>${N(n)}</span>${b ? `<span class="badge">${b}</span>` : ''}${n.tag ? `<span class="tag28">${n.tag}</span>` : ''}</button>`;
+  })()).join('') + `<div class="rail-foot">${L('ต้นแบบเพื่อหารือ ข้อมูลทั้งหมดเป็นตัวอย่าง และรีเซ็ตเมื่อโหลดหน้าใหม่', 'Prototype for discussion. All data are examples and reset when the page reloads.')}<br><button type="button" data-act="reload">${L('รีเซ็ตข้อมูลตัวอย่าง', 'Reset sample data')}</button></div>`;
+}
+
+/* ───────────── Views ───────────── */
+function vBoard() {
+  const m = S.month, all = live(), gs = all.map(k => rag(ach(k, val(k, m), m)));
+  const cnt = g => gs.filter(x => x === g).length;
+  const sent = TEAMS.filter(t => SUB[t.id][m]).length;
+  const kb = k => { const v = val(k, m), g = rag(ach(k, v, m)); return `<button class="kbox" type="button" data-kpi="${k.id}"><span class="t">${esc(N(k))}</span><span class="v"><b>${fmt(v)}</b><small>${L('เป้า', 'Target')} ${fmt(target(k, m))} ${esc(uLabel(k))}</small></span>${pill(g)}</button>`; };
+  const col = s => {
+    const co = all.filter(k => k.unit === 'CO' && k.parent === s.id);
+    const tk = all.filter(k => k.unit !== 'CO' && strategyOf(k) === s.id);
+    const li = (k, cls) => { const g = rag(ach(k, val(k, m), m)); return `<li class="${cls}"><button type="button" data-kpi="${k.id}"><span class="dot ${g}" title="${ragText(g)}"></span><span class="lbl">${esc(N(k))}${cls ? '' : `<em>${esc(N(unit(k.unit)))}</em>`}</span><span class="num muted">${fmt(val(k, m))}</span></button></li>`; };
+    const nb = baseOf(s.id).length;
+    return `<section class="scol"><header><b>${s.id}</b><div>${esc(N(s))}</div></header><ul>${co.map(k => li(k, 'co')).join('')}${tk.length ? '<li class="sep" aria-hidden="true"></li>' : ''}${tk.map(k => li(k, '')).join('')}</ul>${nb ? `<button class="more" type="button" data-go="layers" style="margin-top:auto"><i class="bi bi-layers"></i>${L(`+ KPI พื้นฐานของฝ่ายที่เกี่ยวข้อง ${nb} ตัว (ผลจริง 2026)`, `+ ${nb} related department base KPIs (2026 actuals)`)}</button>` : ''}</section>`;
+  };
+  const tc = t => {
+    const sc = teamScore(t.id, [m]), ks = teamKpis(t.id);
+    const st = SUB[t.id][m] ? `<span class="chip ok"><i class="bi bi-check2"></i>${L('ส่งผลแล้ว', 'Sent')}</span>` : `<span class="chip late"><i class="bi bi-exclamation-circle"></i>${L('เลยกำหนดส่ง', 'Overdue')}</span>`;
+    return `<button class="tcard" type="button" data-team="${t.id}"><div class="top"><div><b>${esc(N(t))}</b><span>${esc(N(unit(t.parent)))}</span></div><div class="score"><b>${sc == null ? '—' : sc.toFixed(1)}</b><small>${L('คะแนน /5', 'score /5')}</small></div></div><div class="dots">${ks.map(k => `<span class="dot ${rag(ach(k, val(k, m), m))}" title="${esc(N(k))}"></span>`).join('')}</div><div>${st}</div></button>`;
+  };
+  return `
+  <div class="phead"><div><div class="eyebrow">${L('รอบปี 2027 · เปิดให้ทุกคนดู', 'Cycle 2027 · open to all staff')}</div><h1>${L('กระดาน KPI บริษัท', 'Company KPI board')}</h1><p>${L('ผลรายเดือน เทียบเป้า เขียว เหลือง แดง ตามหัวข้อ 09 ของกลยุทธ์', 'Monthly results against target, green / amber / red, as in Section 09 of the strategy')}</p></div>
+  <div class="month-tabs" role="group" aria-label="${L('เดือน', 'Month')}">${[0, 1, 2, 3, 4].map(i => `<button type="button" data-month="${i}" aria-pressed="${i === m}">${mon(i)} ${i === OPEN_MONTH ? '•' : ''}</button>`).join('')}</div></div>
+  ${m === OPEN_MONTH ? `<div class="note warn"><i class="bi bi-hourglass-split"></i><div>${L(`เดือน พ.ค. ยังเปิดรับข้อมูล ส่งแล้ว ${sent} จาก ${TEAMS.length} ทีม ครบกำหนดวันที่ 7 มิ.ย. 2027 (วันทำการที่ 5) ผลที่ยังไม่ส่งแสดงเป็นสีเทา`, `May is still open: ${sent} of ${TEAMS.length} teams have sent results. Due 7 Jun 2027 (5th working day). Missing results show grey.`)}</div></div>` : ''}
+  <div class="grid g5">
+    <div class="tile"><span><span class="dot good"></span>${ragText('good')}</span><b>${cnt('good')}</b></div>
+    <div class="tile"><span><span class="dot warn"></span>${ragText('warn')}</span><b>${cnt('warn')}</b></div>
+    <div class="tile"><span><span class="dot bad"></span>${ragText('bad')}</span><b>${cnt('bad')}</b></div>
+    <div class="tile"><span><span class="dot none"></span>${ragText('none')}</span><b>${cnt('none')}</b></div>
+    <div class="tile"><span><i class="bi bi-send-check"></i>${L('ทีมที่ส่งผลแล้ว', 'Teams reported')}</span><b>${sent}/${TEAMS.length}</b></div>
+  </div>
+  <section class="panel"><h2>GOAL · ${esc(N(strat('G')))} <small>${L('เป้าหมายรวม 12 เดือน', 'Overall 12-month goal')}</small></h2><div class="goalrow">${all.filter(k => k.parent === 'G').map(kb).join('')}</div></section>
+  <div class="grid g4">${STRATS.slice(1).map(col).join('')}</div>
+  <section class="panel"><h2>${L('ตามทีม', 'By team')} <small>${L('คะแนนถ่วงน้ำหนักของเดือนที่เลือก · กดเพื่อดู KPI ของทีม', 'Weighted score for the selected month · select a team to see its KPIs')}</small></h2><div class="grid g3">${TEAMS.map(tc).join('')}</div></section>`;
+}
+
+function vRegister() {
+  const q = S.regQ.trim().toLowerCase();
+  const rows = KPIS.filter(k => (S.regUnit === 'ALL' || k.unit === S.regUnit || unit(k.unit).parent === S.regUnit) && (S.regStrat === 'ALL' || strategyOf(k) === S.regStrat) && (!q || (k.th + ' ' + k.en + ' ' + k.id).toLowerCase().includes(q)));
+  const pend = KPIS.filter(k => k.status === 'submitted');
+  const opts = [['ALL', L('ทุกหน่วยงาน', 'All units')], ...UNITS.map(u => [u.id, (u.parent && u.parent !== 'CO' ? '— ' : '') + N(u)])];
+  return `
+  <div class="phead"><div><div class="eyebrow">M1 · M2</div><h1>${L('ทะเบียน KPI', 'KPI register')}</h1><p>${L('KPI ทุกตัวมีนิยามเดียว เจ้าของคนเดียว และต้องเชื่อมกับเป้าหมายรวมหรือกลยุทธ์ S1–S4', 'Every KPI has one definition, one owner and a link to the overall goal or S1–S4')}</p></div>
+  <div class="tools">${can('add') ? `<button class="btn pri" type="button" data-act="addKpi"><i class="bi bi-plus-lg"></i>${L('เสนอ KPI ใหม่', 'Propose a KPI')}</button>` : ''}</div></div>
+  ${pend.length && can('approve') ? `<section class="panel"><h2><i class="bi bi-inbox"></i>${L('รออนุมัติ', 'Waiting for approval')} <small>${pend.length} ${L('รายการ', 'item(s)')}</small></h2>${pend.map(k => `<div class="tools" style="justify-content:space-between;border-top:1px solid var(--line);padding-top:10px"><div class="kname"><b>${esc(k.id)} · ${esc(N(k))}</b><span>${esc(N(unit(k.unit)))} · ${L('เสนอเมื่อ', 'Proposed')} ${esc(k.submittedOn || '')}</span></div><div class="tools"><button class="btn" type="button" data-kpi="${k.id}">${L('ดูรายละเอียด', 'Open')}</button><button class="btn go" type="button" data-act="approve" data-id="${k.id}"><i class="bi bi-check2"></i>${L('อนุมัติ', 'Approve')}</button></div></div>`).join('')}</section>` : ''}
+  <div class="tools">
+    <label class="sr" for="regQ">${L('ค้นหา', 'Search')}</label><input class="inp" id="regQ" type="search" placeholder="${L('ค้นหาชื่อหรือรหัส KPI', 'Search KPI name or code')}" value="${esc(S.regQ)}" style="min-width:220px">
+    <label class="sr" for="regUnit">${L('หน่วยงาน', 'Unit')}</label><select class="sel" id="regUnit">${opts.map(([v, t]) => `<option value="${v}" ${v === S.regUnit ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select>
+    <label class="sr" for="regStrat">${L('กลยุทธ์', 'Strategy')}</label><select class="sel" id="regStrat"><option value="ALL">${L('ทุกกลยุทธ์', 'All strategies')}</option>${STRATS.map(s => `<option value="${s.id}" ${s.id === S.regStrat ? 'selected' : ''}>${s.id} · ${esc(N(s))}</option>`).join('')}</select>
+    <span class="muted">${rows.length} KPI</span>
+  </div>
+  <div class="tw"><table><thead><tr><th>${L('รหัส', 'Code')}</th><th>KPI</th><th>${L('หน่วยงาน', 'Unit')}</th><th>${L('เชื่อมกับ', 'Linked to')}</th><th class="n">${L('ค่าฐาน', 'Baseline')}</th><th class="n">${L('เป้า', 'Target')}</th><th>${L('แหล่งข้อมูล', 'Source')}</th><th>${L('สถานะ', 'Status')}</th></tr></thead><tbody>
+  ${rows.map(k => `<tr class="click" data-kpi="${k.id}" tabindex="0"><td class="code">${k.id}</td><td class="kname"><b>${esc(N(k))}</b><span>${k.dir === 'up' ? L('ยิ่งสูงยิ่งดี', 'Higher is better') : L('ยิ่งต่ำยิ่งดี', 'Lower is better')} · ${esc(uLabel(k))}</span></td><td>${esc(N(unit(k.unit)))}</td><td>${parentLabel(k)}</td><td class="n">${fmt(k.base)}</td><td class="n">${fmt(k.tgt)}</td><td>${k.src === 'erp' ? '<span class="chip erp"><i class="bi bi-database"></i>ERP</span>' : `<span class="chip">${L('กรอกเอง', 'Manual')}</span>`}</td><td>${k.status === 'approved' ? `<span class="chip ok">${L('อนุมัติแล้ว', 'Approved')}</span>` : `<span class="chip draft">${L('รออนุมัติ', 'Pending')}</span>`}</td></tr>`).join('') || `<tr><td colspan="8" class="muted">${L('ไม่พบ KPI ตามเงื่อนไข', 'No KPI matches these filters')}</td></tr>`}
+  </tbody></table></div>`;
+}
+
+const bkpi = c => BASE.kpis.find(b => b.c === c);
+const bdept = id => BASE.depts.find(d => d.id === id);
+const baseOf = s => BASE.kpis.filter(b => b.lk.includes(s));
+const bval = (b, i) => b.v[i] != null ? fmt(b.v[i]) : (b.m[i] || '—');
+const strip = b => `<span class="strip" aria-hidden="true">${b.fl.map((f, i) => `<i class="${f}" title="${mon(i)} 2026: ${esc(b.m[i] || '—')}"></i>`).join('')}</span>`;
+const bpill = b => `<span class="pill ${BST[b.st][2]}">${esc(S.lang === 'en' ? b.sEn : b.sTh)}</span>`;
+const dchip = k => `<span class="chip d-${k}">${L(...BDEC[k])}</span>`;
+const lchips = b => b.lk.length ? b.lk.map(s => `<span class="chip s">${s === 'G' ? 'GOAL' : s}</span>`).join(' ') : `<span class="muted">—</span>`;
+const stripLegend = () => `<div class="legend"><span><span class="strip"><i class="g"></i></span> ${L('ผ่านเป้า', 'Met')}</span><span><span class="strip"><i class="b"></i></span> ${L('ไม่ผ่าน', 'Missed')}</span><span><span class="strip"><i class="p"></i></span> ${L('PASS อย่างเดียว / เป้าไม่ชัด', 'PASS only / unclear target')}</span><span><span class="strip"><i></i></span> ${L('ไม่มีผล', 'No result')}</span><span>${L('ม.ค.–ธ.ค. 2026', 'Jan–Dec 2026')}</span></div>`;
+
+function vLayers() {
+  const ks = BASE.kpis, n = st => ks.filter(b => b.st === st).length, linked = ks.filter(b => b.lk.length).length;
+  const decCount = Object.keys(BDEC).map(k => [k, ks.filter(b => b.dec === k).length]).filter(x => x[1]);
+  const bk = b => `<button class="bk" type="button" data-base="${b.c}"><span class="lbl"><b>${esc(N(b))}</b><em>${b.c} · ${esc(S.lang === 'en' ? bdept(b.d).sen : bdept(b.d).sth)}</em></span><span class="meta">${strip(b)}${dchip(b.dec)}</span></button>`;
+  const layer = s => {
+    const gs = V3.filter(v => v.s === s.id), bs = baseOf(s.id);
+    const gli = v => `<li><span class="t">${esc(N(v))}</span><span class="tg">${esc(S.lang === 'en' ? v.tEn : v.tTh)}</span><span class="by">${v.p ? `<button class="chip ok" type="button" data-kpi="${v.p}" title="${L('เปิดตัวอย่างปี 2027', 'Open the 2027 sample')}"><i class="bi bi-play-circle"></i>${L('ตัวอย่าง 2027', '2027 sample')}</button>` : ''}${v.by.length ? `<i class="bi bi-arrow-return-right"></i>${L('วัดอยู่แล้ว:', 'Already measured by:')} ${v.by.map(c => `<button class="chip" type="button" data-base="${c}">${c}</button>`).join('')}` : `<span class="chip draft">${L('ยังไม่มี KPI ฝ่ายวัด ต้องเก็บข้อมูลใหม่', 'No department KPI yet: new data needed')}</span>`}</span></li>`;
+    return `<section class="layer"><header><b>${s.id === 'G' ? 'GOAL' : s.id}</b><span>${esc(N(s))}</span><small>${L(`KPI เป้าหมาย ${gs.length} · KPI พื้นฐานที่เกี่ยวข้อง ${bs.length}`, `${gs.length} goal KPIs · ${bs.length} related base KPIs`)}</small></header>
+      <div class="lcol"><h3><i class="bi bi-bullseye"></i>${L('KPI เป้าหมาย (v3 · สภากลยุทธ์กำลังสรุป)', 'Goal KPIs (v3 · Council to settle)')}</h3><ul class="gk">${gs.map(gli).join('')}</ul></div>
+      <div class="lcol"><h3><i class="bi bi-building"></i>${L('KPI พื้นฐานของฝ่ายที่เกี่ยวข้อง', 'Related department base KPIs')} <span class="real">${L('ผลจริง 2026', '2026 actuals')}</span></h3>${bs.map(bk).join('') || `<p class="muted" style="margin:6px 0">${L('ยังไม่มี KPI ของฝ่ายใดวัดเรื่องนี้', 'No department KPI measures this yet')}</p>`}</div></section>`;
+  };
+  const unl = ks.filter(b => !b.lk.length);
+  const byStrat = `${STRATS.map(layer).join('')}
+    <section class="panel"><h2><i class="bi bi-gear"></i>${L('KPI พื้นฐานที่ไม่เชื่อมกับเป้าหมาย v3', 'Base KPIs not linked to a v3 goal')} <small>${L(`${unl.length} ตัว · งานประจำและข้อกำหนด ISO / IATF ยังวัดต่อในระบบ แต่ไม่นับในคะแนนกลยุทธ์`, `${unl.length} KPIs · day-to-day work and ISO / IATF requirements: still tracked in the app, not counted in strategy scores`)}</small></h2>
+      <div class="grid g3">${BASE.depts.filter(d => unl.some(b => b.d === d.id)).map(d => `<div><div class="kname" style="margin-bottom:2px"><b>${esc(N(d))}</b></div>${unl.filter(b => b.d === d.id).map(bk).join('')}</div>`).join('')}</div></section>
+    <section class="panel"><h2><i class="bi bi-exclamation-triangle"></i>${L('ฝ่ายที่ยังไม่มี KPI พื้นฐาน', 'Divisions with no base KPI yet')} <small>${L('ไม่อยู่ในทะเบียน S-DC-01 ให้ฝ่ายเสนอในขั้นเก็บรวบรวม (พ.ย. 2026)', 'Not in the S-DC-01 register; for the division to propose at capture (Nov 2026)')}</small></h2>
+      <div class="tools">${BGAPS.map(g => `<span class="chip late">${esc(L(g[0], g[1]))} · ${g[2] === 'G' ? 'GOAL' : g[2]}</span>`).join('')}</div></section>`;
+
+  const q = S.bQ.trim().toLowerCase();
+  const rows = ks.filter(b => (S.bDept === 'ALL' || b.d === S.bDept) && (S.bLink === 'ALL' || (S.bLink === 'NONE' ? !b.lk.length : b.lk.includes(S.bLink))) && (S.bSt === 'ALL' || b.st === S.bSt) && (S.bDec === 'ALL' || b.dec === S.bDec) && (!q || (b.c + ' ' + b.th + ' ' + b.en).toLowerCase().includes(q)));
+  const edit = can('approve');
+  const opt = (id, cur, list) => `<select class="sel" id="${id}">${list.map(([v, t]) => `<option value="${v}" ${v === cur ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select>`;
+  const byDept = `<div class="tools">
+      <label class="sr" for="bQ">${L('ค้นหา', 'Search')}</label><input class="inp" id="bQ" type="search" placeholder="${L('ค้นหาชื่อหรือรหัส KPI', 'Search KPI name or code')}" value="${esc(S.bQ)}" style="min-width:200px">
+      <label class="sr" for="bDept">${L('ฝ่าย', 'Department')}</label>${opt('bDept', S.bDept, [['ALL', L('ทุกฝ่าย', 'All departments')], ...BASE.depts.map(d => [d.id, N(d)])])}
+      <label class="sr" for="bLink">${L('เชื่อม v3', 'v3 link')}</label>${opt('bLink', S.bLink, [['ALL', L('เชื่อม v3: ทั้งหมด', 'v3 link: all')], ...STRATS.map(s => [s.id, (s.id === 'G' ? 'GOAL' : s.id) + ' · ' + N(s)]), ['NONE', L('ไม่เชื่อม', 'Not linked')]])}
+      <label class="sr" for="bSt">${L('ผล 2026', '2026 result')}</label>${opt('bSt', S.bSt, [['ALL', L('ผล 2026: ทั้งหมด', '2026 result: all')], ...Object.entries(BST).map(([k, v]) => [k, L(v[0], v[1])])])}
+      <label class="sr" for="bDec">${L('ข้อเสนอ', 'Proposed')}</label>${opt('bDec', S.bDec, [['ALL', L('ข้อเสนอ: ทั้งหมด', 'Proposed: all')], ...Object.entries(BDEC).map(([k, v]) => [k, L(...v)])])}
+      <span class="muted">${rows.length} KPI</span></div>
+    ${stripLegend()}
+    ${BASE.depts.filter(d => rows.some(b => b.d === d.id)).map(d => { const rs = rows.filter(b => b.d === d.id); return `<h3 class="dept-h">${esc(N(d))} <small>${rs.length} KPI</small></h3>
+    <div class="tw"><table><thead><tr><th>${L('รหัส', 'Code')}</th><th>KPI</th><th>${L('เป้า 2026', '2026 target')}</th><th>${L('ผลรายเดือน 2026', '2026 by month')}</th><th>${L('ผล 2026', '2026 result')}</th><th>${L('เชื่อม v3', 'v3 link')}</th><th>${L('ข้อเสนอ', 'Proposed')}</th></tr></thead><tbody>
+    ${rs.map(b => `<tr class="click" data-base="${b.c}" tabindex="0"><td class="code">${b.c}</td><td class="kname"><b>${esc(N(b))}</b>${S.lang === 'th' ? `<span>${esc(b.en)}</span>` : ''}</td><td>${esc(S.lang === 'en' ? b.tEn : b.tTh)}</td><td>${strip(b)}</td><td>${bpill(b)}</td><td>${lchips(b)}</td><td>${edit ? `<label class="sr" for="bd-${b.c}">${L('ข้อเสนอ', 'Proposed')}</label><select class="sel" id="bd-${b.c}" data-bdec="${b.c}">${Object.entries(BDEC).map(([k, v]) => `<option value="${k}" ${k === b.dec ? 'selected' : ''}>${esc(L(...v))}</option>`).join('')}</select>` : dchip(b.dec)}</td></tr>`).join('')}
+    </tbody></table></div>`; }).join('') || `<p class="muted">${L('ไม่พบ KPI ตามเงื่อนไข', 'No KPI matches these filters')}</p>`}`;
+
+  return `
+  <div class="phead"><div><div class="eyebrow">${L('ทบทวน KPI พื้นฐาน · พ.ย.–ธ.ค. 2026 · อนุมัติพร้อมกันในระบบ ม.ค. 2027', 'Base KPI review · Nov–Dec 2026 · approved together in the app, Jan 2027')}</div><h1>${L('KPI เป้าหมาย + KPI พื้นฐานของฝ่าย', 'Goal KPIs + department base KPIs')}</h1><p>${L('KPI เป้าหมายจากกลยุทธ์ v3 วางคู่กับ KPI ที่แต่ละฝ่ายใช้อยู่ในปี 2026', 'The v3 goal KPIs side by side with the KPIs each department uses in 2026')}</p></div>
+  <div class="month-tabs" role="group" aria-label="${L('มุมมอง', 'View')}"><button type="button" data-lytab="strat" aria-pressed="${S.lyTab === 'strat'}">${L('ตามเป้าหมาย / กลยุทธ์', 'By goal / strategy')}</button><button type="button" data-lytab="dept" aria-pressed="${S.lyTab === 'dept'}">${L('ตามฝ่าย', 'By department')}</button></div></div>
+  <div class="note"><i class="bi bi-database-check"></i><div>${L('หน้านี้ใช้<b>ข้อมูลจริง</b>: KPI 60 ตัวของ 13 ฝ่าย จากทะเบียน S-DC-01 และรายงาน QMS KPI 2026 (ข้อมูลถึง 29 ต.ค. 2026 ไม่ระบุชื่อผู้รับผิดชอบ) ส่วน KPI เป้าหมายเป็นตัวอย่างใน v3 ที่ยังไม่มีค่าฐานและเป้า ข้อเสนอ (คงไว้ ปรับปรุง เชื่อม รวม …) เป็นจุดเริ่มต้นให้แต่ละฝ่ายยืนยันหรือเปลี่ยน', 'This page uses <b>real data</b>: 60 KPIs from 13 departments, from the S-DC-01 register and the QMS KPI 2026 report (data as of 29 Oct 2026; owner names not shown). The goal KPIs are the v3 samples, still without baselines or targets. Proposed decisions (keep, fix, link, merge …) are a starting point for each division to confirm or change.')}</div></div>
+  <div class="grid g5">
+    <div class="tile"><span><i class="bi bi-bullseye"></i>${L('KPI เป้าหมาย (v3)', 'Goal KPIs (v3)')}</span><b>${V3.length}</b></div>
+    <div class="tile"><span><i class="bi bi-building"></i>${L('KPI พื้นฐาน 2026', 'Base KPIs 2026')}</span><b>${ks.length}</b><span>${BASE.depts.length} ${L('ฝ่าย', 'departments')}</span></div>
+    <div class="tile"><span><i class="bi bi-link-45deg"></i>${L('เชื่อมกับ v3 ได้', 'Link to v3')}</span><b>${linked}</b><span>${L('ไม่เชื่อม', 'not linked')} ${ks.length - linked}</span></div>
+    <div class="tile"><span><span class="dot good"></span>${L('ผ่านทุกเดือน', 'Met every month')}</span><b>${n('met')}</b><span>${L('บางเดือน', 'some months')} ${n('mix')}</span></div>
+    <div class="tile"><span><span class="dot bad"></span>${L('ไม่ผ่านทุกเดือน / ไม่มีตัวเลข', 'Missed every month / no figure')}</span><b>${n('miss') + n('none')}</b><span>${L('ไม่ผ่าน', 'missed')} ${n('miss')} · ${L('ไม่มีตัวเลข', 'no figure')} ${n('none')}</span></div>
+  </div>
+  <div class="tools"><span class="muted">${L('ข้อเสนอเบื้องต้น:', 'Proposed so far:')}</span>${decCount.map(([k, c]) => `<span class="chip d-${k}">${L(...BDEC[k])} ${c}</span>`).join('')}</div>
+  ${S.lyTab === 'strat' ? stripLegend() + byStrat : byDept}`;
+}
+
+function vEntry() {
+  const r = role(), team = r.team || S.entryTeam, editable = can('enter') && (!r.team || r.team === team) && !SUB[team][OPEN_MONTH];
+  const ks = teamKpis(team), sent = SUB[team][OPEN_MONTH];
+  const row = k => {
+    const v = val(k, OPEN_MONTH), a = ach(k, v, OPEN_MONTH), g = rag(a), erp = k.src === 'erp', e = S.errs[k.id] || {};
+    const need = (g === 'warn' || g === 'bad');
+    return `<tr><td class="kname"><b>${esc(N(k))}</b><span>${k.id} · ${esc(uLabel(k))}${k.ms ? ' · ' + L('เป้าสะสม', 'cumulative target') : ''}</span></td><td class="n">${fmt(target(k, OPEN_MONTH))}</td><td class="n muted">${fmt(val(k, LAST_CLOSED))}</td>
+      <td class="n">${erp ? `<span class="num">${fmt(v)}</span> <span class="chip erp" title="${L('ดึงจาก ERP อัตโนมัติ', 'Read from the ERP')}">ERP</span>` : `<label class="sr" for="v-${k.id}">${esc(N(k))}</label><input class="inp num ${e.v ? 'err' : ''}" id="v-${k.id}" data-entry="${k.id}" inputmode="decimal" value="${esc(S.draft[k.id] ?? (k.a[OPEN_MONTH] ?? ''))}" style="width:96px;text-align:right" ${editable ? '' : 'disabled'}>`}</td>
+      <td class="n" id="a-${k.id}">${pct(a)}</td><td id="g-${k.id}">${pill(g)}</td>
+      <td><label class="sr" for="c-${k.id}">${L('ความเห็น', 'Comment')}</label><input class="inp ${e.c ? 'err' : ''}" id="c-${k.id}" data-comment="${k.id}" placeholder="${need ? L('จำเป็น: สาเหตุและสิ่งที่จะทำ', 'Required: cause and next step') : L('ไม่บังคับ', 'Optional')}" value="${esc((S.draft['c:' + k.id]) || '')}" style="width:100%;min-width:180px" ${editable ? '' : 'disabled'}></td>
+      <td><label class="btn ghost" style="padding:4px 9px;font-size:13px;${editable ? '' : 'opacity:.45'}"><i class="bi bi-paperclip"></i><span id="f-${k.id}">${esc(S.draft['f:' + k.id] || L('แนบ', 'Attach'))}</span><input type="file" data-file="${k.id}" class="sr" ${editable ? '' : 'disabled'}></label></td></tr>`;
+  };
+  return `
+  <div class="phead"><div><div class="eyebrow">M3 · ${L('รอบ พ.ค. 2027', 'Period May 2027')}</div><h1>${L('บันทึกผลรายเดือน', 'Monthly results')}</h1><p>${L('กรอกผลภายในวันทำการที่ 5 ของเดือนถัดไป สถานะคำนวณให้อัตโนมัติ ผลสีเหลืองหรือแดงต้องมีความเห็น', 'Enter results by the 5th working day of the next month. Status is calculated for you; amber or red results need a comment.')}</p></div>
+  <div class="tools"><label class="sr" for="entryTeam">${L('ทีม', 'Team')}</label><select class="sel" id="entryTeam" ${r.team ? 'disabled' : ''}>${TEAMS.map(t => `<option value="${t.id}" ${t.id === team ? 'selected' : ''}>${esc(N(t))}</option>`).join('')}</select>
+  ${sent ? `<span class="chip ok"><i class="bi bi-check2"></i>${L('ส่งผลแล้ว', 'Sent')}</span>` : `<span class="chip late"><i class="bi bi-exclamation-circle"></i>${L('เลยกำหนด 7 มิ.ย. มา 2 วัน', '2 days past 7 Jun due date')}</span>`}</div></div>
+  ${!can('enter') ? `<div class="note lock"><i class="bi bi-eye"></i><div>${L('บทบาทนี้ดูได้อย่างเดียว ผู้บันทึกข้อมูลและเจ้าของ KPI ของแต่ละทีมเป็นผู้กรอกผล', 'This role can only view. Each team\'s data-entry person and KPI owner enter results.')}</div></div>` : r.team && r.team !== team ? '' : sent ? `<div class="note"><i class="bi bi-lock"></i><div>${L('ส่งผลเดือนนี้แล้ว หากต้องแก้ไข ให้ขอเปิดใหม่จาก HR', 'This month has been sent. To change it, ask HR to reopen the period.')}</div></div>` : ''}
+  <div class="tw"><table><thead><tr><th>KPI</th><th class="n">${L('เป้า', 'Target')}</th><th class="n">${mon(LAST_CLOSED)}</th><th class="n">${L('ผล', 'Result')} ${mon(OPEN_MONTH)}</th><th class="n">${L('ความสำเร็จ', 'Achieved')}</th><th>${L('สถานะ', 'Status')}</th><th>${L('ความเห็น', 'Comment')}</th><th>${L('หลักฐาน', 'Evidence')}</th></tr></thead><tbody>${ks.map(row).join('')}</tbody></table></div>
+  <div id="entryErr"></div>
+  <div class="tools" style="justify-content:flex-end">${editable ? `<button class="btn" type="button" data-act="saveDraft">${L('บันทึกร่าง', 'Save draft')}</button><button class="btn pri" type="button" data-act="submitEntry"><i class="bi bi-send"></i>${L('ส่งผลเดือนนี้', 'Send this month')}</button>` : ''}</div>
+  <section class="panel"><h2>${L('สถานะการส่งผล พ.ค. ทุกทีม', 'May reporting, all teams')}</h2><div class="tools">${TEAMS.map(t => `<span class="chip ${SUB[t.id][OPEN_MONTH] ? 'ok' : 'late'}">${esc(N(t))}</span>`).join('')}</div><p class="muted" style="margin:10px 0 0;font-size:13px">${L('ระบบส่งข้อความเตือนวันที่ 3, 5 และ 7 ของเดือน และแสดง "เลยกำหนด" บนกระดานภาพรวม', 'Reminders go out on the 3rd, 5th and 7th; late teams show as overdue on the company board.')}</p></section>`;
+}
+
+function vReview() {
+  const r = role(), team = r.team || S.revTeam, R = REV[team], ks = teamKpis(team), Q = [0, 1, 2];
+  const ownerCan = can('self') && r.team === team && R.stage === 0, revCan = can('review') && R.stage === 1;
+  const sysScore = k => { const p = periodVal(k, Q); return scoreOf(ach(k, p.v, p.m)); };
+  const final = teamScore(team, Q, k => R.rev[k.id] ?? R.self[k.id] ?? sysScore(k));
+  const sel = (map, k, on, kind) => `<label class="sr" for="${kind}-${k.id}">${kind}</label><select class="sel" id="${kind}-${k.id}" data-score="${kind}" data-id="${k.id}" ${on ? '' : 'disabled'}><option value="">—</option>${[5, 4, 3, 2, 1].map(s => `<option ${map[k.id] === s ? 'selected' : ''}>${s}</option>`).join('')}</select>`;
+  const steps = [L('เจ้าของประเมินตนเอง', 'Owner self-assessment'), L('ผู้ตรวจประเมินและลงนาม', 'Reviewer assessment and sign-off'), L('เสร็จสิ้น', 'Complete')];
+  return `
+  <div class="phead"><div><div class="eyebrow">M4 · M5 · ${L('ไตรมาส 1 ปี 2027 (ม.ค.–มี.ค.)', 'Q1 2027 (Jan–Mar)')}</div><h1>${L('ทบทวนรายไตรมาส', 'Quarterly review')}</h1><p>${L('ผลไตรมาสเติมให้อัตโนมัติ เจ้าของประเมินตนเอง ผู้ตรวจประเมินและลงนาม คะแนนของผู้ตรวจใช้เป็นผลจริง', 'Quarter results are filled in for you. The owner self-assesses; the reviewer assesses and signs. The reviewer\'s score counts.')}</p></div>
+  <div class="tools"><label class="sr" for="revTeam">${L('ทีม', 'Team')}</label><select class="sel" id="revTeam" ${r.team ? 'disabled' : ''}>${TEAMS.map(t => `<option value="${t.id}" ${t.id === team ? 'selected' : ''}>${esc(N(t))} · ${REV[t.id].stage === 2 ? L('ลงนามแล้ว', 'signed') : REV[t.id].stage === 1 ? L('รอผู้ตรวจ', 'with reviewer') : L('ร่าง', 'draft')}</option>`).join('')}</select></div></div>
+  <section class="panel"><ol class="steps" style="margin:0;padding:0">${steps.map((s, i) => `<li class="${i < R.stage ? 'done' : i === R.stage ? 'now' : ''}">${s}</li>`).join('')}</ol></section>
+  <div class="grid" style="grid-template-columns:minmax(0,1fr) 240px">
+    <div class="tw"><table><thead><tr><th>KPI</th><th class="n">${L('ผล Q1', 'Q1 result')}</th><th class="n">${L('เป้า', 'Target')}</th><th class="n">${L('ความสำเร็จ', 'Achieved')}</th><th class="n">${L('คะแนนระบบ', 'System')}</th><th>${L('ตนเอง', 'Self')}</th><th>${L('ผู้ตรวจ', 'Reviewer')}</th><th class="n">${L('น้ำหนัก', 'Weight')}</th></tr></thead><tbody>
+    ${ks.map(k => { const p = periodVal(k, Q), a = ach(k, p.v, p.m); return `<tr><td class="kname"><b>${esc(N(k))}</b><span>${k.id}</span></td><td class="n">${fmt(p.v)}</td><td class="n">${fmt(target(k, p.m))}</td><td class="n">${pct(a)} <span class="dot ${rag(a)}"></span></td><td class="n">${scoreOf(a) ?? '—'}</td><td>${sel(R.self, k, ownerCan, 'self')}</td><td>${sel(R.rev, k, revCan, 'rev')}</td><td class="n">${k.w}%</td></tr>`; }).join('')}
+    </tbody></table></div>
+    <section class="panel"><div class="muted" style="font-size:13px">${L('คะแนนทีม (ถ่วงน้ำหนัก)', 'Team score (weighted)')}</div><div class="bigscore"><b>${final == null ? '—' : final.toFixed(2)}</b><span>/ 5</span></div><p class="muted" style="font-size:12.5px;margin:6px 0 0">${L('ใช้คะแนนผู้ตรวจ ถ้ายังไม่มีใช้คะแนนตนเอง แล้วจึงใช้คะแนนระบบ', 'Uses the reviewer score, then the self score, then the system score.')}</p></section>
+  </div>
+  <div class="grid g2">
+    <label class="f">${L('จุดเด่นของไตรมาส', 'Highlights')}<textarea class="ta" data-rtext="hi" ${ownerCan ? '' : 'disabled'}>${esc(R.hi)}</textarea></label>
+    <label class="f">${L('ปัญหาและสาเหตุ', 'Issues and causes')}<textarea class="ta" data-rtext="issues" ${ownerCan ? '' : 'disabled'}>${esc(R.issues)}</textarea></label>
+  </div>
+  <section class="panel"><h2>${L('แผนการแก้ไข', 'Actions')} <small>${L('ติดตามต่อในไตรมาสถัดไป', 'carried into next quarter')}</small></h2>
+    ${R.actions.length ? `<div class="tw" style="margin-bottom:12px"><table><thead><tr><th>${L('สิ่งที่จะทำ', 'Action')}</th><th>${L('ผู้รับผิดชอบ', 'Owner')}</th><th>${L('กำหนดเสร็จ', 'Due')}</th><th>${L('สถานะ', 'Status')}</th></tr></thead><tbody>${R.actions.map(a => `<tr><td>${esc(a.a)}</td><td>${esc(a.o)}</td><td>${esc(a.d)}</td><td>${a.s === 'done' ? `<span class="chip ok">${L('เสร็จแล้ว', 'Done')}</span>` : `<span class="chip">${L('กำลังทำ', 'Open')}</span>`}</td></tr>`).join('')}</tbody></table></div>` : `<p class="muted">${L('ยังไม่มีแผนการแก้ไข', 'No actions yet.')}</p>`}
+    ${ownerCan || revCan ? `<div class="rowform"><label class="f">${L('สิ่งที่จะทำ', 'Action')}<input class="inp" id="actA"></label><label class="f">${L('ผู้รับผิดชอบ', 'Owner')}<input class="inp" id="actO"></label><label class="f">${L('กำหนดเสร็จ', 'Due')}<input class="inp" id="actD" placeholder="${L('เช่น 31 ก.ค. 2027', 'e.g. 31 Jul 2027')}"></label><button class="btn" type="button" data-act="addAction"><i class="bi bi-plus"></i>${L('เพิ่ม', 'Add')}</button></div>` : ''}
+  </section>
+  <section class="panel"><h2>${L('คำขอปรับเป้า', 'Target-change requests')}</h2>
+    ${R.changes.length ? R.changes.map((c, i) => `<div class="tools" style="justify-content:space-between;border-top:1px solid var(--line);padding:10px 0 0;margin-top:6px"><div class="kname"><b>${esc(c.k)} · ${esc(N(kpi(c.k)))}: ${fmt(c.from)} → ${fmt(c.to)}</b><span>${esc(c.why)}</span></div><div class="tools">${c.s === 'pending' ? `<span class="chip draft">${L('รออนุมัติ', 'Pending')}</span>${revCan ? `<button class="btn go" type="button" data-act="approveChange" data-i="${i}">${L('อนุมัติ', 'Approve')}</button>` : ''}` : `<span class="chip ok">${L('อนุมัติแล้ว เก็บเป้าเดิมไว้ในประวัติ', 'Approved; original target kept in history')}</span>`}</div></div>`).join('') : `<p class="muted">${L('ไม่มีคำขอ', 'No requests.')}</p>`}
+  </section>
+  <div id="revErr"></div>
+  <div class="tools" style="justify-content:flex-end">
+    ${ownerCan ? `<button class="btn pri" type="button" data-act="sendReview"><i class="bi bi-send"></i>${L('ส่งให้ผู้ตรวจ', 'Send to reviewer')}</button>` : ''}
+    ${revCan ? `<button class="btn go" type="button" data-act="signReview"><i class="bi bi-pen"></i>${L('ลงนามรับรองผลไตรมาส', 'Sign off the quarter')}</button>` : ''}
+    ${R.stage === 2 ? `<span class="chip ok"><i class="bi bi-patch-check"></i>${L('ลงนามแล้ว ผลไตรมาสถูกล็อก', 'Signed; quarter results locked')}</span>` : ''}
+    ${!ownerCan && !revCan && R.stage < 2 ? `<span class="muted" style="font-size:13px">${R.stage === 0 ? L('รอเจ้าของ KPI ของทีมประเมินตนเอง', 'Waiting for the team\'s KPI owner to self-assess') : L('รอสภากลยุทธ์หรือผู้บริหารประเมินและลงนาม', 'Waiting for the Council or Executive to assess and sign')}</span>` : ''}
+  </div>`;
+}
+
+function vYearEnd() {
+  const r = role(), team = r.team || S.yeTeam, Y = YE[team], ms = [0, 1, 2, 3, 4], ks = teamKpis(team);
+  const sAvg = s => { const xs = live().filter(k => strategyOf(k) === s.id).map(k => { const p = periodVal(k, ms); return scoreOf(ach(k, p.v, p.m)); }).filter(x => x != null); return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null; };
+  const signers = [['signOwner', L('เจ้าของ KPI', 'KPI owner')], ['review', L('ผู้ตรวจ (สภากลยุทธ์)', 'Reviewer (Council)')], ['signExec', L('ผู้บริหาร (MD)', 'Executive (MD)')]];
+  const nextOk = Y.sign < 3 && can(signers[Y.sign][0]) && (Y.sign !== 0 || r.team === team);
+  const sc = teamScore(team, ms);
+  return `
+  <div class="phead"><div><div class="eyebrow">M6 · ${L('ประเมินผลปลายปี 2027', 'Year-end review 2027')}</div><h1>${L('ประเมินผลปลายปี', 'Year-end review')}</h1><p>${L('ล็อกผลทั้งปี ให้คะแนนสุดท้าย ลงนามสามระดับ และตัดสินใจว่า KPI แต่ละตัวจะคงไว้ ปรับ หรือยกเลิกในปีถัดไป', 'Lock the year\'s results, give final scores, sign at three levels, and decide whether each KPI is kept, changed or retired next year.')}</p></div>
+  <div class="tools"><label class="sr" for="yeTeam">${L('ทีม', 'Team')}</label><select class="sel" id="yeTeam" ${r.team ? 'disabled' : ''}>${TEAMS.map(t => `<option value="${t.id}" ${t.id === team ? 'selected' : ''}>${esc(N(t))}</option>`).join('')}</select></div></div>
+  <div class="note warn"><i class="bi bi-eye"></i><div>${L('ตัวอย่างหน้าจอ: รอบจริงเปิดเดือน ม.ค. 2028 ตัวเลขด้านล่างใช้ผลสะสม ม.ค.–พ.ค. 2027 เพื่อแสดงหน้าจอเท่านั้น', 'Screen preview: the real review opens in January 2028. Figures below use January–May 2027 results only to show the screen.')}</div></div>
+  <section class="panel"><h2>${L('สรุปสำหรับผู้บริหาร: คะแนนเฉลี่ยตามกลยุทธ์', 'Summary for the MD: average score by strategy')}</h2><div class="grid" style="gap:10px">${STRATS.map(s => { const v = sAvg(s); return `<div class="hbar"><span><b>${s.id}</b> ${esc(N(s))}</span><span class="track"><i style="width:${v == null ? 0 : v / 5 * 100}%;background:${v == null ? 'transparent' : v >= 4 ? 'var(--good-dot)' : v >= 3 ? 'var(--warn-dot)' : 'var(--bad-dot)'}"></i></span><b class="num">${v == null ? '—' : v.toFixed(1)}</b></div>`; }).join('')}</div></section>
+  <div class="tw"><table><thead><tr><th>KPI</th><th class="n">${L('ผลทั้งปี', 'Year result')}</th><th class="n">${L('เป้า', 'Target')}</th><th class="n">${L('ความสำเร็จ', 'Achieved')}</th><th class="n">${L('คะแนน', 'Score')}</th><th>${L('ปีถัดไป', 'Next year')}</th></tr></thead><tbody>
+  ${ks.map(k => { const p = periodVal(k, ms), a = ach(k, p.v, p.m); return `<tr><td class="kname"><b>${esc(N(k))}</b><span>${k.id}</span></td><td class="n">${fmt(p.v)}</td><td class="n">${fmt(target(k, p.m))}</td><td class="n">${pct(a)} <span class="dot ${rag(a)}"></span></td><td class="n">${scoreOf(a) ?? '—'}</td><td><label class="sr" for="dec-${k.id}">${L('ปีถัดไป', 'Next year')}</label><select class="sel" id="dec-${k.id}" data-dec="${k.id}" ${Y.sign === 0 && can('signOwner') && r.team === team ? '' : 'disabled'}>${[['keep', L('คงไว้', 'Keep')], ['change', L('ปรับเป้า', 'Change target')], ['retire', L('ยกเลิก (ไม่ได้ใช้ตัดสินใจ)', 'Retire (not used)')]].map(([v, t]) => `<option value="${v}" ${(Y.dec[k.id] || 'keep') === v ? 'selected' : ''}>${t}</option>`).join('')}</select></td></tr>`; }).join('')}
+  </tbody></table></div>
+  <div class="grid" style="grid-template-columns:minmax(0,1fr) 240px">
+    <label class="f">${L('บทเรียนของปี และสิ่งที่จะทำต่างไปในปีหน้า', 'Lessons from the year, and what we will do differently')}<textarea class="ta" data-yetext="1" ${Y.sign === 0 && can('signOwner') && r.team === team ? '' : 'disabled'}>${esc(Y.note)}</textarea></label>
+    <section class="panel"><div class="muted" style="font-size:13px">${L('คะแนนสุดท้ายของทีม', 'Final team score')}</div><div class="bigscore"><b>${sc == null ? '—' : sc.toFixed(2)}</b><span>/ 5</span></div></section>
+  </div>
+  <section class="panel"><h2>${L('การลงนาม', 'Sign-off')}</h2><ol class="steps" style="margin:0 0 12px;padding:0">${signers.map(([, t], i) => `<li class="${i < Y.sign ? 'done' : i === Y.sign ? 'now' : ''}">${t}</li>`).join('')}</ol>
+    ${Y.sign === 3 ? `<span class="chip ok"><i class="bi bi-lock"></i>${L('ลงนามครบ ผลปี 2027 ถูกล็อกและส่งต่อไปตั้งเป้าปี 2028', 'Fully signed. 2027 results locked and carried into 2028 target setting.')}</span>` : nextOk ? `<button class="btn go" type="button" data-act="signYear"><i class="bi bi-pen"></i>${L('ลงนามในฐานะ', 'Sign as')} ${signers[Y.sign][1]}</button>` : `<span class="muted" style="font-size:13px">${L('รอ', 'Waiting for')} ${signers[Y.sign][1]} ${L('ลงนาม (เปลี่ยนมุมมองที่แถบด้านบนเพื่อทดลอง)', 'to sign (switch the view at the top to try it)')}</span>`}
+  </section>`;
+}
+
+function vMine() {
+  const items = [
+    { th: '%NG ของเครื่องที่รับผิดชอบ (เครื่อง 7–9)', en: '%NG on my machines (7–9)', from: 'INJ-02', u: '%', t: 1.5, v: 1.4, dir: 'down' },
+    { th: 'เวลาเปลี่ยนแม่พิมพ์เฉลี่ย', en: 'My average mould changeover', from: 'INJ-03', u: L('นาที', 'min'), t: 45, v: 49, dir: 'down' },
+    { th: 'ข้อเสนอ kaizen ที่นำไปใช้จริง', en: 'Kaizen ideas put into practice', from: 'S3-01', u: L('เรื่อง/ไตรมาส', 'per quarter'), t: 1, v: 1, dir: 'up' },
+    { th: 'ระดับทักษะตาม skill matrix: การตั้งค่าเครื่องฉีด', en: 'Skill matrix level: injection machine set-up', from: 'S3-01', u: L('ระดับ', 'level'), t: 4, v: 3, dir: 'up' },
+  ];
+  const a = it => it.dir === 'up' ? it.v / it.t : it.t / it.v;
+  return `
+  <div class="phead"><div><div class="eyebrow">M9 · ${L('ตัวอย่างสำหรับปี 2028', 'Preview for 2028')}</div><h1>${L('KPI ของฉัน', 'My KPIs')}</h1><p>${L('KPI รายบุคคลส่งต่อมาจาก KPI ของทีม และเชื่อมกับแผนพัฒนาตาม skill matrix (S3)', 'Individual KPIs cascade from the team\'s KPIs and link to the skill-matrix development plan (S3).')}</p></div>
+  <span class="chip"><i class="bi bi-shield-lock"></i>${L('เห็นได้เฉพาะคุณ หัวหน้าสายงาน HR และ MD', 'Visible only to you, your manager line, HR and the MD')}</span></div>
+  <div class="note warn"><i class="bi bi-person-badge"></i><div>${L('พนักงานตัวอย่าง: ช่างเทคนิค ทีมฉีดพลาสติก · ไตรมาส 1 ปี 2028 · ข้อมูลสมมติเพื่อแสดงหน้าจอ', 'Sample employee: technician, Injection team · Q1 2028 · made-up figures to show the screen')}</div></div>
+  <div class="grid g2">${items.map(it => { const r = Math.min(a(it), S.rules.cap / 100), g = rag(r); return `<section class="panel"><div class="tools" style="justify-content:space-between"><b>${esc(N(it))}</b>${pill(g)}</div><div class="bigscore" style="margin:8px 0 4px"><b>${fmt(it.v)}</b><span>${esc(it.u)} · ${L('เป้า', 'target')} ${fmt(it.t)}</span></div><div class="chain"><i class="bi bi-arrow-return-right"></i>${L('มาจาก', 'From')} <button class="chip s" type="button" data-kpi="${it.from}" style="border:0;cursor:pointer">${it.from}</button> ${esc(N(kpi(it.from)))}</div></section>`; }).join('')}</div>
+  <section class="panel"><h2>${L('แผนพัฒนาของฉัน', 'My development plan')} <small>skill matrix</small></h2><div class="grid" style="gap:10px">
+  ${[[L('การตั้งค่าเครื่องฉีด', 'Injection machine set-up'), 3, 4], [L('การเปลี่ยนแม่พิมพ์แบบ SMED', 'SMED mould change'), 2, 3], [L('การแก้ปัญหาด้วย why-why', 'Why-why problem solving'), 2, 3], [L('ค่านิยม STI (หลักสูตรภาคบังคับ)', 'STI core values (mandatory course)'), 4, 4]].map(([n, c, t]) => `<div class="hbar"><span>${n}</span><span class="track"><i style="width:${c / 4 * 100}%;background:${c >= t ? 'var(--good-dot)' : 'var(--cyan)'}"></i></span><b class="num">${c}/${t}</b></div>`).join('')}
+  </div></section>
+  <label class="f">${L('ประเมินตนเอง ไตรมาส 1 ปี 2028', 'Self-assessment, Q1 2028')}<textarea class="ta" placeholder="${L('สิ่งที่ทำได้ดี สิ่งที่ต้องการความช่วยเหลือ', 'What went well, and where you need support')}"></textarea></label>`;
+}
+
+function vAdmin() {
+  const on = can('admin');
+  const st = i => i <= LAST_CLOSED ? ['lock', L('ล็อกแล้ว', 'Locked')] : i === OPEN_MONTH ? ['open', L('เปิดรับข้อมูล', 'Open')] : ['future', L('ยังไม่เปิด', 'Not open')];
+  return `
+  <div class="phead"><div><div class="eyebrow">M8</div><h1>${L('ตั้งค่าและบันทึกระบบ', 'Settings & audit log')}</h1><p>${L('รอบปี กติกาการให้คะแนน บทบาท และบันทึกการเปลี่ยนแปลงทุกครั้ง', 'Cycle periods, scoring rules, roles, and a log of every change')}</p></div></div>
+  ${on ? '' : `<div class="note lock"><i class="bi bi-lock"></i><div>${L('แก้ไขได้เฉพาะ HR / ผู้ดูแลระบบ ลองเปลี่ยนมุมมองที่แถบด้านบน', 'Only HR / KPI admin can change settings. Switch the view at the top to try it.')}</div></div>`}
+  <section class="panel"><h2>${L('รอบปี 2027', 'Cycle 2027')}</h2><div class="tools">${MONTHS[S.lang].map((m, i) => { const [k, t] = st(i); return `<span class="chip ${k === 'lock' ? '' : k === 'open' ? 'ok' : ''}" style="${k === 'future' ? 'opacity:.6' : ''}">${k === 'lock' ? '<i class="bi bi-lock"></i>' : ''}${m} · ${t}</span>`; }).join('')}</div>
+    <p class="muted" style="font-size:13px;margin:10px 0 0">${L('ทบทวนรายไตรมาส: เม.ย. ก.ค. ต.ค. · ประเมินผลปลายปี: ม.ค. 2028', 'Quarterly reviews: Apr, Jul, Oct · Year-end review: Jan 2028')}</p></section>
+  <div class="grid g2">
+  <section class="panel"><h2>${L('กติกาสถานะ (เขียว เหลือง แดง)', 'Status rules (green, amber, red)')}</h2>
+    <div class="grid g3">
+      <label class="f">${L('เขียว ตั้งแต่ (%)', 'Green from (%)')}<input class="inp" type="number" id="rGreen" data-rule="green" value="${S.rules.green}" ${on ? '' : 'disabled'}></label>
+      <label class="f">${L('เหลือง ตั้งแต่ (%)', 'Amber from (%)')}<input class="inp" type="number" id="rAmber" data-rule="amber" value="${S.rules.amber}" ${on ? '' : 'disabled'}></label>
+      <label class="f">${L('เพดานความสำเร็จ (%)', 'Achievement cap (%)')}<input class="inp" type="number" id="rCap" data-rule="cap" value="${S.rules.cap}" ${on ? '' : 'disabled'}></label>
+    </div>
+    <p class="muted" style="font-size:13px;margin:10px 0 0">${L('เปลี่ยนค่าแล้วกระดานภาพรวมและทุกหน้าคำนวณใหม่ทันที ยิ่งสูงยิ่งดี: ผล ÷ เป้า · ยิ่งต่ำยิ่งดี: เป้า ÷ ผล', 'Changes recalculate the board and every screen at once. Higher is better: result ÷ target · lower is better: target ÷ result.')}</p></section>
+  <section class="panel"><h2>${L('คะแนน 1–5', 'Scores 1–5')}</h2><div class="tw"><table><thead><tr><th>${L('ความสำเร็จ', 'Achieved')}</th><th class="n">${L('คะแนน', 'Score')}</th></tr></thead><tbody>${[['≥ 110%', 5], ['100–109%', 4], ['90–99%', 3], ['80–89%', 2], ['< 80%', 1]].map(([a, s]) => `<tr><td>${a}</td><td class="n">${s}</td></tr>`).join('')}</tbody></table></div></section>
+  </div>
+  <section class="panel"><h2>${L('บทบาทและกลุ่มใน Active Directory', 'Roles and Active Directory groups')}</h2><div class="tw"><table><thead><tr><th>${L('บทบาท', 'Role')}</th><th>${L('กลุ่ม AD', 'AD group')}</th></tr></thead><tbody>${[['ผู้บริหาร', 'Executive', 'STI-KPI-Executive'], ['สภากลยุทธ์', 'Council', 'STI-KPI-Council'], ['เจ้าของ KPI', 'KPI owner', 'STI-KPI-Owner-{team}'], ['ผู้บันทึกข้อมูล', 'Data entry', 'STI-KPI-Entry-{team}'], ['HR / ผู้ดูแลระบบ', 'HR / KPI admin', 'STI-KPI-Admin'], ['พนักงานทุกคน', 'All staff', 'Domain Users']].map(([t, e, g]) => `<tr><td>${L(t, e)}</td><td class="code">${g}</td></tr>`).join('')}</tbody></table></div></section>
+  <section class="panel"><h2>${L('บันทึกการเปลี่ยนแปลง', 'Audit log')} <small>${L('ทุกการสร้าง แก้ไข อนุมัติ และลงนาม', 'every create, change, approval and sign-off')}</small></h2><ul class="hist">${LOG.map(l => `<li><span>${esc(l.t)}</span><span><b>${esc(l.w)}</b> · ${esc(l.x)}</span></li>`).join('')}</ul></section>`;
+}
+
+/* ───────────── Drawer ───────────── */
+function niceStep(x) { const p = Math.pow(10, Math.floor(Math.log10(x))), f = x / p; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p; }
+function chart(k) {
+  const ms = [0, 1, 2, 3, 4], vs = ms.map(m => val(k, m)), ts = ms.map(m => target(k, m));
+  const all = [...vs, ...ts].filter(v => v != null), lo = Math.min(0, ...all), step = niceStep((Math.max(...all) - lo) / 3 || 1), hi = Math.ceil(Math.max(...all) * 1.08 / step) * step || step;
+  const W = 480, H = 170, P = { l: 40, r: 10, t: 12, b: 26 }, iw = W - P.l - P.r, ih = H - P.t - P.b, bw = iw / ms.length;
+  const y = v => P.t + ih - (v - lo) / (hi - lo) * ih;
+  const ticks = []; for (let g = Math.floor(lo / step) * step; g <= hi + 1e-9; g += step) ticks.push(Math.round(g * 1e6) / 1e6);
+  const grid = ticks.map(g => `<line x1="${P.l}" x2="${W - P.r}" y1="${y(g)}" y2="${y(g)}" style="stroke:var(--line)"/><text x="${P.l - 6}" y="${y(g) + 4}" text-anchor="end" font-size="11" style="fill:var(--ink-3)">${fmt(g)}</text>`).join('');
+  const bars = ms.map((m, i) => { const v = vs[i], x = P.l + i * bw + bw * .22, w = bw * .56; const g = rag(ach(k, v, m)); return (v == null ? '' : `<rect x="${x}" y="${Math.min(y(v), y(Math.max(lo, 0)))}" width="${w}" height="${Math.abs(y(v) - y(Math.max(lo, 0))) || 1}" rx="3" style="fill:var(--${g}-dot)"><title>${mon(m)}: ${fmt(v)}</title></rect>`) + `<text x="${x + w / 2}" y="${H - 8}" text-anchor="middle" font-size="11" style="fill:var(--ink-3)">${mon(m)}</text>`; }).join('');
+  const tl = ms.map((m, i) => `${i ? 'L' : 'M'}${P.l + i * bw + bw / 2} ${y(ts[i])}`).join(' ');
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="${L('ผลรายเดือนเทียบเป้า', 'Monthly results against target')}">${grid}${bars}<path d="${tl}" style="fill:none;stroke:var(--cyan)" stroke-width="2" stroke-dasharray="5 4"/></svg><div class="muted" style="font-size:12.5px;display:flex;gap:14px;flex-wrap:wrap"><span><span class="dot good"></span> ${L('ผลรายเดือน (สีตามสถานะ)', 'Monthly result (coloured by status)')}</span><span>- - ${L('เป้า', 'Target')}</span></div>`;
+}
+function dKpi(k) {
+  const u = unit(k.unit), ch = chainOf(k);
+  const reviewer = k.unit === 'CO' ? L('ผู้บริหาร (MD)', 'Executive (MD)') : u.parent === 'CO' ? L('สภากลยุทธ์', 'Strategy Council') : L('หัวหน้า', 'Head of ') + N(unit(u.parent));
+  const owner = k.unit === 'CO' ? L('เจ้าภาพกลยุทธ์ ', 'Strategy owner ') + strategyOf(k) : L('หัวหน้า', 'Lead, ') + N(u);
+  return `<header><div><div class="code">${k.id} · ${esc(N(u))}</div><h2>${esc(N(k))}</h2><div class="tools" style="margin-top:6px"><span class="chip s">${strategyOf(k)}</span>${k.src === 'erp' ? '<span class="chip erp"><i class="bi bi-database"></i>ERP</span>' : `<span class="chip">${L('กรอกเอง', 'Manual')}</span>`}${k.status === 'approved' ? `<span class="chip ok">${L('อนุมัติแล้ว', 'Approved')}</span>` : `<span class="chip draft">${L('รออนุมัติ', 'Pending approval')}</span>`}</div></div><button class="x" type="button" data-act="close" aria-label="${L('ปิด', 'Close')}"><i class="bi bi-x-lg"></i></button></header>
+  <div class="body">
+    ${k.status === 'approved' ? `<section>${chart(k)}</section>` : `<div class="note warn"><i class="bi bi-hourglass"></i><div>${L('KPI นี้รออนุมัติ จะเริ่มเก็บผลหลังอนุมัติ', 'This KPI is waiting for approval. Results start after approval.')}</div></div>`}
+    <dl class="dl"><dt>${L('ทิศทาง', 'Direction')}</dt><dd>${k.dir === 'up' ? L('ยิ่งสูงยิ่งดี', 'Higher is better') : L('ยิ่งต่ำยิ่งดี', 'Lower is better')}</dd>
+      <dt>${L('หน่วย', 'Unit')}</dt><dd>${esc(uLabel(k))}</dd><dt>${L('ค่าฐาน', 'Baseline')}</dt><dd>${fmt(k.base)}</dd>
+      <dt>${L('เป้าปี 2027', '2027 target')}</dt><dd>${fmt(k.tgt)}${k.ms ? ` <span class="muted">(${L('เป้าสะสมรายเดือน', 'monthly cumulative milestones')})</span>` : ''}</dd>
+      <dt>${L('น้ำหนักในทีม', 'Weight in team')}</dt><dd>${k.w ? k.w + '%' : '—'}</dd><dt>${L('ความถี่', 'Frequency')}</dt><dd>${L('รายเดือน', 'Monthly')}${k.agg === 'last' ? L(' · ใช้ค่าล่าสุด', ' · latest value') : L(' · ไตรมาสใช้ค่าเฉลี่ย', ' · quarter uses the average')}</dd>
+      <dt>${L('เจ้าของ', 'Owner')}</dt><dd>${esc(owner)}</dd><dt>${L('ผู้ตรวจ', 'Reviewer')}</dt><dd>${esc(reviewer)}</dd>
+      <dt>${L('แหล่งข้อมูล', 'Data source')}</dt><dd>${k.src === 'erp' ? L('อ่านจาก ERP อัตโนมัติ (มุมมองอ่านอย่างเดียว)', 'Read from the ERP automatically (read-only view)') : L('กรอกโดยผู้บันทึกข้อมูลของทีม', 'Entered by the team\'s data-entry person')}</dd>
+      <dt>${L('เชื่อมกับ', 'Linked to')}</dt><dd><div class="chain">${ch.map(c => `<span>${esc(c.id)}</span><i class="bi bi-chevron-right"></i>`).join('')}<span class="chip s">${strategyOf(k)} · ${esc(N(strat(strategyOf(k))))}</span></div></dd></dl>
+    ${k.status === 'approved' ? `<div class="tw"><table><thead><tr><th>${L('เดือน', 'Month')}</th><th class="n">${L('ผล', 'Result')}</th><th class="n">${L('เป้า', 'Target')}</th><th>${L('สถานะ', 'Status')}</th></tr></thead><tbody>${[0, 1, 2, 3, 4].map(m => { const v = val(k, m); return `<tr><td>${mon(m)} 2027</td><td class="n">${fmt(v)}</td><td class="n">${fmt(target(k, m))}</td><td>${pill(rag(ach(k, v, m)))}</td></tr>`; }).join('')}</tbody></table></div>` : ''}
+    <section><h3 style="font-size:16px;margin-bottom:8px">${L('ประวัติ', 'History')}</h3><ul class="hist">${k.status === 'approved' ? `<li><span>15 ม.ค. 2027</span><span>${L('อนุมัติเป้าปี 2027 โดย', '2027 target approved by')} ${esc(reviewer)}</span></li><li><span>8 ม.ค. 2027</span><span>${L('เจ้าของเสนอ KPI และเป้า', 'Owner proposed the KPI and target')}</span></li>` : `<li><span>${esc(k.submittedOn || '')}</span><span>${L('เสนอโดยเจ้าของ KPI', 'Proposed by the KPI owner')}</span></li>`}</ul></section>
+    ${k.status === 'submitted' && can('approve') ? `<div class="tools"><button class="btn go" type="button" data-act="approve" data-id="${k.id}"><i class="bi bi-check2"></i>${L('อนุมัติ', 'Approve')}</button><button class="btn" type="button" data-act="returnKpi" data-id="${k.id}">${L('ส่งกลับให้แก้ไข', 'Return for changes')}</button></div>` : ''}
+  </div>`;
+}
+function chartBase(b) {
+  const t = Array.isArray(b.rule) ? b.rule[1] : null, vs = b.v, all = [...vs, t].filter(v => v != null);
+  if (!vs.some(v => v != null)) return `<div class="note lock"><i class="bi bi-slash-circle"></i><div>${b.rule === 'pass' ? L('รายงานเป็น PASS อย่างเดียว ไม่มีตัวเลขให้แสดงเป็นกราฟ', 'Reported as PASS only: no figure to chart.') : L('ยังไม่มีผลปี 2026', 'No 2026 result yet.')}</div></div>`;
+  const lo = Math.min(0, ...all), step = niceStep((Math.max(...all) - lo) / 3 || 1), hi = Math.ceil(Math.max(...all) * 1.08 / step) * step || step;
+  const W = 480, H = 170, P = { l: 52, r: 10, t: 12, b: 26 }, iw = W - P.l - P.r, ih = H - P.t - P.b, bw = iw / 12, y = v => P.t + ih - (v - lo) / (hi - lo) * ih;
+  const ticks = []; for (let g = Math.floor(lo / step) * step; g <= hi + 1e-9; g += step) ticks.push(Math.round(g * 1e6) / 1e6);
+  const grid = ticks.map(g => `<line x1="${P.l}" x2="${W - P.r}" y1="${y(g)}" y2="${y(g)}" style="stroke:var(--line)"/><text x="${P.l - 6}" y="${y(g) + 4}" text-anchor="end" font-size="11" style="fill:var(--ink-3)">${fmt(g)}</text>`).join('');
+  const col = { g: 'good', b: 'bad', p: 'none', u: 'none', n: 'none' };
+  const bars = vs.map((v, i) => { const x = P.l + i * bw + bw * .2, w = bw * .6; return (v == null ? '' : `<rect x="${x}" y="${Math.min(y(v), y(Math.max(lo, 0)))}" width="${w}" height="${Math.abs(y(v) - y(Math.max(lo, 0))) || 1}" rx="2" style="fill:var(--${col[b.fl[i]]}-dot)"><title>${mon(i)} 2026: ${fmt(v)}</title></rect>`) + `<text x="${x + w / 2}" y="${H - 8}" text-anchor="middle" font-size="10" style="fill:var(--ink-3)">${mon(i)}</text>`; }).join('');
+  const tl = t == null ? '' : `<line x1="${P.l}" x2="${W - P.r}" y1="${y(t)}" y2="${y(t)}" style="stroke:var(--cyan)" stroke-width="2" stroke-dasharray="5 4"/>`;
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="${L('ผลรายเดือน 2026 เทียบเป้า', '2026 monthly results against target')}">${grid}${bars}${tl}</svg><div class="muted" style="font-size:12.5px;display:flex;gap:14px;flex-wrap:wrap"><span><span class="dot good"></span> ${L('ผ่าน', 'Met')}</span><span><span class="dot bad"></span> ${L('ไม่ผ่าน', 'Missed')}</span>${t == null ? '' : `<span>- - ${L('เป้า', 'Target')} ${b.rule[0].replace('<=', '≤').replace('>=', '≥')} ${fmt(t)}</span>`}</div>`;
+}
+function dBase(b) {
+  const d = bdept(b.d), goals = V3.filter(v => v.by.includes(b.c)), edit = can('approve');
+  return `<header><div><div class="code">${b.c} · ${esc(N(d))}</div><h2>${esc(N(b))}</h2><div class="tools" style="margin-top:6px"><span class="real">${L('ข้อมูลจริง 2026', '2026 actuals')}</span>${lchips(b)}${bpill(b)}${dchip(b.dec)}</div></div><button class="x" type="button" data-act="close" aria-label="${L('ปิด', 'Close')}"><i class="bi bi-x-lg"></i></button></header>
+  <div class="body">
+    <section>${chartBase(b)}</section>
+    <dl class="dl"><dt>${L('ชื่อตามทะเบียน', 'As registered')}</dt><dd>${esc(b.th)}</dd>
+      <dt>${L('เป้า 2026', '2026 target')}</dt><dd>${esc(b.tTh)}${S.lang === 'en' ? `<br><span class="muted">${esc(b.tEn)}</span>` : ''}</dd>
+      <dt>${L('วิธีวัด', 'How measured')}</dt><dd>${esc(b.how) || '—'}</dd>
+      <dt>${L('ความถี่', 'Frequency')}</dt><dd>${esc(b.f.split(' / ')[S.lang === 'en' ? 1 : 0] || b.f || '—')}</dd>
+      <dt>${L('ใช้ตั้งแต่', 'In use since')}</dt><dd>${esc(/^\d+$/.test(b.since) ? b.since : L('ทะเบียน EMS', 'EMS register'))}</dd>
+      <dt>${L('ผล 2025', '2025 result')}</dt><dd>${esc(b.b25) || '—'}</dd>
+      <dt>${L('เชื่อมกับ v3', 'v3 link')}</dt><dd>${b.lk.length ? `<div class="chain">${b.lk.map(s => `<span class="chip s">${s === 'G' ? 'GOAL' : s} · ${esc(N(strat(s)))}</span>`).join('')}</div>${goals.length ? `<div class="chain" style="margin-top:6px"><i class="bi bi-arrow-return-right"></i>${L('วัดเรื่องเดียวกับ KPI เป้าหมาย:', 'Measures the same as goal KPI:')} ${goals.map(v => `<b>${esc(N(v))}</b>`).join(', ')}</div>` : ''}` : L('ไม่เชื่อม: งานประจำหรือข้อกำหนด ISO / IATF', 'Not linked: day-to-day work or an ISO / IATF requirement')}</dd>
+      <dt>${L('ข้อสังเกต', 'Observation')}</dt><dd>${esc(b.obs)}${S.lang === 'th' ? ` <span class="muted">(EN)</span>` : ''}</dd>
+      <dt>${L('ข้อเสนอ', 'Proposed')}</dt><dd>${edit ? `<label class="sr" for="bdd-${b.c}">${L('ข้อเสนอ', 'Proposed')}</label><select class="sel" id="bdd-${b.c}" data-bdec="${b.c}">${Object.entries(BDEC).map(([k, v]) => `<option value="${k}" ${k === b.dec ? 'selected' : ''}>${esc(L(...v))}</option>`).join('')}</select>` : dchip(b.dec)}${b.dec !== b.dec0 ? ` <span class="muted">(${L('เดิม', 'was')} ${esc(L(...BDEC[b.dec0]))})</span>` : ''}</dd></dl>
+    <div class="tw"><table><thead><tr><th>${L('เดือน', 'Month')}</th><th class="n">${L('ผล', 'Result')}</th><th>${L('เทียบเป้า', 'Against target')}</th></tr></thead><tbody>${b.m.map((x, i) => `<tr><td>${mon(i)} 2026</td><td class="n">${esc(bval(b, i))}</td><td>${{ g: pill('good').replace(ragText('good'), L('ผ่าน', 'Met')), b: pill('bad').replace(ragText('bad'), L('ไม่ผ่าน', 'Missed')), p: '<span class="chip">PASS</span>', u: `<span class="chip">${L('เป้าไม่ชัด', 'Target unclear')}</span>`, n: `<span class="muted">${L('ไม่มีผล', 'No result')}</span>` }[b.fl[i]]}</td></tr>`).join('')}</tbody></table></div>
+  </div>`;
+}
+function dTeam(id) {
+  const t = unit(id), m = S.month;
+  return `<header><div><div class="code">${esc(N(unit(t.parent)))}</div><h2>${esc(N(t))}</h2></div><button class="x" type="button" data-act="close" aria-label="${L('ปิด', 'Close')}"><i class="bi bi-x-lg"></i></button></header><div class="body">
+  <div class="tw"><table><thead><tr><th>KPI</th><th class="n">${mon(m)}</th><th class="n">${L('เป้า', 'Target')}</th><th>${L('สถานะ', 'Status')}</th></tr></thead><tbody>${teamKpis(id).map(k => { const v = val(k, m); return `<tr class="click" data-kpi="${k.id}" tabindex="0"><td class="kname"><b>${esc(N(k))}</b><span>${k.id} · ${parentLabel(k)}</span></td><td class="n">${fmt(v)}</td><td class="n">${fmt(target(k, m))}</td><td>${pill(rag(ach(k, v, m)))}</td></tr>`; }).join('')}</tbody></table></div>
+  <div class="tools"><button class="btn" type="button" data-go="entry" data-setteam="${id}"><i class="bi bi-pencil-square"></i>${L('บันทึกผลรายเดือน', 'Monthly results')}</button><button class="btn" type="button" data-go="review" data-setteam="${id}"><i class="bi bi-clipboard-check"></i>${L('ทบทวนรายไตรมาส', 'Quarterly review')}</button></div></div>`;
+}
+function dAdd() {
+  const team = role().team, parents = live().filter(k => k.unit === 'CO');
+  return `<header><div><div class="code">${esc(N(unit(team)))}</div><h2>${L('เสนอ KPI ใหม่', 'Propose a KPI')}</h2></div><button class="x" type="button" data-act="close" aria-label="${L('ปิด', 'Close')}"><i class="bi bi-x-lg"></i></button></header>
+  <form class="body" id="addForm" novalidate>
+    <label class="f">${L('ชื่อ KPI (ไทย)', 'KPI name (Thai)')}<input class="inp" id="nTh" required></label>
+    <label class="f">${L('ชื่อ KPI (อังกฤษ)', 'KPI name (English)')}<input class="inp" id="nEn"></label>
+    <div class="grid g2"><label class="f">${L('หน่วยวัด', 'Unit of measure')}<input class="inp" id="nU" placeholder="%"></label><label class="f">${L('ทิศทาง', 'Direction')}<select class="sel" id="nDir"><option value="up">${L('ยิ่งสูงยิ่งดี', 'Higher is better')}</option><option value="down">${L('ยิ่งต่ำยิ่งดี', 'Lower is better')}</option></select></label></div>
+    <div class="grid g3"><label class="f">${L('ค่าฐาน', 'Baseline')}<input class="inp" id="nBase" inputmode="decimal" required></label><label class="f">${L('เป้า', 'Target')}<input class="inp" id="nTgt" inputmode="decimal" required></label><label class="f">${L('น้ำหนัก %', 'Weight %')}<input class="inp" id="nW" inputmode="numeric" value="0"></label></div>
+    <label class="f">${L('เชื่อมกับ KPI บริษัทหรือกลยุทธ์ (จำเป็น)', 'Linked to a company KPI or strategy (required)')}<select class="sel" id="nPar" required><option value="">${L('— เลือก —', '— Choose —')}</option>${STRATS.map(s => `<optgroup label="${s.id} · ${esc(N(s))}">${parents.filter(k => k.parent === s.id).map(k => `<option value="${k.id}">${k.id} · ${esc(N(k))}</option>`).join('')}</optgroup>`).join('')}</select></label>
+    <label class="f">${L('แหล่งข้อมูล', 'Data source')}<select class="sel" id="nSrc"><option value="manual">${L('กรอกเอง', 'Manual')}</option><option value="erp">ERP</option></select></label>
+    <div id="addErr"></div>
+    <div class="note"><i class="bi bi-info-circle"></i><div>${L('KPI ที่ไม่เชื่อมกับเป้าหมายรวมหรือกลยุทธ์ อนุมัติไม่ได้ หลังส่งจะไปที่หัวหน้าฝ่ายเพื่ออนุมัติ', 'A KPI with no link to the goal or a strategy cannot be approved. After you send it, it goes to the division head for approval.')}</div></div>
+    <div class="tools" style="justify-content:flex-end"><button class="btn" type="button" data-act="close">${L('ยกเลิก', 'Cancel')}</button><button class="btn pri" type="submit"><i class="bi bi-send"></i>${L('ส่งเพื่ออนุมัติ', 'Send for approval')}</button></div>
+  </form>`;
+}
+
+/* ───────────── Render ───────────── */
+const VIEWS = { board: vBoard, register: vRegister, entry: vEntry, layers: vLayers, review: vReview, yearend: vYearEnd, mine: vMine, admin: vAdmin };
+function render() {
+  renderChrome(); setTbh();
+  document.getElementById('view').innerHTML = VIEWS[S.view]();
+  renderDrawer(); renderToast();
+}
+function renderDrawer() {
+  const d = S.drawer, host = document.getElementById('layer');
+  if (!d) { host.innerHTML = ''; return; }
+  const html = d.t === 'kpi' ? dKpi(kpi(d.id)) : d.t === 'team' ? dTeam(d.id) : d.t === 'base' ? dBase(bkpi(d.id)) : dAdd();
+  host.innerHTML = `<div class="scrim" data-act="close"></div><aside class="drawer" role="dialog" aria-modal="true">${html}</aside>`;
+  host.querySelector('.drawer button, .drawer input')?.focus();
+}
+function renderToast() { document.getElementById('toastHost').innerHTML = S.toast ? `<div class="toast"><i class="bi bi-check-circle-fill"></i>${esc(S.toast)}</div>` : ''; }
+function go(view) { if (!VIEWS[view]) return; S.view = view; S.drawer = null; S.errs = {}; history.replaceState(null, '', '#' + view); render(); window.scrollTo(0, 0); }
+
+/* ───────────── Events ───────────── */
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-go],[data-kpi],[data-base],[data-team],[data-month],[data-lytab],[data-act],[data-lang]');
+  if (!el || el.tagName === 'SELECT' || e.target.closest('select')) return;
+  if (el.dataset.base) { S.drawer = { t: 'base', id: el.dataset.base }; renderDrawer(); return; }
+  if (el.dataset.lytab) { S.lyTab = el.dataset.lytab; render(); return; }
+  if (el.dataset.lang) { S.lang = el.dataset.lang; store.set('lang', S.lang); render(); return; }
+  if (el.dataset.go) { if (el.dataset.setteam) { S.entryTeam = S.revTeam = S.yeTeam = el.dataset.setteam; } go(el.dataset.go); return; }
+  if (el.dataset.kpi) { S.drawer = { t: 'kpi', id: el.dataset.kpi }; renderDrawer(); return; }
+  if (el.dataset.team) { S.drawer = { t: 'team', id: el.dataset.team }; renderDrawer(); return; }
+  if (el.dataset.month) { S.month = Number(el.dataset.month); render(); return; }
+  const a = el.dataset.act, team = role().team || S.entryTeam;
+  if (a === 'close') { S.drawer = null; renderDrawer(); }
+  else if (a === 'reload') { location.reload(); }
+  else if (a === 'addKpi') { S.drawer = { t: 'add' }; renderDrawer(); }
+  else if (a === 'approve') { const k = kpi(el.dataset.id); k.status = 'approved'; k.a = []; log(L('อนุมัติ KPI ', 'Approved KPI ') + k.id); S.drawer = null; toast(L('อนุมัติแล้ว KPI เริ่มเก็บผลเดือนถัดไป', 'Approved. The KPI starts collecting results next month.')); render(); }
+  else if (a === 'returnKpi') { const k = kpi(el.dataset.id); KPIS.splice(KPIS.indexOf(k), 1); log(L('ส่งกลับให้แก้ไข ', 'Returned for changes ') + k.id); S.drawer = null; toast(L('ส่งกลับให้เจ้าของแก้ไขแล้ว', 'Returned to the owner for changes.')); render(); }
+  else if (a === 'saveDraft') { toast(L('บันทึกร่างแล้ว ยังไม่ได้ส่ง', 'Draft saved, not sent yet.')); }
+  else if (a === 'submitEntry') submitEntry(team);
+  else if (a === 'addAction') { const t = role().team || S.revTeam, A = document.getElementById('actA').value.trim(); if (!A) { document.getElementById('actA').classList.add('err'); return; } REV[t].actions.push({ a: A, o: document.getElementById('actO').value.trim() || '—', d: document.getElementById('actD').value.trim() || '—', s: 'open' }); log(L('เพิ่มแผนการแก้ไข ', 'Added action ') + N(unit(t))); render(); }
+  else if (a === 'approveChange') { const t = role().team || S.revTeam, c = REV[t].changes[Number(el.dataset.i)]; c.s = 'ok'; kpi(c.k).tgt = c.to; log(L('อนุมัติปรับเป้า ', 'Approved target change ') + c.k + ` ${c.from} → ${c.to}`); toast(L('อนุมัติปรับเป้าแล้ว', 'Target change approved.')); render(); }
+  else if (a === 'sendReview') reviewStep('self', 1);
+  else if (a === 'signReview') reviewStep('rev', 2);
+  else if (a === 'signYear') { const t = role().team || S.yeTeam; YE[t].sign++; log(L('ลงนามประเมินผลปลายปี ', 'Signed year-end review ') + N(unit(t))); toast(L('ลงนามแล้ว', 'Signed.')); render(); }
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && S.drawer) { S.drawer = null; renderDrawer(); }
+  if (e.key === 'Enter' && e.target.matches('tr[data-kpi]')) { S.drawer = { t: 'kpi', id: e.target.dataset.kpi }; renderDrawer(); }
+  if (e.key === 'Enter' && e.target.matches('tr[data-base]')) { S.drawer = { t: 'base', id: e.target.dataset.base }; renderDrawer(); }
+});
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.dataset.entry) {
+    const k = kpi(t.dataset.entry), raw = t.value.replace(',', '.').trim();
+    S.draft[k.id] = raw; const v = raw === '' ? null : Number(raw), ok = raw === '' || !Number.isNaN(v);
+    t.classList.toggle('err', !ok);
+    const a = ok ? ach(k, v, OPEN_MONTH) : null;
+    document.getElementById('a-' + k.id).textContent = pct(a);
+    document.getElementById('g-' + k.id).innerHTML = pill(rag(a));
+    const c = document.getElementById('c-' + k.id), need = ['warn', 'bad'].includes(rag(a));
+    c.placeholder = need ? L('จำเป็น: สาเหตุและสิ่งที่จะทำ', 'Required: cause and next step') : L('ไม่บังคับ', 'Optional');
+  } else if (t.dataset.comment) { S.draft['c:' + t.dataset.comment] = t.value; t.classList.remove('err'); }
+  else if (t.id === 'regQ' || t.id === 'bQ') { S[t.id] = t.value; const pos = t.selectionStart; render(); const n = document.getElementById(t.id); n.focus(); n.setSelectionRange(pos, pos); }
+  else if (t.dataset.rtext) { REV[role().team || S.revTeam][t.dataset.rtext] = t.value; }
+  else if (t.dataset.yetext) { YE[role().team || S.yeTeam].note = t.value; }
+});
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t.id === 'roleSel') { S.role = t.value; store.set('role', S.role); S.drawer = null; S.errs = {}; render(); }
+  else if (t.id === 'regUnit') { S.regUnit = t.value; render(); }
+  else if (t.id === 'regStrat') { S.regStrat = t.value; render(); }
+  else if (['bDept', 'bLink', 'bSt', 'bDec'].includes(t.id)) { S[t.id] = t.value; render(); }
+  else if (t.dataset.bdec) { const b = bkpi(t.dataset.bdec); b.dec = t.value; log(L('เปลี่ยนข้อเสนอ KPI พื้นฐาน ', 'Changed base KPI decision ') + `${b.c} → ${L(...BDEC[b.dec])}`); toast(L('บันทึกข้อเสนอแล้ว', 'Decision saved.')); render(); }
+  else if (t.id === 'entryTeam') { S.entryTeam = t.value; S.errs = {}; render(); }
+  else if (t.id === 'revTeam') { S.revTeam = t.value; render(); }
+  else if (t.id === 'yeTeam') { S.yeTeam = t.value; render(); }
+  else if (t.dataset.score) { const R = REV[role().team || S.revTeam]; R[t.dataset.score][t.dataset.id] = t.value ? Number(t.value) : undefined; render(); }
+  else if (t.dataset.dec) { YE[role().team || S.yeTeam].dec[t.dataset.dec] = t.value; }
+  else if (t.dataset.file) { const f = t.files[0]; if (f) { S.draft['f:' + t.dataset.file] = f.name.length > 18 ? f.name.slice(0, 16) + '…' : f.name; document.getElementById('f-' + t.dataset.file).textContent = S.draft['f:' + t.dataset.file]; } }
+  else if (t.dataset.rule) {
+    const v = Number(t.value); if (Number.isNaN(v)) return;
+    S.rules[t.dataset.rule] = v; if (S.rules.amber > S.rules.green) S.rules.amber = S.rules.green;
+    log(L('เปลี่ยนกติกาสถานะ: ', 'Changed status rules: ') + `green ≥ ${S.rules.green}%, amber ≥ ${S.rules.amber}%, cap ${S.rules.cap}%`); toast(L('บันทึกกติกาแล้ว ทุกหน้าคำนวณใหม่', 'Rules saved; every screen recalculated.')); render();
+  }
+});
+document.addEventListener('submit', e => {
+  if (e.target.id !== 'addForm') return;
+  e.preventDefault();
+  const g = id => document.getElementById(id), errs = [];
+  const th = g('nTh').value.trim(), base = Number(g('nBase').value), tgt = Number(g('nTgt').value), par = g('nPar').value;
+  ['nTh', 'nBase', 'nTgt', 'nPar'].forEach(id => g(id).classList.remove('err'));
+  if (!th) { errs.push(L('ใส่ชื่อ KPI ภาษาไทย', 'Enter the Thai KPI name')); g('nTh').classList.add('err'); }
+  if (g('nBase').value === '' || Number.isNaN(base)) { errs.push(L('ใส่ค่าฐานเป็นตัวเลข', 'Enter the baseline as a number')); g('nBase').classList.add('err'); }
+  if (g('nTgt').value === '' || Number.isNaN(tgt)) { errs.push(L('ใส่เป้าเป็นตัวเลข', 'Enter the target as a number')); g('nTgt').classList.add('err'); }
+  if (!par) { errs.push(L('เลือก KPI บริษัทหรือกลยุทธ์ที่ KPI นี้ช่วย KPI ที่ไม่เชื่อมโยงอนุมัติไม่ได้', 'Choose the company KPI or strategy this KPI serves. Unlinked KPIs cannot be approved.')); g('nPar').classList.add('err'); }
+  if (errs.length) { g('addErr').innerHTML = `<div class="note warn"><i class="bi bi-exclamation-triangle"></i><div>${errs.map(esc).join('<br>')}</div></div>`; return; }
+  const team = role().team, n = KPIS.filter(k => k.unit === team).length + 1;
+  const k = K(`${team}-${String(n).padStart(2, '0')}`, team, par, th, g('nEn').value.trim() || th, g('nU').value.trim() || '%', g('nDir').value, base, tgt, Number(g('nW').value) || 0, g('nSrc').value, [], { status: 'submitted', submittedOn: L('วันนี้', 'today') });
+  KPIS.push(k); log(L('เสนอ KPI ใหม่ ', 'Proposed new KPI ') + k.id + ' ' + th);
+  S.drawer = null; toast(L('ส่งเพื่ออนุมัติแล้ว ลองเปลี่ยนมุมมองเป็นสภากลยุทธ์เพื่ออนุมัติ', 'Sent for approval. Switch the view to Strategy Council to approve it.')); render();
+});
+
+function submitEntry(team) {
+  const ks = teamKpis(team).filter(k => k.src === 'manual'), errs = []; S.errs = {};
+  teamKpis(team).forEach(k => {
+    const raw = k.src === 'erp' ? String(k.a[OPEN_MONTH] ?? '') : String(S.draft[k.id] ?? (k.a[OPEN_MONTH] ?? '')).trim(), v = Number(raw);
+    if (k.src === 'manual' && (raw === '' || Number.isNaN(v))) { S.errs[k.id] = { v: 1 }; errs.push(`${N(k)}: ${L('ยังไม่ได้กรอกผล', 'result missing')}`); return; }
+    const g = rag(ach(k, v, OPEN_MONTH));
+    if ((g === 'warn' || g === 'bad') && !(S.draft['c:' + k.id] || '').trim()) { S.errs[k.id] = Object.assign(S.errs[k.id] || {}, { c: 1 }); errs.push(`${N(k)}: ${L('ผลต่ำกว่าเป้า ใส่สาเหตุและสิ่งที่จะทำ', 'below target, add the cause and next step')}`); }
+  });
+  if (errs.length) { render(); document.getElementById('entryErr').innerHTML = `<div class="note warn"><i class="bi bi-exclamation-triangle"></i><div><b>${L('ยังส่งไม่ได้', 'Not sent yet')}</b><br>${errs.map(esc).join('<br>')}</div></div>`; return; }
+  ks.forEach(k => { k.a[OPEN_MONTH] = Number(S.draft[k.id] ?? k.a[OPEN_MONTH]); delete S.draft[k.id]; });
+  SUB[team][OPEN_MONTH] = 1; log(L('ส่งผลเดือน พ.ค. ', 'Sent May results ') + N(unit(team)));
+  toast(L('ส่งผลแล้ว กระดานภาพรวมอัปเดตแล้ว', 'Sent. The company board is updated.')); render();
+}
+function reviewStep(kind, stage) {
+  const t = role().team || S.revTeam, R = REV[t], miss = teamKpis(t).filter(k => !R[kind][k.id]);
+  if (miss.length) { document.getElementById('revErr').innerHTML = `<div class="note warn"><i class="bi bi-exclamation-triangle"></i><div>${L('ให้คะแนนให้ครบทุก KPI ก่อน: ', 'Score every KPI first: ')}${miss.map(k => esc(N(k))).join(', ')}</div></div>`; return; }
+  R.stage = stage; log((stage === 1 ? L('ส่งทบทวนไตรมาส 1 ให้ผู้ตรวจ ', 'Sent Q1 review to reviewer ') : L('ลงนามทบทวนไตรมาส 1 ', 'Signed Q1 review ')) + N(unit(t)));
+  toast(stage === 1 ? L('ส่งให้ผู้ตรวจแล้ว', 'Sent to the reviewer.') : L('ลงนามแล้ว ผลไตรมาสถูกล็อก', 'Signed. Quarter results locked.')); render();
+}
+
+function setTbh() { document.documentElement.style.setProperty('--tbh', document.querySelector('.topbar').offsetHeight + 'px'); }
+window.addEventListener('resize', setTbh);
+window.addEventListener('hashchange', () => { const v = location.hash.slice(1); if (VIEWS[v] && v !== S.view) go(v); });
+
+/* ───────────── Start ───────────── */
+const start = (location.hash || '').slice(1);
+S.view = VIEWS[start] ? start : 'board';
+render();
+</script>
+</body>
+</html>
