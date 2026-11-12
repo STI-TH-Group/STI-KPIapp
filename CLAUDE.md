@@ -9,6 +9,15 @@ The STI KPI App: a Tier 1, standalone intranet app at `http://sti-apps:8080/kpi`
 `Doc/STI_KPI_App_TDD.html` (read it before changing anything) and the clickable mock-up is in
 `Doc/STI_KPI_App_Prototype.html`. Status: design and prototype only; no production code yet.
 
+### STI Main (the main app)
+
+KPI talks to **STI Main**, repo `STI-TH-Group/Mainpage` (locally
+`C:\Users\thana\Project\STI\STI-TH-Group\Mainpage`). Staff sign in only there, and KPI is
+its SSO client `sti-kpi`. The contract is in Mainpage's `SSO-Handshake.md` (§14 records what
+is actually implemented) and `Backend/sso/`. Where the KPI design and STI Main's code disagree,
+check the code, record the difference in `changes/auth-security.md`, and fix the KPI design.
+Do not change STI Main from this repository.
+
 ## Standard rule: always record changes in `changes/`
 
 **Every change goes into the matching `changes/<area>.md` file, in the same commit or PR as
@@ -22,6 +31,9 @@ files but has no change-log entry is not complete.
 4. Record decisions, open items that were closed, and anything that changes the design. When
    the design changes, also update `Doc/STI_KPI_App_TDD.html` and raise its version number.
 5. Never log secrets, passwords, connection strings or personal data about named staff.
+6. Each area file has three sections: **Design baseline** (the current agreed design for that
+   area), **Open items** (a checklist) and **Log**. When a change alters the design, update
+   the baseline as well as adding a log entry. Tick or strike open items when they close.
 
 | Area | File | Covers |
 |------|------|--------|
